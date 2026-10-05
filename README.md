@@ -1,16 +1,28 @@
-# React + Vite
+# Online Learning Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite + TypeScript client for the Online Learning System SRS. It provides public, student, expert, manager, and administrator route groups, Axios, React Query, and role guards.
 
-Currently, two official plugins are available:
+## Package architecture
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```text
+public/         Static files served by Vite
+src/routes/     URL definitions and role boundaries
+src/features/   Pages grouped by business area (public, auth, management)
+src/components/ Shared layouts and route guard
+src/hooks/      React Query hooks for feature data
+src/services/   REST API functions
+src/api/        Axios instance and token interceptors
+src/types/      Shared TypeScript contracts
+```
 
-## React Compiler
+The data path is `routes → features → hooks → services → apiClient → Backend REST API`. For example, the course catalogue uses `CourseCatalogPage → usePublishedCourses → courseService → GET /api/v1/public/courses`. Shared layouts live in `components`.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Several SRS screens are still placeholders. The landing page, sample course details and dashboard use mockup data; the course catalogue reads the API.
 
-## Expanding the ESLint configuration
+## Run locally
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. Copy `.env.example` to `.env` and set `VITE_API_BASE_URL`.
+2. Run `npm install`.
+3. Run `npm run dev` and open the address Vite prints.
+
+Production build: `npm run build`.
