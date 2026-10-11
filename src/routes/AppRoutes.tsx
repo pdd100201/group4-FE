@@ -2,6 +2,8 @@ import { Route, Routes } from 'react-router-dom'
 import { ProtectedRoute } from '../shared/components/auth/ProtectedRoute'
 import { DashboardLayout, ExpertLayout, PublicLayout, StudentLayout } from '../shared/components/layout/Layouts'
 import { HomePage } from '../features/home/screens/HomePage'
+import { BlogListPage } from '../features/blog/screens/BlogListPage'
+import { BlogDetailPage } from '../features/blog/screens/BlogDetailPage'
 import { CourseDetailPage } from '../features/courses/screens/CourseDetailPage'
 import { CourseCatalogPage } from '../features/courses/screens/CourseCatalogPage'
 import { LoginPage } from '../features/auth/screens/LoginPage'
@@ -24,8 +26,8 @@ export function AppRoutes() {
       <Route path="/" element={<HomePage />} />
       <Route path="/courses" element={<CourseCatalogPage />} />
       <Route path="/courses/:courseId" element={<CourseDetailPage />} />
-      <Route path="/blog" element={<PlaceholderPage title="Bài viết" />} />
-      <Route path="/blog/:postId" element={<PlaceholderPage title="Chi tiết bài viết" />} />
+      <Route path="/blog" element={<BlogListPage />} />
+      <Route path="/blog/:postId" element={<BlogDetailPage />} />
     </Route>
     <Route path="/login" element={<LoginPage />} />
     <Route path="/register" element={<RegisterPage />} />
