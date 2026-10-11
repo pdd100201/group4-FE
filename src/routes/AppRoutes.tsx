@@ -1,16 +1,17 @@
 import { Route, Routes } from 'react-router-dom'
-import { ProtectedRoute } from '../components/auth/ProtectedRoute'
-import { DashboardLayout, ExpertLayout, PublicLayout, StudentLayout } from '../components/layout/Layouts'
-import { HomePage } from '../features/public/HomePage'
-import { CourseDetailPage } from '../features/public/CourseDetailPage'
-import { CourseCatalogPage } from '../features/public/CourseCatalogPage'
-import { LoginPage } from '../features/auth/LoginPage'
-import { ResetPasswordPage } from '../features/auth/ResetPasswordPage'
-import { ForgotPasswordPage } from '../features/auth/ForgotPasswordPage'
-import { RegisterPage } from '../features/auth/RegisterPage'
-import { VerifyEmailPage } from '../features/auth/VerifyEmailPage'
-import { DashboardPage } from '../features/management/DashboardPage'
-import { PlaceholderPage } from '../features/shared/PlaceholderPage'
+import { ProtectedRoute } from '../features/auth/components/ProtectedRoute'
+import { DashboardLayout, ExpertLayout, PublicLayout, StudentLayout } from '../shared/components/layout/Layouts'
+import { HomePage } from '../features/home/screens/HomePage'
+import { CourseDetailPage } from '../features/courses/screens/CourseDetailPage'
+import { CourseCatalogPage } from '../features/courses/screens/CourseCatalogPage'
+import { LoginPage } from '../features/auth/screens/LoginPage'
+import { ResetPasswordPage } from '../features/auth/screens/ResetPasswordPage'
+import { ForgotPasswordPage } from '../features/auth/screens/ForgotPasswordPage'
+import { RegisterPage } from '../features/auth/screens/RegisterPage'
+import { VerifyEmailPage } from '../features/auth/screens/VerifyEmailPage'
+import { DashboardPage } from '../features/dashboard/screens/DashboardPage'
+import { ManagementRecordsPage, ManagementRecordDetailPage } from '../features/management/screens/ManagementRecordsPage'
+import { PlaceholderPage } from '../shared/components/ui/PlaceholderPage'
 
 export function AppRoutes() {
   return <Routes>
@@ -46,8 +47,10 @@ export function AppRoutes() {
     <Route element={<ProtectedRoute roles={['ROLE_ADMIN']} />}>
       <Route element={<DashboardLayout />}>
         <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/admin/registrations" element={<PlaceholderPage title="Danh sách đăng ký" />} />
-        <Route path="/admin/transactions" element={<PlaceholderPage title="Giao dịch" />} />
+        <Route path="/admin/registrations" element={<ManagementRecordsPage kind="registrations" />} />
+        <Route path="/admin/registrations/:id" element={<ManagementRecordDetailPage kind="registrations" />} />
+        <Route path="/admin/transactions" element={<ManagementRecordsPage kind="transactions" />} />
+        <Route path="/admin/transactions/:id" element={<ManagementRecordDetailPage kind="transactions" />} />
         <Route path="/admin/reports" element={<PlaceholderPage title="Báo cáo" />} />
         <Route path="/admin/accounts" element={<PlaceholderPage title="Quản lý tài khoản" />} />
       </Route>
@@ -55,8 +58,10 @@ export function AppRoutes() {
     <Route element={<ProtectedRoute roles={['ROLE_MANAGER']} />}>
       <Route element={<DashboardLayout />}>
         <Route path="/manager/courses/review" element={<PlaceholderPage title="Duyệt khóa học" />} />
-        <Route path="/manager/registrations" element={<PlaceholderPage title="Danh sách đăng ký" />} />
-        <Route path="/manager/transactions" element={<PlaceholderPage title="Giao dịch" />} />
+        <Route path="/manager/registrations" element={<ManagementRecordsPage kind="registrations" />} />
+        <Route path="/manager/registrations/:id" element={<ManagementRecordDetailPage kind="registrations" />} />
+        <Route path="/manager/transactions" element={<ManagementRecordsPage kind="transactions" />} />
+        <Route path="/manager/transactions/:id" element={<ManagementRecordDetailPage kind="transactions" />} />
         <Route path="/manager/posts" element={<PlaceholderPage title="Quản lý bài viết" />} />
       </Route>
     </Route>

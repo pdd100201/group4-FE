@@ -1,0 +1,30 @@
+.management-page{padding:24px;max-width:1400px;margin:auto;letter-spacing:0}
+.management-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:16px 0 24px}
+.management-heading h1{font-size:24px;margin:4px 0;overflow-wrap:anywhere}
+.management-brand{font-size:14px;font-weight:700;color:#2860e7}
+.management-filters{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px;padding:16px 0;border-top:1px solid #e1e7ee;border-bottom:1px solid #e1e7ee;margin-bottom:20px}
+.management-filters label{display:grid;gap:6px;font-size:12px;font-weight:600;flex:1 1 140px;min-width:0}
+.management-filters .management-search{flex:2 1 260px}
+.management-filters input,.management-filters select{width:100%;min-width:0;height:38px;padding:8px;border:1px solid #d2dce8;border-radius:6px;background:white;font:inherit}
+.management-filter-actions{display:flex;gap:8px;flex-wrap:wrap}
+.management-table-wrap{overflow-x:auto;border:1px solid #e1e7ee;background:#fff}
+.management-table{width:100%;border-collapse:collapse;font-size:13px}
+.management-table th{background:#edf2f7;text-align:left;white-space:nowrap;color:#506079}
+.management-table th,.management-table td{padding:14px 12px;border-bottom:1px solid #e5ebf2;vertical-align:top}
+.management-table td{overflow-wrap:anywhere;min-width:110px;max-width:260px}
+.management-table small{display:block;color:#68788a;font-size:12px;margin-top:5px}
+.management-status{display:inline-block;padding:4px 7px;border-radius:4px;background:#edf1f5;color:#506079;font-size:12px;white-space:nowrap}
+.status-active,.status-succeeded{background:#dcf5e7;color:#126b44}
+.status-failed,.status-cancelled{background:#fde5e4;color:#a53129}
+.status-pending,.status-pending_payment{background:#fff1cc;color:#805700}
+.management-pagination{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin:16px 0;flex-wrap:wrap}
+.management-pagination span{margin-right:auto;color:#506079}
+.management-pagination button{width:40px;height:38px;padding:0}
+.management-page button:disabled{opacity:.5;cursor:default}
+.management-empty{text-align:center;padding:36px!important;color:#68788a}
+.management-error{color:#a53129;margin:16px 0}
+.management-details{display:grid;grid-template-columns:220px minmax(0,1fr);margin:12px 0 28px;border-top:1px solid #e1e7ee}
+.management-details dt,.management-details dd{padding:14px 0;border-bottom:1px solid #e1e7ee;margin:0;overflow-wrap:anywhere}
+.management-details dt{color:#68788a}
+.management-note{white-space:pre-wrap}
+@media(max-width:600px){.management-page{padding:16px}.management-heading{align-items:flex-start}.management-heading h1{font-size:20px}.management-details{grid-template-columns:1fr}.management-details dt{padding-bottom:4px;border:0}.management-details dd{padding-top:4px}.management-filters label{flex-basis:calc(50% - 12px)}}
