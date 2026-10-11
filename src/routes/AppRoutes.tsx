@@ -11,6 +11,11 @@ import { RegisterPage } from '../features/auth/RegisterPage'
 import { VerifyEmailPage } from '../features/auth/VerifyEmailPage'
 import { DashboardPage } from '../features/management/DashboardPage'
 import { PlaceholderPage } from '../features/shared/PlaceholderPage'
+import { ExpertCoursesPage } from '../features/expert/ExpertCoursesPage'
+import { CourseEditorPage } from '../features/expert/CourseEditorPage'
+import { CourseReviewPage } from '../features/management/CourseReviewPage'
+import { CourseReviewDetailPage } from '../features/management/CourseReviewDetailPage'
+import { ArchivedCoursesPage } from '../features/management/ArchivedCoursesPage'
 
 export function AppRoutes() {
   return <Routes>
@@ -37,8 +42,9 @@ export function AppRoutes() {
     </Route>
     <Route element={<ProtectedRoute roles={['ROLE_EXPERT']} />}>
       <Route element={<ExpertLayout />}>
-        <Route path="/expert/courses" element={<PlaceholderPage title="Quản lý khóa học" />} />
-        <Route path="/expert/courses/:courseId" element={<PlaceholderPage title="Chỉnh sửa khóa học" />} />
+        <Route path="/expert/courses" element={<ExpertCoursesPage />} />
+        <Route path="/expert/courses/new" element={<CourseEditorPage />} />
+        <Route path="/expert/courses/:courseId" element={<CourseEditorPage />} />
         <Route path="/expert/questions" element={<PlaceholderPage title="Ngân hàng câu hỏi" />} />
         <Route path="/expert/quizzes" element={<PlaceholderPage title="Quản lý bài kiểm tra" />} />
       </Route>
@@ -46,6 +52,7 @@ export function AppRoutes() {
     <Route element={<ProtectedRoute roles={['ROLE_ADMIN']} />}>
       <Route element={<DashboardLayout />}>
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/admin/courses/archived" element={<ArchivedCoursesPage role="admin" />} />
         <Route path="/admin/registrations" element={<PlaceholderPage title="Danh sách đăng ký" />} />
         <Route path="/admin/transactions" element={<PlaceholderPage title="Giao dịch" />} />
         <Route path="/admin/reports" element={<PlaceholderPage title="Báo cáo" />} />
@@ -54,7 +61,9 @@ export function AppRoutes() {
     </Route>
     <Route element={<ProtectedRoute roles={['ROLE_MANAGER']} />}>
       <Route element={<DashboardLayout />}>
-        <Route path="/manager/courses/review" element={<PlaceholderPage title="Duyệt khóa học" />} />
+        <Route path="/manager/courses/review" element={<CourseReviewPage />} />
+        <Route path="/manager/courses/archived" element={<ArchivedCoursesPage role="manager" />} />
+        <Route path="/manager/courses/:courseId/review" element={<CourseReviewDetailPage />} />
         <Route path="/manager/registrations" element={<PlaceholderPage title="Danh sách đăng ký" />} />
         <Route path="/manager/transactions" element={<PlaceholderPage title="Giao dịch" />} />
         <Route path="/manager/posts" element={<PlaceholderPage title="Quản lý bài viết" />} />
