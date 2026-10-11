@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { featuredCourses } from '../../home/data/featuredCourses'
+import { featuredCourses } from '../../../shared/data/featuredCourses'
 
 const registrations = [
   ['#REG-9842', 'Nguyễn Văn An', 'Full-Stack Java Web', '899.000 đ', '✓ Thành công'],

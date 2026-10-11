@@ -1,8 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom'
 import { isAxiosError } from 'axios'
-import { useManagementRecord, useManagementRecords } from '../hooks/useManagementRecords'
-import type { ManagementKind, ManagementRecord, ManagementScope, RegistrationRecord } from '../types/management'
+import { useManagementRecord, useManagementRecords } from '../../../shared/hooks/useManagementRecords'
+import type { ManagementKind, ManagementRecord, ManagementScope, RegistrationRecord } from '../../../shared/types/management'
 import './management.css'
 
 const labels: Record<string, string> = {

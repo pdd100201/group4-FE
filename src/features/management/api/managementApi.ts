@@ -1,5 +1,5 @@
 import apiClient from '../../../shared/services/apiClient'
-import type { ManagementKind, ManagementPage, ManagementRecord, ManagementScope } from '../types/management'
+import type { ManagementKind, ManagementPage, ManagementRecord, ManagementScope } from '../../../shared/types/management'
 
 export const managementApi = {
   list: async (scope: ManagementScope, kind: ManagementKind, params: URLSearchParams) => {

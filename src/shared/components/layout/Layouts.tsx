@@ -1,6 +1,6 @@
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { useAuth } from '../../../features/auth/context/AuthContext'
-import { landingRoute } from '../../../features/auth/utils/roleRoutes'
+import { useAuth } from '../../context/AuthContext'
+import { landingRoute } from '../../utils/roleRoutes'
 
 const Logo = ({ admin = false }: { admin?: boolean }) => <Link className="brand" to={admin ? '/dashboard' : '/'}><b>E</b> Edu<span>{admin ? 'Admin' : 'Learn'}</span></Link>
 

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { featuredCourses } from '../data/featuredCourses'
+import { featuredCourses } from '../../../shared/data/featuredCourses'
 
 export function HomePage() {
   return <>

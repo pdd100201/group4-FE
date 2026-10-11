@@ -1,5 +1,5 @@
 import { Route, Routes } from 'react-router-dom'
-import { ProtectedRoute } from '../features/auth/components/ProtectedRoute'
+import { ProtectedRoute } from '../shared/components/auth/ProtectedRoute'
 import { DashboardLayout, ExpertLayout, PublicLayout, StudentLayout } from '../shared/components/layout/Layouts'
 import { HomePage } from '../features/home/screens/HomePage'
 import { CourseDetailPage } from '../features/courses/screens/CourseDetailPage'

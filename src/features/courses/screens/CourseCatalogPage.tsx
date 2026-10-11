@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { usePublishedCourses } from '../hooks/usePublishedCourses'
+import { usePublishedCourses } from '../../../shared/hooks/usePublishedCourses'
 
 export function CourseCatalogPage() {
   const { data: courses = [], isLoading, isError, refetch } = usePublishedCourses()

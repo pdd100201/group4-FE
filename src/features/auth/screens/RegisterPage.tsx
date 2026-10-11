@@ -2,9 +2,9 @@ import { useState, type FormEvent } from 'react'
 import axios from 'axios'
 import { Link, useNavigate } from 'react-router-dom'
 import { authApi } from '../api/authApi'
-import { GoogleSignInButton } from '../components/GoogleSignInButton'
-import { useAuth } from '../context/AuthContext'
-import { landingRoute } from '../utils/roleRoutes'
+import { GoogleSignInButton } from '../../../shared/components/auth/GoogleSignInButton'
+import { useAuth } from '../../../shared/context/AuthContext'
+import { landingRoute } from '../../../shared/utils/roleRoutes'
 
 export function RegisterPage() {
   const navigate = useNavigate()

@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useState, type PropsWithChildren } from 'react'
-import { authApi } from '../api/authApi'
+import { authApi } from '../../features/auth/api/authApi'
 import { authStorage } from '../utils/authStorage'
 import type { AuthUser } from '../types/auth'
 

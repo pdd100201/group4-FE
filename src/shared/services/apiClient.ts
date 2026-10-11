@@ -1,6 +1,6 @@
 import axios, { type InternalAxiosRequestConfig } from 'axios'
-import { authStorage } from '../../features/auth/utils/authStorage'
-import type { TokenResponse } from '../../features/auth/types/auth'
+import { authStorage } from '../utils/authStorage'
+import type { TokenResponse } from '../types/auth'
 
 const apiClient = axios.create({ baseURL: import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api/v1' })
 apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {

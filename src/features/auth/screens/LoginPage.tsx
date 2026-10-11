@@ -1,9 +1,9 @@
 import { useState, type FormEvent } from 'react'
 import axios from 'axios'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-import { landingRoute } from '../utils/roleRoutes'
-import { GoogleSignInButton } from '../components/GoogleSignInButton'
+import { useAuth } from '../../../shared/context/AuthContext'
+import { landingRoute } from '../../../shared/utils/roleRoutes'
+import { GoogleSignInButton } from '../../../shared/components/auth/GoogleSignInButton'
 
 type LoginLocationState = { from?: string }
 
