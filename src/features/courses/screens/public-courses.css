@@ -1,0 +1,9 @@
+.public-course-image { padding: 0; display: block; overflow: hidden; }
+.public-course-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.public-course-image > span { height: 100%; display: grid; place-items: center; padding: 16px; }
+.public-course-description { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.8; }
+.public-course-outline { padding-left: 0; list-style: none; }
+.public-course-outline .curriculum { display: flex; justify-content: space-between; gap: 12px; }
+.public-course-cover { width: 100%; max-height: 240px; object-fit: cover; border-radius: 7px; margin-bottom: 14px; }
+.public-course-notice { margin-top: 12px; color: #5b6d84; line-height: 1.8; }
+.course-hero small a { color: #c1d4ff; }
