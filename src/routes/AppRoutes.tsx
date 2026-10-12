@@ -11,6 +11,11 @@ import { RegisterPage } from '../features/auth/screens/RegisterPage'
 import { VerifyEmailPage } from '../features/auth/screens/VerifyEmailPage'
 import { DashboardPage } from '../features/dashboard/screens/DashboardPage'
 import { ManagementRecordsPage, ManagementRecordDetailPage } from '../features/management/screens/ManagementRecordsPage'
+import { ExpertCoursesPage } from '../features/expert/screens/ExpertCoursesPage'
+import { CourseEditorPage } from '../features/expert/screens/CourseEditorPage'
+import { CourseReviewPage } from '../features/management/screens/CourseReviewPage'
+import { CourseReviewDetailPage } from '../features/management/screens/CourseReviewDetailPage'
+import { ArchivedCoursesPage } from '../features/management/screens/ArchivedCoursesPage'
 import { PlaceholderPage } from '../shared/components/ui/PlaceholderPage'
 import { ReportsPage } from '../features/reports/screens/ReportsPage'
 
@@ -39,8 +44,9 @@ export function AppRoutes() {
     </Route>
     <Route element={<ProtectedRoute roles={['ROLE_EXPERT']} />}>
       <Route element={<ExpertLayout />}>
-        <Route path="/expert/courses" element={<PlaceholderPage title="Quản lý khóa học" />} />
-        <Route path="/expert/courses/:courseId" element={<PlaceholderPage title="Chỉnh sửa khóa học" />} />
+        <Route path="/expert/courses" element={<ExpertCoursesPage />} />
+        <Route path="/expert/courses/new" element={<CourseEditorPage />} />
+        <Route path="/expert/courses/:courseId" element={<CourseEditorPage />} />
         <Route path="/expert/questions" element={<PlaceholderPage title="Ngân hàng câu hỏi" />} />
         <Route path="/expert/quizzes" element={<PlaceholderPage title="Quản lý bài kiểm tra" />} />
       </Route>
@@ -48,6 +54,7 @@ export function AppRoutes() {
     <Route element={<ProtectedRoute roles={['ROLE_ADMIN']} />}>
       <Route element={<DashboardLayout />}>
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/admin/courses/archived" element={<ArchivedCoursesPage role="admin" />} />
         <Route path="/admin/registrations" element={<ManagementRecordsPage kind="registrations" />} />
         <Route path="/admin/registrations/:id" element={<ManagementRecordDetailPage kind="registrations" />} />
         <Route path="/admin/transactions" element={<ManagementRecordsPage kind="transactions" />} />
@@ -58,7 +65,9 @@ export function AppRoutes() {
     </Route>
     <Route element={<ProtectedRoute roles={['ROLE_MANAGER']} />}>
       <Route element={<DashboardLayout />}>
-        <Route path="/manager/courses/review" element={<PlaceholderPage title="Duyệt khóa học" />} />
+        <Route path="/manager/courses/review" element={<CourseReviewPage />} />
+        <Route path="/manager/courses/archived" element={<ArchivedCoursesPage role="manager" />} />
+        <Route path="/manager/courses/:courseId/review" element={<CourseReviewDetailPage />} />
         <Route path="/manager/registrations" element={<ManagementRecordsPage kind="registrations" />} />
         <Route path="/manager/registrations/:id" element={<ManagementRecordDetailPage kind="registrations" />} />
         <Route path="/manager/transactions" element={<ManagementRecordsPage kind="transactions" />} />
