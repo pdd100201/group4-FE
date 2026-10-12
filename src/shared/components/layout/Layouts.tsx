@@ -1,6 +1,7 @@
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { landingRoute } from '../../utils/roleRoutes'
+import './public-layout.css'
 
 const Logo = ({ admin = false }: { admin?: boolean }) => <Link className="brand" to={admin ? '/dashboard' : '/'}><b>E</b> Edu<span>{admin ? 'Admin' : 'Learn'}</span></Link>
 
@@ -12,7 +13,7 @@ function LogoutButton() {
 
 export function PublicLayout() {
   const { user } = useAuth()
-  return <><header className="public-header"><Logo/><nav><NavLink to="/">Trang chủ</NavLink><NavLink to="/courses">Khóa học</NavLink><NavLink to="/blog">Bài viết</NavLink><a href="#about">Về chúng tôi</a></nav><div className="header-actions">{user ? <><Link to={landingRoute(user)}>Không gian của tôi</Link><LogoutButton /></> : <><Link to="/login">Đăng nhập</Link><Link className="primary-button small" to="/register">Đăng ký</Link></>}</div></header><main><Outlet/></main><footer id="about"><Logo/><p>Nền tảng học tập & ôn luyện kiến thức trực tuyến hiện đại.</p><div><b>LIÊN HỆ</b><p>Email: hotro@edulearn.vn · Hotline: 1900 6688</p></div><div><b>KẾT NỐI VỚI CHÚNG TÔI</b><p>© 2026 EduLearn. Bảo lưu mọi quyền.</p></div></footer></>
+  return <div className="public-layout"><header className="public-header"><Logo/><nav><NavLink to="/">Trang chủ</NavLink><NavLink to="/courses">Khóa học</NavLink><NavLink to="/blog">Bài viết</NavLink><a href="#about">Về chúng tôi</a></nav><div className="header-actions">{user ? <><Link to={landingRoute(user)}>Không gian của tôi</Link><LogoutButton /></> : <><Link to="/login">Đăng nhập</Link><Link className="primary-button small" to="/register">Đăng ký</Link></>}</div></header><main><Outlet/></main><footer id="about"><Logo/><p>Nền tảng học tập & ôn luyện kiến thức trực tuyến hiện đại.</p><div><b>LIÊN HỆ</b><p>Email: hotro@edulearn.vn · Hotline: 1900 6688</p></div><div><b>KẾT NỐI VỚI CHÚNG TÔI</b><p>© 2026 EduLearn. Bảo lưu mọi quyền.</p></div></footer></div>
 }
 
 const SideLink = ({ to, children }: { to: string; children: React.ReactNode }) => <NavLink className="side-link" to={to}>{children}</NavLink>

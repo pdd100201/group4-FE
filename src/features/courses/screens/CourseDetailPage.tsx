@@ -17,11 +17,11 @@ export function CourseDetailPage() {
       {!unavailable && <button onClick={() => void query.refetch()}>Thử lại</button>} <Link to="/courses">Quay lại danh sách khóa học</Link></section>
   }
   const course = query.data
-  return <><section className="course-hero">
+  return <><section className="course-hero"><div className="course-hero-content">
     <small><Link to="/">Trang chủ</Link> / <Link to="/courses">Khóa học</Link> / {course.category || 'Chưa phân loại'} / <b>{course.title}</b></small>
     <h1>{course.title}</h1><span>Giảng viên: <b>{course.expertName || 'Chưa cập nhật'}</b></span>
-  </section>
-    <div className="detail-layout"><section>
+  </div></section>
+    <div className="course-detail-content"><div className="detail-layout"><section>
       <article className="learn-box"><h3>Thông tin khóa học</h3><p>Danh mục: {course.category || 'Chưa phân loại'}</p><p>{course.lessons.length} bài học đang hiển thị · {course.quizCount} bài kiểm tra đang hoạt động</p></article>
       <h2>Mô tả khóa học</h2><p className="public-course-description">{course.description || 'Giảng viên chưa cập nhật mô tả.'}</p>
       <h2>Nội dung khóa học</h2>
@@ -30,10 +30,10 @@ export function CourseDetailPage() {
       <p className="public-course-notice">Danh sách trên là đề cương khóa học. Nội dung bài giảng và video chỉ dành cho học viên có quyền truy cập hợp lệ.</p>
     </section><aside className="checkout" aria-label="Thông tin giá khóa học">
       {course.thumbnailUrl && <img className="public-course-cover" src={course.thumbnailUrl} alt={'Ảnh khóa học ' + course.title} />}
-      <small>GIÁ KHÓA HỌC HIỆN TẠI</small><h1>{coursePrice(course.price)}</h1>
+      <small>GIÁ KHÓA HỌC HIỆN TẠI</small><h2 className="course-price">{coursePrice(course.price)}</h2>
       <b>Khóa học bao gồm:</b><p>{course.lessons.length} bài học đang hiển thị<br />{course.quizCount} bài kiểm tra đang hoạt động</p>
       <p className="public-course-notice">Gói học và chức năng đăng ký/thanh toán chưa được triển khai. Trang này chưa hỗ trợ mua khóa học hoặc học thử.</p>
       <Link to="/courses">Xem các khóa học khác →</Link>
-    </aside></div>
+    </aside></div></div>
   </>
 }

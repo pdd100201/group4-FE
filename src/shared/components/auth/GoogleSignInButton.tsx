@@ -34,18 +34,33 @@ export function GoogleSignInButton({ onCredential }: { onCredential: (credential
     const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
     if (!clientId) { setError('Google Sign-In chưa được cấu hình.'); return }
     let active = true
+    let observer: ResizeObserver | undefined
     loadGoogleScript().then(() => {
       if (!active || !container.current || !window.google) return
       window.google.accounts.id.initialize({
         client_id: clientId,
         callback: (response) => callback.current(response.credential),
       })
-      container.current.replaceChildren()
-      window.google.accounts.id.renderButton(container.current, {
-        type: 'standard', theme: 'outline', size: 'large', width: 284, text: 'continue_with',
-      })
+      const target = container.current
+      const parent = target.parentElement
+      let previousWidth = 0
+      const render = () => {
+        if (!active || !window.google || !parent) return
+        const width = Math.max(200, Math.min(400, Math.floor(parent.clientWidth)))
+        if (width === previousWidth) return
+        previousWidth = width
+        target.replaceChildren()
+        window.google.accounts.id.renderButton(target, {
+          type: 'standard', theme: 'outline', size: 'large', width, text: 'continue_with',
+        })
+      }
+      render()
+      if (parent) {
+        observer = new ResizeObserver(render)
+        observer.observe(parent)
+      }
     }).catch(() => active && setError('Không thể tải Google Sign-In.'))
-    return () => { active = false }
+    return () => { active = false; observer?.disconnect() }
   }, [])
 
   return <div className="google-signin">{error ? <p className="form-error" role="alert">{error}</p> : <div ref={container} />}</div>

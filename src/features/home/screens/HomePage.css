@@ -1,0 +1,20 @@
+.home-page .hero{padding:48px max(24px,calc((100% - 1132px)/2));grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:48px;align-items:center;min-height:360px}
+.home-page .hero>div:first-child{max-width:560px;min-width:0}
+.home-page .hero em{font-size:12px;padding:6px 10px}
+.home-page .hero h1{font-size:36px;line-height:1.25;letter-spacing:0;margin:18px 0;overflow-wrap:anywhere}
+.home-page .hero p{font-size:16px;line-height:1.7;margin-bottom:24px}
+.home-page .search-box{height:auto;min-height:48px;padding:6px 6px 6px 12px;gap:8px;min-width:0}
+.home-page .search-box input{min-width:0;width:100%;font-size:14px;line-height:1.5;background:transparent}
+.home-page .search-box a{font-size:14px;padding:10px 16px;flex-shrink:0;border-radius:6px}
+.home-page .hero-art{width:100%;max-width:420px;height:220px;padding:24px;font-size:13px}
+.home-page .categories{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.home-page .categories article{font-size:14px;padding:20px;overflow-wrap:anywhere}
+.home-page .categories small{font-size:13px;margin:8px 0 0}
+.home-page .post-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.home-page .post-grid article{grid-template-columns:64px minmax(0,1fr);padding:16px;gap:6px 12px;font-size:13px}
+.home-page .post-grid b{font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+.home-page .post-grid small,.home-page .post-grid a{font-size:12px;line-height:1.5}
+.home-page .thumbnail{font-size:11px;min-height:64px}
+@media(max-width:900px){.home-page .hero{gap:24px;padding:32px 24px}.home-page .categories{grid-template-columns:repeat(2,minmax(0,1fr))}.home-page .post-grid{grid-template-columns:1fr}}
+@media(max-width:800px){.home-page .hero{grid-template-columns:minmax(0,1fr);min-height:0}}
+@media(max-width:600px){.home-page .hero{padding:28px 16px}.home-page .hero h1{font-size:28px}.home-page .hero p{font-size:14px}.home-page .hero em{font-size:11px}.home-page .search-box a{padding:10px;font-size:13px}.home-page .search-box input{font-size:13px}.home-page .categories article{padding:16px}}

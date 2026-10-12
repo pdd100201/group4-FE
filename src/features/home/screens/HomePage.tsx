@@ -2,12 +2,13 @@ import { Link } from 'react-router-dom'
 import { usePublishedCourses } from '../../../shared/hooks/usePublishedCourses'
 import { PublicCourseCard } from '../../courses/screens/PublicCourseCard'
 import '../../courses/screens/public-courses.css'
+import './HomePage.css'
 
 export function HomePage() {
   const query = usePublishedCourses()
   const courses = query.data ?? []
   const categories = [...new Set(courses.map(course => course.category).filter((category): category is string => Boolean(category)))].slice(0, 4)
-  return <>
+  return <div className="home-page">
     <section className="hero"><div><em>✦ NỀN TẢNG HỌC TRỰC TUYẾN 4.0</em>
       <h1>Khám Phá & Nâng Tầm<br />Kỹ Năng Cùng <span>Chuyên Gia</span></h1>
       <p>Học tập chủ động với bài giảng chất lượng, luyện tập quiz trắc nghiệm và lộ trình cá nhân hóa hướng tới mục tiêu thực tế.</p>
@@ -25,5 +26,5 @@ export function HomePage() {
       <div className="post-grid">{['Bí quyết vượt qua kỳ thực tập IT', 'Kỹ thuật nhớ lâu với Active Recall', 'Cân bằng tham vọng trong thiết kế UI'].map(title =>
         <article key={title}><div className="thumbnail">[Hình ảnh]</div><small>Cẩm nang · 18 Thg, 2026</small><b>{title}</b><Link to="/blog/1">Đọc chi tiết →</Link></article>)}</div>
     </section>
-  </>
+  </div>
 }

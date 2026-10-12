@@ -1,0 +1,17 @@
+.public-layout{min-height:100vh;min-height:100svh;display:flex;flex-direction:column}
+.public-layout>main{flex:1;min-width:0}
+.public-layout .public-header{height:auto;min-height:72px;padding:12px max(24px,calc((100% - 1180px)/2));gap:28px;flex-wrap:wrap}
+.public-layout .brand{font-size:18px}
+.public-layout .brand b{width:32px;height:32px;font-size:18px;flex-shrink:0}
+.public-layout .public-header nav{display:flex;align-items:center;gap:24px;font-size:14px;min-width:0;flex-wrap:wrap}
+.public-layout .public-header nav a{padding:10px 0;border-bottom:2px solid transparent}
+.public-layout .public-header nav .active{border-bottom-color:#2460e8}
+.public-layout .header-actions{gap:12px;font-size:14px;margin-left:auto;flex-wrap:wrap}
+.public-layout .header-actions .logout{width:auto;margin:0;font-size:14px;white-space:nowrap}
+.public-layout>footer{padding:32px max(24px,calc((100% - 1180px)/2));grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;font-size:13px}
+.public-layout>footer>*{min-width:0;overflow-wrap:anywhere}
+.public-layout>footer b{font-size:13px}
+.public-layout>footer .brand b{font-size:18px}
+.public-layout>footer p{margin-bottom:0}
+@media(max-width:1000px){.public-layout .public-header{gap:12px 24px}.public-layout .public-header nav{order:3;flex-basis:100%;justify-content:flex-start}.public-layout>footer{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.public-layout .public-header{padding:12px 16px}.public-layout .header-actions{font-size:12px;gap:8px}.public-layout .header-actions .logout{font-size:12px;padding:8px}.public-layout .public-header nav{gap:16px;font-size:13px}.public-layout>footer{padding:24px 16px;grid-template-columns:1fr;gap:20px}}
