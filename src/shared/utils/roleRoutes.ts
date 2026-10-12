@@ -4,7 +4,7 @@ const destinations: Array<[Role, string]> = [
   ['ROLE_ADMIN', '/dashboard'],
   ['ROLE_MANAGER', '/manager/courses/review'],
   ['ROLE_EXPERT', '/expert/courses'],
-  ['ROLE_STUDENT', '/student/courses'],
+  ['ROLE_STUDENT', '/'],
 ]
 
 export function landingRoute(user: AuthUser) {
