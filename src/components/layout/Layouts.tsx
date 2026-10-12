@@ -2,7 +2,7 @@ import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { landingRoute } from '../../utils/roleRoutes'
 
-const Logo = ({ admin = false }: { admin?: boolean }) => <Link className="brand" to={admin ? '/dashboard' : '/'}><b>E</b> Edu<span>{admin ? 'Admin' : 'Learn'}</span></Link>
+const Logo = ({ admin = false, expert = false }: { admin?: boolean; expert?: boolean }) => <Link className="brand" to={admin ? '/dashboard' : '/'}><b>E</b> Edu<span>{admin ? 'Admin' : expert ? 'Portal' : 'Learn'}</span></Link>
 
 function LogoutButton() {
   const { logout } = useAuth()
@@ -28,7 +28,7 @@ export function StudentLayout() {
 }
 
 export function ExpertLayout() {
-  return <section className="app-shell"><aside className="sidebar"><Logo/><p className="side-label">GIẢNG DẠY</p><SideLink to="/expert/courses">▣ Quản lý khóa học</SideLink><SideLink to="/expert/questions">▤ Ngân hàng câu hỏi</SideLink><SideLink to="/expert/quizzes">◫ Quản lý bài kiểm tra</SideLink><LogoutButton /></aside><section className="app-content"><Topbar/><Outlet/></section></section>
+  return <section className="app-shell"><aside className="sidebar"><Logo expert/><p className="side-label">GIẢNG DẠY</p><SideLink to="/expert/courses">▣ Quản lý khóa học</SideLink><SideLink to="/expert/questions">▤ Ngân hàng câu hỏi</SideLink><SideLink to="/expert/quizzes">◫ Quản lý bài kiểm tra</SideLink><LogoutButton /></aside><section className="app-content"><Topbar/><Outlet/></section></section>
 }
 
 export function DashboardLayout() {
@@ -36,6 +36,6 @@ export function DashboardLayout() {
   const admin = Boolean(user?.roles.includes('ROLE_ADMIN'))
   return <section className="app-shell"><aside className={admin ? 'sidebar admin' : 'sidebar'}><Logo admin={admin}/>
     {admin ? <><p className="side-label">TỔNG QUAN HỆ THỐNG</p><SideLink to="/dashboard">▥ Bảng điều khiển</SideLink><SideLink to="/admin/registrations">▧ Quản lý Đăng ký</SideLink><SideLink to="/admin/transactions">▣ Giao dịch & Dòng tiền</SideLink><SideLink to="/admin/reports">◫ Báo cáo & Xuất dữ liệu</SideLink><p className="side-label">QUẢN TRỊ NGƯỜI DÙNG</p><SideLink to="/admin/accounts">♟ Tài khoản & Phân quyền</SideLink></>
-      : <><p className="side-label">QUẢN LÝ</p><SideLink to="/manager/courses/review">▤ Duyệt khóa học</SideLink><SideLink to="/manager/registrations">▧ Quản lý Đăng ký</SideLink><SideLink to="/manager/transactions">▣ Giao dịch & Dòng tiền</SideLink><SideLink to="/manager/posts">▤ Quản lý bài viết</SideLink></>}
+      : <><p className="side-label">QUẢN LÝ</p><SideLink to="/manager/courses/review">▤ Duyệt khóa học</SideLink><SideLink to="/manager/courses/review/quizzes">◫ Xem trước quiz khi review</SideLink><SideLink to="/manager/registrations">▧ Quản lý Đăng ký</SideLink><SideLink to="/manager/transactions">▣ Giao dịch & Dòng tiền</SideLink><SideLink to="/manager/posts">▤ Quản lý bài viết</SideLink></>}
     <LogoutButton /></aside><section className="app-content"><Topbar/><Outlet/></section></section>
 }

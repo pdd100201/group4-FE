@@ -1,0 +1,5 @@
+export { AuthProvider } from '../src/context/AuthContext'
+export { AppRoutes } from '../src/routes/AppRoutes'
+export { quizError } from '../src/services/quizService'
+export { quizService } from '../src/services/quizService'
+export { validId } from '../src/hooks/useQuizManagement'

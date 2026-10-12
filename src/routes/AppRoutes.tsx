@@ -11,6 +11,9 @@ import { RegisterPage } from '../features/auth/RegisterPage'
 import { VerifyEmailPage } from '../features/auth/VerifyEmailPage'
 import { DashboardPage } from '../features/management/DashboardPage'
 import { PlaceholderPage } from '../features/shared/PlaceholderPage'
+import { ExpertQuizPage } from '../features/quiz/ExpertQuizPage'
+import { QuizEditorPage } from '../features/quiz/QuizEditorPage'
+import { ManagerQuizPreviewPage } from '../features/quiz/ManagerQuizPreviewPage'
 
 export function AppRoutes() {
   return <Routes>
@@ -40,7 +43,11 @@ export function AppRoutes() {
         <Route path="/expert/courses" element={<PlaceholderPage title="Quản lý khóa học" />} />
         <Route path="/expert/courses/:courseId" element={<PlaceholderPage title="Chỉnh sửa khóa học" />} />
         <Route path="/expert/questions" element={<PlaceholderPage title="Ngân hàng câu hỏi" />} />
-        <Route path="/expert/quizzes" element={<PlaceholderPage title="Quản lý bài kiểm tra" />} />
+        <Route path="/expert/quizzes" element={<ExpertQuizPage />} />
+        <Route path="/expert/courses/:courseId/quizzes" element={<ExpertQuizPage />} />
+        <Route path="/expert/courses/:courseId/quizzes/new" element={<QuizEditorPage />} />
+        <Route path="/expert/courses/:courseId/quizzes/:quizId" element={<QuizEditorPage readOnly />} />
+        <Route path="/expert/courses/:courseId/quizzes/:quizId/edit" element={<QuizEditorPage />} />
       </Route>
     </Route>
     <Route element={<ProtectedRoute roles={['ROLE_ADMIN']} />}>
@@ -55,6 +62,8 @@ export function AppRoutes() {
     <Route element={<ProtectedRoute roles={['ROLE_MANAGER']} />}>
       <Route element={<DashboardLayout />}>
         <Route path="/manager/courses/review" element={<PlaceholderPage title="Duyệt khóa học" />} />
+        <Route path="/manager/courses/review/quizzes" element={<ManagerQuizPreviewPage />} />
+        <Route path="/manager/courses/:courseId/review/quizzes" element={<ManagerQuizPreviewPage />} />
         <Route path="/manager/registrations" element={<PlaceholderPage title="Danh sách đăng ký" />} />
         <Route path="/manager/transactions" element={<PlaceholderPage title="Giao dịch" />} />
         <Route path="/manager/posts" element={<PlaceholderPage title="Quản lý bài viết" />} />
