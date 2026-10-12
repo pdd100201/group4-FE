@@ -13,6 +13,7 @@ src/features/
   home/                  Home screen
   dashboard/             Existing dashboard screen
   management/            Registration/transaction API and screens
+  reports/               Admin report API and screens (UC50-54)
   <feature>/api/         Feature-specific REST API functions
   <feature>/screens/     Feature pages and their CSS
 src/shared/components/

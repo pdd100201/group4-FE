@@ -12,6 +12,7 @@ import { VerifyEmailPage } from '../features/auth/screens/VerifyEmailPage'
 import { DashboardPage } from '../features/dashboard/screens/DashboardPage'
 import { ManagementRecordsPage, ManagementRecordDetailPage } from '../features/management/screens/ManagementRecordsPage'
 import { PlaceholderPage } from '../shared/components/ui/PlaceholderPage'
+import { ReportsPage } from '../features/reports/screens/ReportsPage'
 
 export function AppRoutes() {
   return <Routes>
@@ -51,7 +52,7 @@ export function AppRoutes() {
         <Route path="/admin/registrations/:id" element={<ManagementRecordDetailPage kind="registrations" />} />
         <Route path="/admin/transactions" element={<ManagementRecordsPage kind="transactions" />} />
         <Route path="/admin/transactions/:id" element={<ManagementRecordDetailPage kind="transactions" />} />
-        <Route path="/admin/reports" element={<PlaceholderPage title="Báo cáo" />} />
+        <Route path="/admin/reports" element={<ReportsPage />} />
         <Route path="/admin/accounts" element={<PlaceholderPage title="Quản lý tài khoản" />} />
       </Route>
     </Route>
