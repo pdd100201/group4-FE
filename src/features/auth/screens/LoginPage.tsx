@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import axios from 'axios'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../../shared/context/AuthContext'
-import { postLoginRoute } from '../../../shared/utils/roleRoutes'
+import { postLoginRoute, registrationReturnRoute } from '../../../shared/utils/roleRoutes'
 import { GoogleSignInButton } from '../../../shared/components/auth/GoogleSignInButton'
 
 type LoginLocationState = { from?: string }
@@ -20,7 +20,9 @@ export function LoginPage() {
 
   function destination(user: Awaited<ReturnType<typeof login>>) {
     const requested = (location.state as LoginLocationState | null)?.from
-    navigate(postLoginRoute(user, requested), { replace: true })
+    const registration = registrationReturnRoute(user, requested ?? sessionStorage.getItem('ols.registrationReturnTo'))
+    if (registration) sessionStorage.removeItem('ols.registrationReturnTo')
+    navigate(registration ?? postLoginRoute(user, requested), { replace: true })
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {

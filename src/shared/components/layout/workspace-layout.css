@@ -11,6 +11,11 @@
 .app-shell .topbar>span:nth-of-type(1){display:grid;place-items:center;width:36px;height:36px;flex-shrink:0;font-size:14px;padding:0;margin-left:auto}
 .app-shell .topbar div{display:block;font-size:14px;line-height:1.5;min-width:0;max-width:320px;overflow-wrap:anywhere}
 .app-shell .topbar small{font-size:12px;line-height:1.5}
+.app-shell .topbar>.topbar-spacer{display:block;width:auto;height:0;flex:1;border:0;background:none;padding:0;margin:0}
+.app-shell .topbar .topbar-profile{display:flex;align-items:center;gap:10px;padding:0;max-width:320px;flex-shrink:1}
+.app-shell .topbar-profile .avatar{width:36px;height:36px;flex-shrink:0;font-size:14px}
+.app-shell .sidebar-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}
+.app-shell .sidebar-header .brand{margin-bottom:0}
 .app-shell .placeholder-page{margin:24px;padding:24px;border-radius:8px;min-width:0}
 .app-shell .placeholder-page h1{font-size:26px;line-height:1.35;overflow-wrap:anywhere}
 .app-shell .placeholder-page p{font-size:14px;line-height:1.7;overflow-wrap:anywhere;margin-bottom:0}
@@ -34,3 +39,4 @@
 @media(max-width:1000px){.app-shell .dashboard-grid{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:800px){.app-shell{grid-template-columns:minmax(0,1fr)}.app-shell .sidebar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 8px;position:static;height:auto;padding:16px;border-right:0;border-bottom:1px solid #e6ecf4;overflow:visible}.app-shell .sidebar .brand,.app-shell .side-label,.app-shell .sidebar .logout{grid-column:1/-1}.app-shell .sidebar .brand{margin-bottom:4px}.app-shell .side-label{margin:12px 8px 4px}.app-shell .sidebar .logout{margin-top:12px}.app-shell .side-link{margin:0}.app-shell .topbar{display:grid;grid-template-columns:36px minmax(0,1fr);padding:16px}.app-shell .topbar label{grid-column:1/-1;order:3;width:100%;max-width:none}.app-shell .topbar>span:nth-of-type(1){margin-left:0}.app-shell .topbar div{max-width:none}.app-shell .placeholder-page{margin:16px;padding:20px}.app-shell .placeholder-page h1{font-size:24px}.app-shell .dashboard{padding:16px}}
 @media(max-width:480px){.app-shell .dashboard .metric-grid{grid-template-columns:minmax(0,1fr)}.app-shell .placeholder-page{padding:16px}.app-shell .side-link{padding:10px;font-size:13px}.app-shell .topbar div{font-size:13px}}
+@media(max-width:800px){.app-shell .sidebar{display:block;position:fixed;left:0;top:0;width:min(280px,calc(100% - 32px));height:100svh;overflow-y:auto;z-index:40}.app-shell .topbar{display:flex;flex-wrap:wrap}.app-shell .topbar label{order:3;flex-basis:100%}.app-shell .topbar .topbar-profile{max-width:calc(100% - 64px)}.app-shell .topbar-profile div{min-width:0}.app-shell .sidebar-header button{width:40px;height:40px;padding:0}.app-shell .sidebar-toggle{min-width:40px;min-height:40px}.app-shell .topbar-spacer{display:none!important}}

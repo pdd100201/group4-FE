@@ -20,6 +20,8 @@ export interface RegistrationRecord {
   discount: number | null
   amount: number | null
   validityDays: number | null
+  validityMonths?: number | null
+  lifetime?: boolean | null
   createdAt: string | null
   validFrom: string | null
   validUntil: string | null

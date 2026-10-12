@@ -11,7 +11,7 @@ const output = ts.transpileModule(source, {
 }).outputText
 const exportsObject = {}
 vm.runInNewContext(output, { exports: exportsObject, URL })
-const { postLoginRoute } = exportsObject
+const { postLoginRoute, registrationReturnRoute } = exportsObject
 const user = (...roles) => ({ roles })
 
 test('admin falls back to dashboard for a manager-only return path', () => {
@@ -28,7 +28,7 @@ test('manager cannot return to the admin dashboard', () => {
 })
 
 test('student and expert cannot return to admin pages', () => {
-  assert.equal(postLoginRoute(user('ROLE_STUDENT'), '/admin/accounts'), '/student/courses')
+  assert.equal(postLoginRoute(user('ROLE_STUDENT'), '/admin/accounts'), '/')
   assert.equal(postLoginRoute(user('ROLE_EXPERT'), '/admin/reports'), '/expert/courses')
 })
 
@@ -46,4 +46,12 @@ test('external, auth and normalized unauthorized paths fall back safely', () => 
 
 test('public course return paths remain available to students', () => {
   assert.equal(postLoginRoute(user('ROLE_STUDENT'), '/courses/1?packageId=2'), '/courses/1?packageId=2')
+})
+
+test('student lands on home but can return to a selected course package', () => {
+  assert.equal(postLoginRoute(user('ROLE_STUDENT')), '/')
+  assert.equal(registrationReturnRoute(user('ROLE_STUDENT'), '/student/courses/1/register?packageId=2'),
+    '/student/courses/1/register?packageId=2')
+  assert.equal(registrationReturnRoute(user('ROLE_ADMIN'), '/student/courses/1/register?packageId=2'), null)
+  assert.equal(registrationReturnRoute(user('ROLE_STUDENT'), '//example.com'), null)
 })

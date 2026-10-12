@@ -16,8 +16,12 @@ import { CourseEditorPage } from '../features/expert/screens/CourseEditorPage'
 import { CourseReviewPage } from '../features/management/screens/CourseReviewPage'
 import { CourseReviewDetailPage } from '../features/management/screens/CourseReviewDetailPage'
 import { ArchivedCoursesPage } from '../features/management/screens/ArchivedCoursesPage'
+import { CourseRegistrationPage } from '../features/registrations/screens/CourseRegistrationPage'
+import { StudentRegistrationsPage, StudentRegistrationDetailPage } from '../features/registrations/screens/StudentRegistrationsPage'
 import { PlaceholderPage } from '../shared/components/ui/PlaceholderPage'
 import { ReportsPage } from '../features/reports/screens/ReportsPage'
+import { PaymentPage, PaymentResultPage } from '../features/payment/screens/PaymentPage'
+import { StudentCoursesPage } from '../features/courses/screens/StudentCoursesPage'
 
 export function AppRoutes() {
   return <Routes>
@@ -25,6 +29,11 @@ export function AppRoutes() {
       <Route path="/" element={<HomePage />} />
       <Route path="/courses" element={<CourseCatalogPage />} />
       <Route path="/courses/:courseId" element={<CourseDetailPage />} />
+      <Route element={<ProtectedRoute roles={['ROLE_STUDENT']} />}>
+        <Route path="/student/courses/:courseId/register" element={<CourseRegistrationPage />} />
+        <Route path="/student/registrations/:id/payment" element={<PaymentPage />} />
+        <Route path="/payment/result" element={<PaymentResultPage />} />
+      </Route>
       <Route path="/blog" element={<PlaceholderPage title="Bài viết" />} />
       <Route path="/blog/:postId" element={<PlaceholderPage title="Chi tiết bài viết" />} />
     </Route>
@@ -35,9 +44,10 @@ export function AppRoutes() {
     <Route path="/verify-email" element={<VerifyEmailPage />} />
     <Route element={<ProtectedRoute roles={['ROLE_STUDENT']} />}>
       <Route element={<StudentLayout />}>
-        <Route path="/student/courses" element={<PlaceholderPage title="Khóa học của tôi" />} />
+        <Route path="/student/courses" element={<StudentCoursesPage />} />
         <Route path="/student/courses/:courseId/lessons/:lessonId" element={<PlaceholderPage title="Bài học" />} />
-        <Route path="/student/registrations" element={<PlaceholderPage title="Đăng ký của tôi" />} />
+        <Route path="/student/registrations" element={<StudentRegistrationsPage />} />
+        <Route path="/student/registrations/:id" element={<StudentRegistrationDetailPage />} />
         <Route path="/student/quizzes/:quizId" element={<PlaceholderPage title="Bài kiểm tra" />} />
         <Route path="/student/quiz-attempts/:attemptId" element={<PlaceholderPage title="Kết quả kiểm tra" />} />
       </Route>

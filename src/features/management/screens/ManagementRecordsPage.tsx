@@ -11,7 +11,7 @@ const labels: Record<string, string> = {
   SUCCEEDED: 'Thành công', REFUNDED: 'Đã hoàn tiền',
 }
 const money = (value: number | null) => value == null ? 'Chưa lưu' : new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
-const date = (value: string | null) => value ? new Intl.DateTimeFormat('vi-VN', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(value)) : 'Chưa lưu'
+const date = (value: string | null) => value ? new Intl.DateTimeFormat('vi-VN', { dateStyle: 'short', timeStyle: 'short', timeZone: 'UTC' }).format(new Date(value)) : 'Chưa lưu'
 function errorMessage(error: unknown) {
   if (isAxiosError(error)) {
     if (error.response?.status === 404) return 'Không tìm thấy bản ghi.'
@@ -51,6 +51,16 @@ export function ManagementRecordsPage({ kind }: { kind: ManagementKind }) {
     for (const [key, value] of values.entries()) if (String(value).trim()) next.set(key, String(value).trim())
     const from = next.get('from'), to = next.get('to')
     const min = next.get('minAmount'), max = next.get('maxAmount')
+    const courseId = next.get('courseId')
+    if (courseId && (!Number.isSafeInteger(Number(courseId)) || Number(courseId) <= 0)) {
+      setValidation('Mã khóa học phải là số nguyên dương.')
+      return
+    }
+    const amounts = [min, max].filter((value): value is string => Boolean(value))
+    if (amounts.some(value => !Number.isFinite(Number(value)) || Number(value) < 0 || Number(value) >= 1e12 || !/^\d+(\.\d{1,2})?$/.test(value))) {
+      setValidation('Số tiền phải không âm, nhỏ hơn 1.000.000.000.000 và tối đa 2 chữ số thập phân.')
+      return
+    }
     if ((from && to && from > to) || (min && max && Number(min) > Number(max))) {
       setValidation('Khoảng ngày hoặc số tiền không hợp lệ.')
       return
@@ -69,14 +79,14 @@ export function ManagementRecordsPage({ kind }: { kind: ManagementKind }) {
     <header className="management-heading"><div><span className="management-brand">EduCRM</span><h1>{transactions ? 'Giao dịch' : 'Quản lý đăng ký'}</h1></div>
       <button type="button" onClick={() => refetch()} disabled={isFetching}>Làm mới</button></header>
     <form className="management-filters" key={params.toString()} onSubmit={applyFilters}>
-      <label className="management-search">Tìm kiếm<input name="q" defaultValue={params.get('q') ?? ''} maxLength={200} placeholder={transactions ? 'Mã giao dịch, học viên, khóa học' : 'Tên, email, khóa học'} /></label>
+      <label className="management-search">Tìm kiếm<input name="q" defaultValue={params.get('q') ?? ''} maxLength={200} placeholder={transactions ? 'Mã giao dịch/QR, tên, email, khóa học' : 'Tên, email, khóa học'} /></label>
       <label>Mã khóa học<input name="courseId" type="number" min="1" step="1" defaultValue={params.get('courseId') ?? ''} /></label>
-      <label>Trạng thái<select name="status" defaultValue={params.get('status') ?? ''}><option value="">Tất cả</option>{statuses.map(s => <option key={s} value={s}>{labels[s]}</option>)}</select></label>
+      <label>{transactions ? 'Kết quả giao dịch' : 'Trạng thái'}<select name="status" defaultValue={params.get('status') ?? ''}><option value="">Tất cả</option>{statuses.map(s => <option key={s} value={s}>{labels[s]}</option>)}</select></label>
       <label>Từ ngày (UTC)<input name="from" type="date" defaultValue={params.get('from') ?? ''} /></label>
       <label>Đến ngày (UTC)<input name="to" type="date" defaultValue={params.get('to') ?? ''} /></label>
-      {transactions && <><label>Phương thức<select name="provider" defaultValue={params.get('provider') ?? ''}><option value="">Tất cả</option><option value="VNPAY">VNPAY</option></select></label>
-        <label>Số tiền từ<input name="minAmount" type="number" min="0" step="0.01" defaultValue={params.get('minAmount') ?? ''} /></label>
-        <label>Số tiền đến<input name="maxAmount" type="number" min="0" step="0.01" defaultValue={params.get('maxAmount') ?? ''} /></label></>}
+      {transactions && <><label>Phương thức<select name="provider" defaultValue={params.get('provider') ?? ''}><option value="">Tất cả</option><option value="SEPAY">SePay</option><option value="SEPAY_TEST">SePay Test Mode</option></select></label>
+        <label>Số tiền từ (VND)<input name="minAmount" type="number" min="0" max="999999999999.99" step="0.01" defaultValue={params.get('minAmount') ?? ''} /></label>
+        <label>Số tiền đến (VND)<input name="maxAmount" type="number" min="0" max="999999999999.99" step="0.01" defaultValue={params.get('maxAmount') ?? ''} /></label></>}
       <label>Số dòng<select name="size" defaultValue={size}><option>10</option><option>20</option><option>50</option></select></label>
       <div className="management-filter-actions"><button className="primary-button" type="submit">Áp dụng</button><button type="button" onClick={() => { setValidation(''); setParams({}) }}>Xóa lọc</button></div>
     </form>
@@ -86,7 +96,7 @@ export function ManagementRecordsPage({ kind }: { kind: ManagementKind }) {
     {!isLoading && !error && data && <>
       {data.items.length > 0 ? <div className="management-table-wrap" aria-busy={isFetching}><table className="management-table"><thead><tr>
         <th>{transactions ? 'Giao dịch' : 'Đăng ký'}</th><th>Học viên</th><th>Khóa học / Gói</th><th>Số tiền</th>
-        {transactions && <th>Phương thức</th>}<th>Trạng thái</th><th>{transactions ? 'Ngày giao dịch' : 'Ngày đăng ký'}</th>
+        {transactions && <th>Phương thức</th>}<th>Trạng thái</th><th>{transactions ? 'Ngày giao dịch (UTC)' : 'Ngày đăng ký (UTC)'}</th>
         {!transactions && <th>Hiệu lực</th>}<th></th>
       </tr></thead><tbody>
         {data.items.map(record => {
@@ -118,7 +128,7 @@ function RegistrationFields({ record }: { record: RegistrationRecord }) {
     <dt>Giá gốc</dt><dd>{money(record.originalPrice)}</dd>
     <dt>Giảm giá</dt><dd>{money(record.discount)}</dd>
     <dt>Chi phí cuối cùng</dt><dd>{money(record.amount)}</dd>
-    <dt>Thời hạn gói</dt><dd>{record.validityDays == null ? 'Chưa lưu' : `${record.validityDays} ngày`}</dd>
+    <dt>Thời hạn gói</dt><dd>{record.lifetime ? 'Vĩnh viễn' : record.validityMonths != null ? `${record.validityMonths} tháng` : record.validityDays == null ? 'Chưa lưu' : `${record.validityDays} ngày`}</dd>
     <dt>Ngày đăng ký</dt><dd>{date(record.createdAt)}</dd>
     <dt>Hiệu lực từ</dt><dd>{date(record.validFrom)}</dd>
     <dt>Hiệu lực đến</dt><dd>{date(record.validUntil)}</dd>
@@ -142,8 +152,8 @@ export function ManagementRecordDetailPage({ kind }: { kind: ManagementKind }) {
       {'registration' in data && <><h2>Thông tin thanh toán</h2><dl className="management-details">
         <dt>Mã payment</dt><dd>#{data.paymentId}</dd><dt>Mã cổng thanh toán</dt><dd>{data.providerReference ?? 'Chưa lưu'}</dd>
         <dt>Phương thức</dt><dd>{data.provider ?? 'Chưa lưu'}</dd><dt>Loại giao dịch</dt><dd>{data.type}</dd>
-        <dt>Số tiền giao dịch</dt><dd>{money(data.amount)}</dd><dt>Trạng thái thanh toán</dt><dd><Badge status={data.status} /></dd>
-        <dt>Ngày giao dịch</dt><dd>{date(data.createdAt)}</dd>
+        <dt>Số tiền giao dịch</dt><dd>{money(data.amount)}</dd><dt>Kết quả giao dịch</dt><dd><Badge status={data.status} /></dd>
+        <dt>Ngày giao dịch (UTC)</dt><dd>{date(data.createdAt)}</dd>
       </dl><h2>Đăng ký #{data.registration.id}</h2></>}
       <RegistrationFields record={registrationOf(data)} />
     </>}

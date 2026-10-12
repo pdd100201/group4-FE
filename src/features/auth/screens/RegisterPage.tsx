@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { authApi } from '../api/authApi'
 import { GoogleSignInButton } from '../../../shared/components/auth/GoogleSignInButton'
 import { useAuth } from '../../../shared/context/AuthContext'
-import { landingRoute } from '../../../shared/utils/roleRoutes'
+import { landingRoute, registrationReturnRoute } from '../../../shared/utils/roleRoutes'
 
 export function RegisterPage() {
   const navigate = useNavigate()
@@ -49,7 +49,9 @@ export function RegisterPage() {
     setError(''); setSubmitting(true)
     try {
       const user = await loginWithGoogle(credential, true)
-      navigate(landingRoute(user), { replace: true })
+      const registration = registrationReturnRoute(user, sessionStorage.getItem('ols.registrationReturnTo'))
+      if (registration) sessionStorage.removeItem('ols.registrationReturnTo')
+      navigate(registration ?? landingRoute(user), { replace: true })
     } catch { setError('Không thể đăng ký bằng Google. Hãy kiểm tra tài khoản thử nghiệm hoặc thử lại.') }
     finally { setSubmitting(false) }
   }
