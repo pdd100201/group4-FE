@@ -118,7 +118,7 @@ function RegistrationFields({ record }: { record: RegistrationRecord }) {
     <dt>Giá gốc</dt><dd>{money(record.originalPrice)}</dd>
     <dt>Giảm giá</dt><dd>{money(record.discount)}</dd>
     <dt>Chi phí cuối cùng</dt><dd>{money(record.amount)}</dd>
-    <dt>Thời hạn gói</dt><dd>{record.validityDays == null ? 'Chưa lưu' : `${record.validityDays} ngày`}</dd>
+    <dt>Thời hạn gói</dt><dd>{record.lifetime ? 'Vĩnh viễn' : record.validityMonths != null ? `${record.validityMonths} tháng` : record.validityDays == null ? 'Chưa lưu' : `${record.validityDays} ngày`}</dd>
     <dt>Ngày đăng ký</dt><dd>{date(record.createdAt)}</dd>
     <dt>Hiệu lực từ</dt><dd>{date(record.validFrom)}</dd>
     <dt>Hiệu lực đến</dt><dd>{date(record.validUntil)}</dd>

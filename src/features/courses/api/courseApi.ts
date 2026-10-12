@@ -1,4 +1,5 @@
 import apiClient from '../../../shared/services/apiClient'
+import type { CoursePackage } from '../../registrations/api/registrationApi'
 
 export interface CourseSummary {
   id: number
@@ -13,6 +14,7 @@ export interface CourseSummary {
 export interface PublicCourseDetail extends CourseSummary {
   lessons: { id: number; title: string; position: number | null }[]
   quizCount: number
+  packages: CoursePackage[]
 }
 
 export const courseApi = {

@@ -16,6 +16,8 @@ import { CourseEditorPage } from '../features/expert/screens/CourseEditorPage'
 import { CourseReviewPage } from '../features/management/screens/CourseReviewPage'
 import { CourseReviewDetailPage } from '../features/management/screens/CourseReviewDetailPage'
 import { ArchivedCoursesPage } from '../features/management/screens/ArchivedCoursesPage'
+import { CourseRegistrationPage } from '../features/registrations/screens/CourseRegistrationPage'
+import { StudentRegistrationsPage, StudentRegistrationDetailPage } from '../features/registrations/screens/StudentRegistrationsPage'
 import { PlaceholderPage } from '../shared/components/ui/PlaceholderPage'
 
 export function AppRoutes() {
@@ -36,7 +38,9 @@ export function AppRoutes() {
       <Route element={<StudentLayout />}>
         <Route path="/student/courses" element={<PlaceholderPage title="Khóa học của tôi" />} />
         <Route path="/student/courses/:courseId/lessons/:lessonId" element={<PlaceholderPage title="Bài học" />} />
-        <Route path="/student/registrations" element={<PlaceholderPage title="Đăng ký của tôi" />} />
+        <Route path="/student/courses/:courseId/register" element={<CourseRegistrationPage />} />
+        <Route path="/student/registrations" element={<StudentRegistrationsPage />} />
+        <Route path="/student/registrations/:id" element={<StudentRegistrationDetailPage />} />
         <Route path="/student/quizzes/:quizId" element={<PlaceholderPage title="Bài kiểm tra" />} />
         <Route path="/student/quiz-attempts/:attemptId" element={<PlaceholderPage title="Kết quả kiểm tra" />} />
       </Route>

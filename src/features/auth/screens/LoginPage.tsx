@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import axios from 'axios'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../../shared/context/AuthContext'
-import { landingRoute } from '../../../shared/utils/roleRoutes'
+import { landingRoute, registrationReturnRoute } from '../../../shared/utils/roleRoutes'
 import { GoogleSignInButton } from '../../../shared/components/auth/GoogleSignInButton'
 
 type LoginLocationState = { from?: string }
@@ -20,7 +20,10 @@ export function LoginPage() {
 
   function destination(user: Awaited<ReturnType<typeof login>>) {
     const requested = (location.state as LoginLocationState | null)?.from
-    navigate(requested?.startsWith('/') ? requested : landingRoute(user), { replace: true })
+    const registration = registrationReturnRoute(user, requested ?? sessionStorage.getItem('ols.registrationReturnTo'))
+    if (registration) sessionStorage.removeItem('ols.registrationReturnTo')
+    const landing = landingRoute(user)
+    navigate(registration ?? (landing === '/' ? '/' : requested?.startsWith('/') && !requested.startsWith('//') && !requested.startsWith('/student/courses/') ? requested : landing), { replace: true })
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {

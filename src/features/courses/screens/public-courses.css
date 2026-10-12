@@ -7,3 +7,19 @@
 .public-course-cover { width: 100%; max-height: 240px; object-fit: cover; border-radius: 7px; margin-bottom: 14px; }
 .public-course-notice { margin-top: 12px; color: #5b6d84; line-height: 1.8; }
 .course-hero small a { color: #c1d4ff; }
+.course-card { display: flex; flex-direction: column; }
+.course-card-cover { display: block; }
+.course-card > .course-card-content { padding: 20px; display: flex; flex-direction: column; flex: 1; }
+.course-card-title { color: #17213a; }
+.course-card-price { display: flex; flex-direction: column; gap: 5px; margin-top: auto; min-height: 70px; }
+.course-card-price > small { color: #62738c; }
+.course-card-price > strong { color: #2457df; font-size: 20px; }
+.course-card-price > span { color: #62738c; font-size: 12px; line-height: 1.5; }
+.course-card-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-top: 16px; }
+.course-detail-link { font-size: 13px; }
+.course-register-link { display: inline-block; padding: 10px 12px; border-radius: 9px; font-size: 13px; text-align: center; }
+#course-packages { scroll-margin-top: 90px; }
+.course-card-content .course-registration-unavailable { margin: 10px 0 0; font-size: 12px; line-height: 1.5; color: #62738c; }
+.course-checkout-action { margin: 16px 0; }
+.course-checkout-action > .primary-button { display: block; width: 100%; padding: 13px 16px; border-radius: 9px; text-align: center; font-size: 14px; }
+.course-checkout-action > p { margin: 10px 0 0; color: #62738c; font-size: 12px; line-height: 1.6; }
