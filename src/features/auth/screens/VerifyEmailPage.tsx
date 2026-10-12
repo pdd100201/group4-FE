@@ -1,19 +1,18 @@
-import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { authApi } from '../api/authApi'
+import { isAxiosError } from 'axios'
+import { useEmailVerification } from '../../../shared/hooks/useEmailVerification'
 
 export function VerifyEmailPage() {
   const [params] = useSearchParams()
   const token = params.get('token')
-  const [status, setStatus] = useState(token ? 'Đang xác minh email…' : 'Liên kết xác minh không hợp lệ.')
-  const [verified, setVerified] = useState(false)
-
-  useEffect(() => {
-    if (!token) return
-    authApi.verifyEmail(token).then(() => {
-      setVerified(true); setStatus('Email đã được xác minh. Tài khoản của bạn đã được kích hoạt.')
-    }).catch(() => setStatus('Liên kết xác minh không hợp lệ hoặc đã hết hạn.'))
-  }, [token])
+  const query = useEmailVerification(token)
+  const verified = Boolean(token) && query.isSuccess
+  const invalid = isAxiosError(query.error) && query.error.response?.status === 400
+  const status = !token ? 'Liên kết xác minh không hợp lệ.'
+    : verified ? 'Email đã được xác minh. Tài khoản của bạn đã được kích hoạt.'
+      : query.isError ? invalid ? 'Liên kết xác minh đã được sử dụng, không hợp lệ hoặc đã hết hạn.'
+        : 'Không thể kết nối dịch vụ xác minh. Vui lòng thử lại sau.'
+        : 'Đang xác minh email…'
 
   return <section className="auth-page"><div className="auth-card"><h1>Xác minh email</h1>
     <p role="status">{status}</p>

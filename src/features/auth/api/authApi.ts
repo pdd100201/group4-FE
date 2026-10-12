@@ -1,6 +1,7 @@
 import apiClient from '../../../shared/services/apiClient'
 import type { ApiMessage, RegisterRequest, TokenResponse } from '../../../shared/types/auth'
 export const authApi = {
+  configuration: async () => (await apiClient.get<{ googleClientId: string }>('/auth/config')).data,
   login: (email: string, password: string) => apiClient.post<TokenResponse>('/auth/login', { email, password }),
   googleLogin: (credential: string) => apiClient.post<TokenResponse>('/auth/google', { credential }),
   register: (request: RegisterRequest) => apiClient.post<ApiMessage>('/auth/register', request),

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useGoogleConfiguration } from '../../hooks/useGoogleConfiguration'
 
 let googleScriptPromise: Promise<void> | null = null
 
@@ -9,7 +10,7 @@ function loadGoogleScript() {
     const existing = document.querySelector<HTMLScriptElement>('script[data-ols-google-signin]')
     if (existing) {
       existing.addEventListener('load', () => resolve(), { once: true })
-      existing.addEventListener('error', () => reject(new Error('Google Sign-In unavailable')), { once: true })
+      existing.addEventListener('error', () => { existing.remove(); reject(new Error('Google Sign-In unavailable')) }, { once: true })
       return
     }
     const script = document.createElement('script')
@@ -18,9 +19,9 @@ function loadGoogleScript() {
     script.defer = true
     script.dataset.olsGoogleSignin = 'true'
     script.onload = () => resolve()
-    script.onerror = () => reject(new Error('Google Sign-In unavailable'))
+    script.onerror = () => { script.remove(); reject(new Error('Google Sign-In unavailable')) }
     document.head.appendChild(script)
-  })
+  }).catch(error => { googleScriptPromise = null; throw error })
   return googleScriptPromise
 }
 
@@ -28,11 +29,14 @@ export function GoogleSignInButton({ onCredential }: { onCredential: (credential
   const container = useRef<HTMLDivElement>(null)
   const callback = useRef(onCredential)
   const [error, setError] = useState('')
+  const [attempt, setAttempt] = useState(0)
+  const configuration = useGoogleConfiguration()
+  const clientId = configuration.data?.googleClientId.trim()
   callback.current = onCredential
 
   useEffect(() => {
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
-    if (!clientId) { setError('Google Sign-In chưa được cấu hình.'); return }
+    if (!clientId) return
+    setError('')
     let active = true
     let observer: ResizeObserver | undefined
     loadGoogleScript().then(() => {
@@ -61,7 +65,16 @@ export function GoogleSignInButton({ onCredential }: { onCredential: (credential
       }
     }).catch(() => active && setError('Không thể tải Google Sign-In.'))
     return () => { active = false; observer?.disconnect() }
-  }, [])
+  }, [clientId, attempt])
 
-  return <div className="google-signin">{error ? <p className="form-error" role="alert">{error}</p> : <div ref={container} />}</div>
+  const message = configuration.isError ? 'Không tải được cấu hình đăng nhập Google từ server.'
+    : configuration.isSuccess && !clientId ? 'Google Sign-In chưa được cấu hình trên server.' : error
+  return <div className="google-signin">
+    <div ref={container} hidden={!clientId || Boolean(message)} />
+    {configuration.isPending && <p role="status">Đang tải đăng nhập Google...</p>}
+    {message && <p className="form-error" role="alert">{message}</p>}
+    {(configuration.isError || error) && <button type="button" onClick={() => {
+      setError(''); setAttempt(value => value + 1); void configuration.refetch()
+    }}>Thử lại Google</button>}
+  </div>
 }
