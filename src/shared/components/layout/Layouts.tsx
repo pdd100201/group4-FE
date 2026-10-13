@@ -43,11 +43,11 @@ function AppFrame({ children, admin = false }: { children: ReactNode; admin?: bo
 }
 
 export function StudentLayout() {
-  return <AppFrame><p className="side-label">HỌC TẬP</p><SideLink to="/student/courses" end>▣ Khóa học của tôi</SideLink><SideLink to="/student/registrations">▤ Đăng ký của tôi</SideLink></AppFrame>
+  return <AppFrame><p className="side-label">HỌC TẬP</p><SideLink to="/student/courses" end>▣ Khóa học của tôi</SideLink><SideLink to="/student/registrations">▤ Đăng ký của tôi</SideLink><p className="side-label">TÀI KHOẢN</p><SideLink to="/profile">Hồ sơ cá nhân</SideLink></AppFrame>
 }
 
 export function ExpertLayout() {
-  return <AppFrame><p className="side-label">GIẢNG DẠY</p><SideLink to="/expert/courses">▣ Quản lý khóa học</SideLink><SideLink to="/expert/questions">▤ Ngân hàng câu hỏi</SideLink><SideLink to="/expert/quizzes">◫ Quản lý bài kiểm tra</SideLink></AppFrame>
+  return <AppFrame><p className="side-label">GIẢNG DẠY</p><SideLink to="/expert/courses">▣ Quản lý khóa học</SideLink><SideLink to="/expert/questions">▤ Ngân hàng câu hỏi</SideLink><SideLink to="/expert/quizzes">◫ Quản lý bài kiểm tra</SideLink><p className="side-label">TÀI KHOẢN</p><SideLink to="/profile">Hồ sơ cá nhân</SideLink></AppFrame>
 }
 
 export function DashboardLayout() {
@@ -57,5 +57,13 @@ export function DashboardLayout() {
     <SideLink to={admin ? '/admin/courses/archived' : '/manager/courses/archived'}>▣ Trạng thái khóa học</SideLink>
     {admin ? <><p className="side-label">TỔNG QUAN HỆ THỐNG</p><SideLink to="/dashboard">▥ Bảng điều khiển</SideLink><SideLink to="/admin/registrations">▧ Quản lý Đăng ký</SideLink><SideLink to="/admin/transactions">▣ Giao dịch & Dòng tiền</SideLink><SideLink to="/admin/reports">◫ Báo cáo & Xuất dữ liệu</SideLink><p className="side-label">QUẢN TRỊ NGƯỜI DÙNG</p><SideLink to="/admin/accounts">♟ Tài khoản & Phân quyền</SideLink></>
       : <><p className="side-label">QUẢN LÝ</p><SideLink to="/manager/courses/review">▤ Duyệt khóa học</SideLink><SideLink to="/manager/registrations">▧ Quản lý Đăng ký</SideLink><SideLink to="/manager/transactions">▣ Giao dịch & Dòng tiền</SideLink><SideLink to="/manager/posts">▤ Quản lý bài viết</SideLink></>}
+    <p className="side-label">TÀI KHOẢN</p><SideLink to="/profile">Hồ sơ cá nhân</SideLink>
   </AppFrame>
+}
+
+export function ProfileLayout() {
+  const { user } = useAuth()
+  if (user?.roles.includes('ROLE_STUDENT')) return <StudentLayout />
+  if (user?.roles.includes('ROLE_EXPERT')) return <ExpertLayout />
+  return <DashboardLayout />
 }

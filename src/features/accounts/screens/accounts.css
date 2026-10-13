@@ -1,0 +1,7 @@
+.account-command{display:inline-flex;align-items:center;justify-content:center;border-radius:6px;padding:10px 16px}
+.accounts-page .status-blocked{background:#fde5e4;color:#a53129}.accounts-page .status-inactive{background:#fff1cc;color:#805700}
+.account-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-width:820px;background:#fff;border:1px solid #e1e7ee;padding:20px}
+.account-form label{display:grid;gap:7px;font-weight:600}.account-form input,.account-form select{height:42px;border:1px solid #d2dce8;border-radius:6px;padding:9px;font:inherit;min-width:0}
+.account-form-actions{grid-column:1/-1;display:flex;justify-content:flex-end}.account-status-panel{max-width:820px;margin-top:20px;border-top:1px solid #dce4ed;padding-top:18px}.account-status-panel p{color:#68788a}.account-status-panel>div{display:flex;gap:8px;flex-wrap:wrap}.account-status-panel button.selected{border-color:#2860e7;color:#2860e7;font-weight:700}.account-success{color:#126b44;margin-top:16px}
+@media(max-width:640px){.account-form{grid-template-columns:1fr}.account-form-actions{grid-column:auto}}
+.account-pagination p{margin:0 auto 0 0;color:#506079}.account-page-buttons{display:flex;gap:6px;flex-wrap:wrap}.account-page-buttons button[aria-current=page]{background:#2860e7;color:#fff;border-color:#2860e7;font-weight:700}.account-page-buttons button:disabled{opacity:.45;cursor:default}

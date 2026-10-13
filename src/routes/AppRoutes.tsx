@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 import { ProtectedRoute } from '../shared/components/auth/ProtectedRoute'
-import { DashboardLayout, ExpertLayout, PublicLayout, StudentLayout } from '../shared/components/layout/Layouts'
+import { DashboardLayout, ExpertLayout, ProfileLayout, PublicLayout, StudentLayout } from '../shared/components/layout/Layouts'
 import { HomePage } from '../features/home/screens/HomePage'
 import { CourseDetailPage } from '../features/courses/screens/CourseDetailPage'
 import { CourseCatalogPage } from '../features/courses/screens/CourseCatalogPage'
@@ -22,6 +22,9 @@ import { PlaceholderPage } from '../shared/components/ui/PlaceholderPage'
 import { ReportsPage } from '../features/reports/screens/ReportsPage'
 import { PaymentPage, PaymentResultPage } from '../features/payment/screens/PaymentPage'
 import { StudentCoursesPage } from '../features/courses/screens/StudentCoursesPage'
+import { AccountsPage } from '../features/accounts/screens/AccountsPage'
+import { AccountEditorPage } from '../features/accounts/screens/AccountEditorPage'
+import { ProfilePage } from '../features/profile/screens/ProfilePage'
 
 export function AppRoutes() {
   return <Routes>
@@ -42,6 +45,9 @@ export function AppRoutes() {
     <Route path="/forgot-password" element={<ForgotPasswordPage />} />
     <Route path="/reset-password" element={<ResetPasswordPage />} />
     <Route path="/verify-email" element={<VerifyEmailPage />} />
+    <Route element={<ProtectedRoute />}>
+      <Route element={<ProfileLayout />}><Route path="/profile" element={<ProfilePage />} /></Route>
+    </Route>
     <Route element={<ProtectedRoute roles={['ROLE_STUDENT']} />}>
       <Route element={<StudentLayout />}>
         <Route path="/student/courses" element={<StudentCoursesPage />} />
@@ -70,7 +76,9 @@ export function AppRoutes() {
         <Route path="/admin/transactions" element={<ManagementRecordsPage kind="transactions" />} />
         <Route path="/admin/transactions/:id" element={<ManagementRecordDetailPage kind="transactions" />} />
         <Route path="/admin/reports" element={<ReportsPage />} />
-        <Route path="/admin/accounts" element={<PlaceholderPage title="Quản lý tài khoản" />} />
+        <Route path="/admin/accounts" element={<AccountsPage />} />
+        <Route path="/admin/accounts/new" element={<AccountEditorPage create />} />
+        <Route path="/admin/accounts/:id" element={<AccountEditorPage />} />
       </Route>
     </Route>
     <Route element={<ProtectedRoute roles={['ROLE_MANAGER']} />}>
