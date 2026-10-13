@@ -55,13 +55,15 @@ export function BlogListPage() {
     {posts.data?.content.length === 0 && <p>Không tìm thấy bài viết phù hợp.</p>}
     <div className="blog-list">{posts.data?.content.map(post => <PostCard post={post} key={post.id} />)}</div>
     {posts.data && posts.data.totalPages > 0 && <nav className="blog-pagination" aria-label="Phân trang bài viết">
-      <button disabled={page === 0} onClick={() => goPage(page - 1)}>Trước</button>
-      <span aria-live="polite">Trang {page + 1} / {posts.data.totalPages}</span>
+      <div className="blog-pagination-controls">
+      <button className="blog-page-arrow" aria-label="Trước" title="Trang trước" disabled={page === 0 || posts.isFetching} onClick={() => goPage(page - 1)}>‹</button>
       {Array.from({ length: Math.min(5, posts.data.totalPages) }, (_, i) => {
         const value = Math.max(0, Math.min(page - 2, posts.data!.totalPages - 5)) + i
-        return <button key={value} aria-current={page === value ? 'page' : undefined} onClick={() => goPage(value)}>{value + 1}</button>
+        return <button key={value} aria-label={`Trang ${value + 1}`} aria-current={page === value ? 'page' : undefined} disabled={posts.isFetching} onClick={() => goPage(value)}>{value + 1}</button>
       })}
-      <button disabled={page >= posts.data.totalPages - 1} onClick={() => goPage(page + 1)}>Sau</button>
+      <button className="blog-page-arrow" aria-label="Sau" title="Trang sau" disabled={page >= posts.data.totalPages - 1 || posts.isFetching} onClick={() => goPage(page + 1)}>›</button>
+      </div>
+      <span className="blog-page-caption" aria-live="polite">Trang {page + 1} / {posts.data.totalPages}</span>
     </nav>}
   </section><BlogSidebar /></div>
 }
