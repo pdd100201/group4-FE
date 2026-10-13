@@ -1,4 +1,4 @@
-import type { CourseStatus } from './entities'
+export type CourseStatus = 'DRAFT' | 'REJECTED' | 'PENDING_REVIEW' | 'PUBLISHED' | 'ARCHIVED' | 'APPROVED'
 
 export interface QuizQuestionItem { questionId: number; position: number; points: number }
 export interface QuizQuestionResponse extends QuizQuestionItem { content: string }

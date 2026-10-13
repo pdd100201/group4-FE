@@ -57,6 +57,7 @@ export function DashboardLayout() {
     <SideLink to={admin ? '/admin/courses/archived' : '/manager/courses/archived'}>▣ Trạng thái khóa học</SideLink>
     {admin ? <><p className="side-label">TỔNG QUAN HỆ THỐNG</p><SideLink to="/dashboard">▥ Bảng điều khiển</SideLink><SideLink to="/admin/registrations">▧ Quản lý Đăng ký</SideLink><SideLink to="/admin/transactions">▣ Giao dịch & Dòng tiền</SideLink><SideLink to="/admin/reports">◫ Báo cáo & Xuất dữ liệu</SideLink><p className="side-label">QUẢN TRỊ NGƯỜI DÙNG</p><SideLink to="/admin/accounts">♟ Tài khoản & Phân quyền</SideLink></>
       : <><p className="side-label">QUẢN LÝ</p><SideLink to="/manager/courses/review">▤ Duyệt khóa học</SideLink><SideLink to="/manager/registrations">▧ Quản lý Đăng ký</SideLink><SideLink to="/manager/transactions">▣ Giao dịch & Dòng tiền</SideLink><SideLink to="/manager/posts">▤ Quản lý bài viết</SideLink></>}
+    {!admin && <SideLink to="/manager/courses/review/quizzes">◫ Xem trước bài kiểm tra</SideLink>}
     <p className="side-label">TÀI KHOẢN</p><SideLink to="/profile">Hồ sơ cá nhân</SideLink>
   </AppFrame>
 }

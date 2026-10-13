@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuizCourses } from '../../shared/hooks/useQuizManagement'
 import { quizError } from './api/quizService'
-import type { CourseStatus } from '../../shared/types/entities'
+import type { CourseStatus } from '../../shared/types/quiz'
 import './quiz.css'
 
 const labels: Record<CourseStatus, string> = { DRAFT: 'Nháp', REJECTED: 'Bị từ chối', PENDING_REVIEW: 'Chờ duyệt', PUBLISHED: 'Đã xuất bản', ARCHIVED: 'Đã ẩn', APPROVED: 'Đã duyệt (cũ)' }
