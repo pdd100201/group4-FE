@@ -1,0 +1,15 @@
+.expert-courses .package-panel{margin-top:24px;border-radius:8px;min-width:0}
+.package-panel h2{margin:0;font-size:18px;line-height:1.5}
+.package-panel .package-policy{margin:8px 0 4px;color:#63738c;font-size:14px}
+.expert-courses .package-panel>fieldset{min-width:0;gap:0}
+.package-panel .package-editor{display:grid;grid-template-columns:minmax(80px,.55fr) minmax(160px,1.5fr) minmax(120px,1fr) minmax(150px,.9fr);gap:20px;align-items:center;padding:20px 0;border-bottom:1px solid #e2e7ef;min-width:0}
+.package-panel .package-editor h3{margin:0;font-size:16px;line-height:1.5}
+.package-panel .package-editor label{min-width:0;margin:0;font-size:14px;line-height:1.5;gap:8px}
+.package-panel .package-editor input[type=number]{height:44px;min-width:0;border-radius:6px;font-size:16px}
+.package-panel .package-availability{display:flex;flex-direction:row;align-items:center;gap:10px;min-height:44px;cursor:pointer}
+.package-panel .package-availability input[type=checkbox]{display:inline-block;width:18px;height:18px;flex:0 0 18px;margin:0;padding:0;accent-color:#2563eb;cursor:pointer}
+.package-panel input:disabled{background:#f5f7fa;cursor:not-allowed}
+.package-panel .package-save-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;padding-top:20px}
+.package-panel .package-save-actions button{min-height:44px;border-radius:6px}
+@media(max-width:1100px){.package-panel .package-editor{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.package-panel .package-editor h3{grid-column:1/-1}.package-panel .package-availability{grid-column:1/-1}}
+@media(max-width:480px){.package-panel{padding:16px}.package-panel .package-editor{grid-template-columns:minmax(0,1fr);gap:14px}.package-panel .package-save-actions button{width:100%}}

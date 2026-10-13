@@ -10,8 +10,8 @@ export function usePayment(id: number, poll = false) {
     refetchInterval: poll ? query => query.state.data?.status === 'PENDING' ? 3000 : false : false })
   const status = query.data?.status
   useEffect(() => {
-    if (status === 'SUCCEEDED') {
-      void client.invalidateQueries({ queryKey: ['student-courses'] })
+    if (status === 'SUCCEEDED' || status === 'CANCELLED') {
+      if (status === 'SUCCEEDED') void client.invalidateQueries({ queryKey: ['student-courses'] })
       void client.invalidateQueries({ queryKey: ['student-registrations'] })
       void client.invalidateQueries({ queryKey: ['student-registration', id] })
     }

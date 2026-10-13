@@ -7,4 +7,7 @@
 .report-totals dt{font-size:13px;color:#68788a}
 .report-totals dd{margin:6px 0;font-size:22px;font-weight:700;overflow-wrap:anywhere}
 .report-demo{color:#805700!important;font-weight:700}
+.reports-page .management-table a{color:#2459cc;text-underline-offset:3px}
+.reports-page .management-table a:hover{text-decoration:underline}
+.reports-page .management-table a:focus-visible{outline:2px solid #2459cc;outline-offset:3px}
 @media(max-width:600px){.report-actions{justify-content:flex-end}.report-tabs button{padding:12px}.report-totals dd{font-size:20px}}

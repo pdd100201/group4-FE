@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { isAxiosError } from 'axios'
 import { useAvailableReports, useReport } from '../../../shared/hooks/useReports'
 import { reportApi } from '../api/reportApi'
@@ -46,6 +46,16 @@ export function ReportsPage() {
   if (kind !== 'REGISTRATIONS') request.delete('status')
   const report = useReport(kind, request, available.data?.includes(kind) ?? false)
   const registrations = kind === 'REGISTRATIONS'
+  const reportReturnTo = `/admin/reports${params.size ? `?${params}` : ''}`
+  function recordsLink(courseId: number, transactions: boolean) {
+    const filters = new URLSearchParams({ courseId: String(courseId), size: String(size) })
+    if (transactions) filters.set('status', 'SUCCEEDED')
+    for (const key of ['from', 'to']) {
+      const value = params.get(key)
+      if (value) filters.set(key, value)
+    }
+    return `/admin/${transactions ? 'transactions' : 'registrations'}?${filters}`
+  }
 
   function selectKind(nextKind: ReportKind) {
     const next = new URLSearchParams(params)
@@ -118,11 +128,17 @@ export function ReportsPage() {
           {registrations && <><th>Học viên</th><th>Ngày đăng ký (UTC)</th></>}
           {kind !== 'REVENUE' && <th>Trạng thái</th>}
           {!registrations && <th>{kind === 'COURSES' ? 'Số đăng ký' : 'Payment thành công'}</th>}
-          <th>{registrations ? 'Số tiền đăng ký' : 'Doanh thu'}</th></tr></thead>
-          <tbody>{data.records.items.map(row => <tr key={row.id}><td>#{row.id}</td><td>{row.courseTitle}{row.demo && <small className="report-demo">DEMO</small>}</td>
+          <th>{registrations ? 'Số tiền đăng ký' : 'Doanh thu'}</th><th>Chi tiết</th></tr></thead>
+          <tbody>{data.records.items.map(row => {
+            const detail = registrations ? `/admin/registrations/${row.id}` : recordsLink(row.id, kind === 'REVENUE')
+            const navigation = { reportReturnTo, reportDirect: registrations }
+            return <tr key={row.id}><td><Link to={detail} state={navigation}>#{row.id}</Link></td><td><Link to={detail} state={navigation}>{row.courseTitle}</Link>{row.demo && <small className="report-demo">DEMO</small>}</td>
             {registrations && <><td>{row.studentName}<small>{row.studentEmail}</small></td><td>{date(row.createdAt)}</td></>}
             {kind !== 'REVENUE' && <td>{row.status ? statuses[row.status] ?? row.status : 'Chưa lưu'}</td>}
-            {!registrations && <td>{row.count}</td>}<td>{money(row.amount)}</td></tr>)}</tbody>
+            {!registrations && <td><Link to={detail} state={navigation}>{row.count}</Link></td>}
+            <td>{registrations ? money(row.amount) : <Link to={recordsLink(row.id, true)} state={{ reportReturnTo }}>{money(row.amount)}</Link>}</td>
+            <td><Link to={detail} state={navigation}>{registrations ? 'Xem chi tiết' : kind === 'REVENUE' ? 'Xem giao dịch' : 'Xem đăng ký'}</Link></td></tr>
+          })}</tbody>
         </table></div> : <p className="management-empty" role="status">Không có dữ liệu phù hợp.</p>}
       <nav className="management-pagination" aria-label="Phân trang báo cáo"><span>Trang {data.records.totalPages ? page + 1 : 0}/{data.records.totalPages}</span>
         <button aria-label="Trang trước" title="Trang trước" disabled={page === 0 || report.isFetching} onClick={() => changePage(page - 1)}>&lt;</button>

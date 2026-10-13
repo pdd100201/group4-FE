@@ -29,9 +29,16 @@ function scopeFromPath(path: string): ManagementScope {
 function registrationOf(record: ManagementRecord): RegistrationRecord {
   return 'registration' in record ? record.registration : record
 }
+function reportOrigin(state: unknown): string | null {
+  if (!state || typeof state !== 'object' || !('reportReturnTo' in state)) return null
+  const target = state.reportReturnTo
+  return typeof target === 'string' && /^\/admin\/reports(?:\?|$)/.test(target) ? target : null
+}
 
 export function ManagementRecordsPage({ kind }: { kind: ManagementKind }) {
-  const scope = scopeFromPath(useLocation().pathname)
+  const location = useLocation()
+  const scope = scopeFromPath(location.pathname)
+  const reportReturnTo = scope === 'admin' ? reportOrigin(location.state) : null
   const [params, setParams] = useSearchParams()
   const [validation, setValidation] = useState('')
   const request = new URLSearchParams(params)
@@ -67,15 +74,16 @@ export function ManagementRecordsPage({ kind }: { kind: ManagementKind }) {
     }
     setValidation('')
     next.set('page', '0')
-    setParams(next)
+    setParams(next, { state: location.state })
   }
   function changePage(nextPage: number) {
     const next = new URLSearchParams(params)
     next.set('page', String(nextPage))
-    setParams(next)
+    setParams(next, { state: location.state })
   }
 
   return <section className="management-page">
+    {reportReturnTo && <Link to={reportReturnTo}>← Quay lại báo cáo</Link>}
     <header className="management-heading"><div><span className="management-brand">EduCRM</span><h1>{transactions ? 'Giao dịch' : 'Quản lý đăng ký'}</h1></div>
       <button type="button" onClick={() => refetch()} disabled={isFetching}>Làm mới</button></header>
     <form className="management-filters" key={params.toString()} onSubmit={applyFilters}>
@@ -88,7 +96,7 @@ export function ManagementRecordsPage({ kind }: { kind: ManagementKind }) {
         <label>Số tiền từ (VND)<input name="minAmount" type="number" min="0" max="999999999999.99" step="0.01" defaultValue={params.get('minAmount') ?? ''} /></label>
         <label>Số tiền đến (VND)<input name="maxAmount" type="number" min="0" max="999999999999.99" step="0.01" defaultValue={params.get('maxAmount') ?? ''} /></label></>}
       <label>Số dòng<select name="size" defaultValue={size}><option>10</option><option>20</option><option>50</option></select></label>
-      <div className="management-filter-actions"><button className="primary-button" type="submit">Áp dụng</button><button type="button" onClick={() => { setValidation(''); setParams({}) }}>Xóa lọc</button></div>
+      <div className="management-filter-actions"><button className="primary-button" type="submit">Áp dụng</button><button type="button" onClick={() => { setValidation(''); setParams({}, { state: location.state }) }}>Xóa lọc</button></div>
     </form>
     {validation && <p role="alert" className="management-error">{validation}</p>}
     {isLoading && <p role="status">Đang tải...</p>}
@@ -107,7 +115,7 @@ export function ManagementRecordsPage({ kind }: { kind: ManagementKind }) {
             <td>{money(record.amount)}</td>{'registration' in record && <td>{record.provider ?? 'Chưa lưu'}</td>}
             <td><Badge status={record.status} /></td><td>{date(record.createdAt)}</td>
             {!transactions && <td>{date(registration.validFrom)}<small>{date(registration.validUntil)}</small></td>}
-            <td><Link to={`/${scope}/${kind}/${record.id}?${params.toString()}`}>Chi tiết</Link></td></tr>
+            <td><Link to={`/${scope}/${kind}/${record.id}?${params.toString()}`} state={reportReturnTo ? { reportReturnTo, reportDirect: false } : undefined}>Chi tiết</Link></td></tr>
         })}
       </tbody></table></div> : <p className="management-empty" role="status">Không có {transactions ? 'giao dịch' : 'đăng ký'} phù hợp.</p>}
       <nav className="management-pagination" aria-label="Phân trang">
@@ -140,10 +148,13 @@ export function ManagementRecordDetailPage({ kind }: { kind: ManagementKind }) {
   const { id = '' } = useParams()
   const location = useLocation()
   const scope = scopeFromPath(location.pathname)
+  const reportReturnTo = scope === 'admin' ? reportOrigin(location.state) : null
+  const reportDirect = Boolean(reportReturnTo && (location.state as { reportDirect?: boolean } | null)?.reportDirect)
   const { data, isLoading, error, refetch } = useManagementRecord(scope, kind, id)
   const validId = /^\d+$/.test(id) && Number(id) > 0
   return <section className="management-page">
-    <Link to={`/${scope}/${kind}${location.search}`}>Quay lại danh sách</Link>
+    <Link to={reportDirect ? reportReturnTo! : `/${scope}/${kind}${location.search}`} state={reportReturnTo ? { reportReturnTo } : undefined}>{reportDirect ? '← Quay lại báo cáo' : 'Quay lại danh sách'}</Link>
+    {reportReturnTo && !reportDirect && <p><Link to={reportReturnTo}>← Quay lại báo cáo</Link></p>}
     <header className="management-heading"><h1>{kind === 'transactions' ? 'Chi tiết giao dịch' : 'Chi tiết đăng ký'} #{id}</h1></header>
     {!validId && <p role="alert">Mã bản ghi không hợp lệ.</p>}
     {isLoading && <p role="status">Đang tải...</p>}

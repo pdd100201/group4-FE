@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { useCoursePackages, useSaveCoursePackages } from '../../../shared/hooks/useCoursePackages'
 import type { CoursePackage, PackageDuration, PackageInput } from '../../registrations/api/registrationApi'
 import { courseError } from './ExpertCoursesPage'
+import './course-packages.css'
 const durations: Array<[PackageDuration, string]> = [['ONE_MONTH', '1 tháng'], ['ONE_YEAR', '1 năm'], ['LIFETIME', 'Vĩnh viễn']]
 export function CoursePackagesPanel({ id, disabled, onDirty, onBusy }: { id: number; disabled: boolean; onDirty: (value: boolean) => void; onBusy: (value: boolean) => void }) {
   const query = useCoursePackages(id)
@@ -22,12 +23,12 @@ function PackageForm({ id, initial, disabled, onDirty, onBusy }: { id: number; i
     const input: PackageInput[] = form.map(p => ({ ...p, price: Number(p.price), discountPercent: Number(p.discountPercent) }))
     try { await save.mutateAsync(input) } catch { /* Render server validation below. */ }
   }
-  return <form className="course-panel package-panel" onSubmit={event => void submit(event)}><h2>Gói giá và thời hạn</h2><p>Giá nguyên VNĐ; giảm giá 0–100%. Tắt gói để ngừng đăng ký mới. Đăng ký cũ giữ nguyên giá đã chốt.</p>
-    <fieldset disabled={disabled || save.isPending}>{form.map((p, index) => <section key={p.duration} className="package-editor"><h3>{durations[index][1]}</h3>
-      <label>Giá gốc {durations[index][1]} (VNĐ)<input required type="number" min="0" max="9999999999" step="1" value={p.price} onChange={e => setForm(current => current.map((item, i) => i === index ? { ...item, price: e.target.value } : item))} /></label>
-      <label>Giảm giá {durations[index][1]} (%)<input required type="number" min="0" max="100" step="0.01" value={p.discountPercent} onChange={e => setForm(current => current.map((item, i) => i === index ? { ...item, discountPercent: e.target.value } : item))} /></label>
-      <label><input type="checkbox" checked={p.active} onChange={e => setForm(current => current.map((item, i) => i === index ? { ...item, active: e.target.checked } : item))} /> Mở đăng ký gói {durations[index][1]}</label>
-    </section>)}<button className="course-primary" disabled={!dirty} type="submit">{save.isPending ? 'Đang lưu gói…' : 'Lưu các gói giá'}</button></fieldset>
+  return <form className="course-panel package-panel" onSubmit={event => void submit(event)}><h2>Gói giá và thời hạn</h2><p className="package-policy">Đăng ký cũ giữ nguyên giá đã chốt.</p>
+    <fieldset disabled={disabled || save.isPending}>{form.map((p, index) => <section key={p.duration} className="package-editor" aria-labelledby={`package-title-${p.duration}`}><h3 id={`package-title-${p.duration}`}>{durations[index][1]}</h3>
+      <label>Giá gốc (VNĐ)<input aria-label={`Giá gốc ${durations[index][1]} (VNĐ)`} required type="number" min="0" max="9999999999" step="1" value={p.price} onChange={e => setForm(current => current.map((item, i) => i === index ? { ...item, price: e.target.value } : item))} /></label>
+      <label>Giảm giá (%)<input aria-label={`Giảm giá ${durations[index][1]} (%)`} required type="number" min="0" max="100" step="0.01" value={p.discountPercent} onChange={e => setForm(current => current.map((item, i) => i === index ? { ...item, discountPercent: e.target.value } : item))} /></label>
+      <label className="package-availability"><input aria-label={`Mở đăng ký gói ${durations[index][1]}`} type="checkbox" checked={p.active} onChange={e => setForm(current => current.map((item, i) => i === index ? { ...item, active: e.target.checked } : item))} /><span>Mở đăng ký</span></label>
+    </section>)}<div className="package-save-actions"><button className="course-primary" disabled={!dirty} type="submit">{save.isPending ? 'Đang lưu gói…' : 'Lưu các gói giá'}</button></div></fieldset>
     {save.isError && <p role="alert" className="course-error">{courseError(save.error)}</p>}
   </form>
 }

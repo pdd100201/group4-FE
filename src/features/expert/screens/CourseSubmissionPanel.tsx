@@ -26,7 +26,6 @@ export function CourseSubmissionPanel({ course, dirty, busy, onBusy }: { course?
       {eligible ? <>
         <p>Hoàn tất các mục sau để chuyển khóa học sang Chờ duyệt. Không yêu cầu tối thiểu 5 bài học.</p>
         {query.isPending ? <p role="status">Đang kiểm tra điều kiện…</p> : query.isError ? <p role="alert" className="course-error">{courseError(query.error)}</p> : <ul>{query.data?.checks.map(check => <li key={check.code}>{check.complete ? '✓ Đã đủ' : '○ Còn thiếu'} — {check.label}</li>)}</ul>}
-        <p>Gói giá riêng chưa được triển khai; hiện kiểm tra giá khóa học đã lưu.</p>
         {course.status === 'REJECTED' && <p>Hãy sửa các nội dung Manager yêu cầu trước khi gửi lại.</p>}
         {dirty && <p role="status">Bạn có thay đổi chưa lưu. Hãy bấm Lưu thay đổi trước khi gửi duyệt.</p>}
         <div className="course-row-actions"><button className="course-primary" disabled={disabled} onClick={() => { submit.reset(); setConfirming(true) }}>{label}</button><button disabled={busy || query.isFetching} onClick={() => void query.refetch()}>Kiểm tra lại</button></div>

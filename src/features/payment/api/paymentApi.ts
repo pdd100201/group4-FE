@@ -11,6 +11,9 @@ export interface PaymentResponse {
   accountHolder: string | null
   transferContent: string | null
   amount: number
+  expiresAt: string | null
+  serverTime: string
+  expired: boolean
 }
 export const paymentApi = {
   initiate: async (id: number) => (await apiClient.post<PaymentResponse>(`/student/registrations/${id}/payment`)).data,
