@@ -25,6 +25,9 @@ import { StudentCoursesPage } from '../features/courses/screens/StudentCoursesPa
 import { AccountsPage } from '../features/accounts/screens/AccountsPage'
 import { AccountEditorPage } from '../features/accounts/screens/AccountEditorPage'
 import { ProfilePage } from '../features/profile/screens/ProfilePage'
+import { ExpertQuizPage } from '../features/quiz/ExpertQuizPage'
+import { QuizEditorPage } from '../features/quiz/QuizEditorPage'
+import { ManagerQuizPreviewPage } from '../features/quiz/ManagerQuizPreviewPage'
 
 export function AppRoutes() {
   return <Routes>
@@ -64,7 +67,11 @@ export function AppRoutes() {
         <Route path="/expert/courses/new" element={<CourseEditorPage />} />
         <Route path="/expert/courses/:courseId" element={<CourseEditorPage />} />
         <Route path="/expert/questions" element={<PlaceholderPage title="Ngân hàng câu hỏi" />} />
-        <Route path="/expert/quizzes" element={<PlaceholderPage title="Quản lý bài kiểm tra" />} />
+        <Route path="/expert/quizzes" element={<ExpertQuizPage />} />
+        <Route path="/expert/courses/:courseId/quizzes" element={<ExpertQuizPage />} />
+        <Route path="/expert/courses/:courseId/quizzes/new" element={<QuizEditorPage />} />
+        <Route path="/expert/courses/:courseId/quizzes/:quizId" element={<QuizEditorPage readOnly />} />
+        <Route path="/expert/courses/:courseId/quizzes/:quizId/edit" element={<QuizEditorPage />} />
       </Route>
     </Route>
     <Route element={<ProtectedRoute roles={['ROLE_ADMIN']} />}>
@@ -90,6 +97,8 @@ export function AppRoutes() {
         <Route path="/manager/registrations/:id" element={<ManagementRecordDetailPage kind="registrations" />} />
         <Route path="/manager/transactions" element={<ManagementRecordsPage kind="transactions" />} />
         <Route path="/manager/transactions/:id" element={<ManagementRecordDetailPage kind="transactions" />} />
+        <Route path="/manager/courses/review/quizzes" element={<ManagerQuizPreviewPage />} />
+        <Route path="/manager/courses/:courseId/review/quizzes" element={<ManagerQuizPreviewPage />} />
         <Route path="/manager/posts" element={<PlaceholderPage title="Quản lý bài viết" />} />
       </Route>
     </Route>

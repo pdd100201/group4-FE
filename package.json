@@ -8,6 +8,8 @@
     "dev:team": "node scripts/dev-team.mjs",
     "build": "vite build",
     "lint": "eslint .",
+    "test:quiz": "node scripts/quiz-smoke.mjs",
+    "test:quiz:api": "node scripts/quiz-api-smoke.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
