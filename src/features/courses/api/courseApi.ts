@@ -18,6 +18,7 @@ export interface PublicCourseDetail extends CourseSummary {
 }
 
 export const courseApi = {
+  enrollment: async (id: number) => (await apiClient.get<{ hasAccess: boolean; registrationId: number | null; packageName: string | null; status: string | null; validUntil: string | null; lifetime: boolean }>(`/student/courses/${id}/enrollment`)).data,
   getPublished: async (id: number): Promise<PublicCourseDetail> => (await apiClient.get<PublicCourseDetail>(`/public/courses/${id}`)).data,
   listPublished: async (params: { search?: string; category?: string } = {}): Promise<CourseSummary[]> => {
     const response = await apiClient.get<CourseSummary[]>('/public/courses', { params })

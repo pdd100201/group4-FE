@@ -31,6 +31,9 @@ import { ExpertQuizPage } from '../features/quiz/ExpertQuizPage'
 import { QuizEditorPage } from '../features/quiz/QuizEditorPage'
 import { ManagerQuizPreviewPage } from '../features/quiz/ManagerQuizPreviewPage'
 import { QuestionBankPage } from '../features/questions/screens/QuestionBankPage'
+import { LessonLearningPage } from '../features/learning/screens/LessonLearningPage'
+import { StudentQuizPage } from '../features/learning/screens/StudentQuizPage'
+import { StudentQuizResultPage } from '../features/learning/screens/StudentQuizResultPage'
 
 export function AppRoutes() {
   return <Routes>
@@ -57,11 +60,12 @@ export function AppRoutes() {
     <Route element={<ProtectedRoute roles={['ROLE_STUDENT']} />}>
       <Route element={<StudentLayout />}>
         <Route path="/student/courses" element={<StudentCoursesPage />} />
-        <Route path="/student/courses/:courseId/lessons/:lessonId" element={<PlaceholderPage title="Bài học" />} />
+        <Route path="/student/courses/:courseId/learn" element={<LessonLearningPage />} />
+        <Route path="/student/courses/:courseId/lessons/:lessonId" element={<LessonLearningPage />} />
         <Route path="/student/registrations" element={<StudentRegistrationsPage />} />
         <Route path="/student/registrations/:id" element={<StudentRegistrationDetailPage />} />
-        <Route path="/student/quizzes/:quizId" element={<PlaceholderPage title="Bài kiểm tra" />} />
-        <Route path="/student/quiz-attempts/:attemptId" element={<PlaceholderPage title="Kết quả kiểm tra" />} />
+        <Route path="/student/quizzes/:quizId" element={<StudentQuizPage />} />
+        <Route path="/student/quiz-attempts/:attemptId" element={<StudentQuizResultPage />} />
       </Route>
     </Route>
     <Route element={<ProtectedRoute roles={['ROLE_EXPERT']} />}>

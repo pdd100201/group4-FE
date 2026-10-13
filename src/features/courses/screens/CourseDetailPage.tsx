@@ -1,6 +1,8 @@
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { isAxiosError } from 'axios'
 import { useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { courseApi } from '../api/courseApi'
 import { useAuth } from '../../../shared/context/AuthContext'
 import { usePublicCourse } from '../../../shared/hooks/usePublicCourse'
 import { coursePrice } from './PublicCourseCard'
@@ -11,6 +13,9 @@ export function CourseDetailPage() {
   const id = Number(courseId)
   const query = usePublicCourse(id)
   const { user } = useAuth()
+  const student = Boolean(user?.roles.includes('ROLE_STUDENT'))
+  const enrollment = useQuery({ queryKey: ['course-enrollment', user?.id, id], queryFn: () => courseApi.enrollment(id),
+    enabled: student && query.isSuccess && Number.isSafeInteger(id) && id > 0, retry: false })
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const location = useLocation()
   useEffect(() => {
@@ -27,7 +32,6 @@ export function CourseDetailPage() {
   const course = query.data
   const packages = course.packages ?? []
   const selected = packages.find(p => p.id === selectedId) ?? packages[0]
-  const student = user?.roles.includes('ROLE_STUDENT')
   const registerTo = selected ? `/student/courses/${id}/register?packageId=${selected.id}` : ''
   return <><section className="course-hero"><div className="course-hero-content">
     <small><Link to="/">Trang chủ</Link> / <Link to="/courses">Khóa học</Link> / {course.category || 'Chưa phân loại'} / <b>{course.title}</b></small>
@@ -42,6 +46,7 @@ export function CourseDetailPage() {
       <p className="public-course-notice">Danh sách trên là đề cương khóa học. Nội dung bài giảng và video chỉ dành cho học viên có quyền truy cập hợp lệ.</p>
     </section><aside id="course-packages" className="checkout" aria-label="Thông tin giá khóa học">
       {course.thumbnailUrl && <img className="public-course-cover" src={course.thumbnailUrl} alt={'Ảnh khóa học ' + course.title} />}
+      {student && enrollment.isPending ? <p role="status">Đang kiểm tra đăng ký...</p> : student && enrollment.isError ? <div role="alert"><p>Không kiểm tra được trạng thái đăng ký.</p><button onClick={() => void enrollment.refetch()}>Thử lại</button></div> : enrollment.data?.hasAccess ? <div className="course-checkout-action"><p className="course-enrolled" role="status">Bạn đã đăng ký khóa học này.</p><p>Gói học: {enrollment.data.packageName ?? 'Gói đã đăng ký'}</p><p>{enrollment.data.lifetime ? 'Quyền học vĩnh viễn' : enrollment.data.validUntil ? `Hiệu lực đến ${new Date(enrollment.data.validUntil).toLocaleDateString('vi-VN')}` : 'Quyền học đang hoạt động'}</p><Link className="primary-button" to={`/student/courses/${id}/learn`}>Vào học</Link><Link to={`/student/registrations/${enrollment.data.registrationId}`}>Chi tiết đăng ký</Link></div> : enrollment.data?.status === 'PENDING_PAYMENT' ? <div className="course-checkout-action"><p role="status">Bạn đã đăng ký, đang chờ thanh toán.</p><p>Gói học: {enrollment.data.packageName ?? 'Gói đã đăng ký'}</p><Link className="primary-button" to={`/student/registrations/${enrollment.data.registrationId}/payment`}>Tiếp tục thanh toán</Link><Link to={`/student/registrations/${enrollment.data.registrationId}`}>Chi tiết đăng ký</Link></div> : <>
       <small>CHỌN GÓI HỌC</small>
       {packages.length === 0 ? <><p id="registration-unavailable">Expert chưa mở gói học để đăng ký.</p>{student && <button className="primary-button" disabled aria-describedby="registration-unavailable">Đăng ký khóa học</button>}</> : <><fieldset className="package-selector"><legend>Thời hạn truy cập</legend>{packages.map(p => <label key={p.id}><input type="radio" name="course-package" checked={p.id === selected?.id} onChange={() => setSelectedId(p.id)} /> {p.name} · {coursePrice(p.finalPrice)}</label>)}</fieldset>
         {selected && <><h2 className="course-price">{coursePrice(selected.finalPrice)}</h2>{selected.discountPercent > 0 && <p><del>{coursePrice(selected.price)}</del> · Giảm {selected.discountPercent}%</p>}
@@ -49,8 +54,9 @@ export function CourseDetailPage() {
             {student && <p>Xác nhận thông tin đăng ký, sau đó thanh toán bằng QR chuyển khoản qua SePay.</p>}
           </div></>}
       </>}
+      </>}
       <b>Khóa học bao gồm:</b><p>{course.lessons.length} bài học đang hiển thị<br />{course.quizCount} bài kiểm tra đang hoạt động</p>
-      <p className="public-course-notice">Đăng ký được tạo ở trạng thái chờ thanh toán. Quyền học chỉ được cấp sau thanh toán thành công.</p>
+      {!enrollment.data?.hasAccess && <p className="public-course-notice">Đăng ký được tạo ở trạng thái chờ thanh toán. Quyền học chỉ được cấp sau thanh toán thành công.</p>}
       <Link to="/courses">Xem các khóa học khác →</Link>
     </aside></div></div>
   </>
