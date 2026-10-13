@@ -23,3 +23,11 @@ export interface PreviewQuiz {
   maxAttempts: number | null; active: boolean; questions: PreviewQuestion[]
 }
 export interface ReviewCourse extends QuizCourse { expertName: string; quizzes: PreviewQuiz[] }
+export interface QuizListItem {
+  id: number; courseId: number; courseTitle: string; category: string; courseStatus: CourseStatus
+  title: string; questionCount: number; durationMinutes: number | null; passRate: number | null
+  maxAttempts: number | null; active: boolean; retained: boolean
+}
+export interface QuizPage { content: QuizListItem[]; totalElements: number; totalPages: number; number: number }
+export interface QuestionChoice { id: number; content: string; type: string | null; active: boolean }
+export interface QuestionPage { content: QuestionChoice[]; totalElements: number; totalPages: number; number: number }

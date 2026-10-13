@@ -1,5 +1,5 @@
 import apiClient from '../../../shared/services/apiClient'
-export type MediaPurpose = 'AVATAR' | 'COURSE_IMAGE' | 'LESSON_VIDEO' | 'CONTENT_IMAGE'
+export type MediaPurpose = 'AVATAR' | 'COURSE_IMAGE' | 'LESSON_VIDEO' | 'CONTENT_IMAGE' | 'QUESTION_IMAGE'
 export interface UploadedMedia { id: number; url: string | null; resourceType: 'image' | 'video'; bytes: number }
 export const mediaApi = {
   upload: async (file: File, purpose: MediaPurpose, courseId: number | undefined, progress: (percent: number) => void) => {

@@ -1,22 +1,24 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useParams, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom'
 import { validId, useQuizWorkspace, useQuizWrites } from '../../shared/hooks/useQuizManagement'
 import type { ManagedQuiz } from '../../shared/types/quiz'
 import { canManageQuiz, courseStatusLabel, QuizCoursePicker, QuizError } from './QuizShared'
+import { QuizList } from './QuizList'
 
 export function ExpertQuizPage() {
   const { courseId: rawId } = useParams()
   const courseId = validId(rawId)
   return <div className="qm-page"><header className="qm-heading"><div><p className="qm-eyebrow">EDUPORTAL · GIẢNG DẠY</p><h1>Quản lý quiz</h1><p>Tạo và quản lý bài kiểm tra trong khóa học của bạn.</p></div></header>
-    {rawId === undefined ? <QuizCoursePicker role="expert" /> : courseId === null ? <p role="alert">Mã khóa học không hợp lệ.</p> : <QuizWorkspace key={courseId} courseId={courseId} />}
+    {rawId === undefined ? <><QuizList /><details className="qm-course-picker"><summary>Tạo quiz · Chọn khóa học</summary><QuizCoursePicker role="expert" /></details></> : courseId === null ? <p role="alert">Mã khóa học không hợp lệ.</p> : <QuizWorkspace key={courseId} courseId={courseId} />}
   </div>
 }
 function QuizWorkspace({ courseId }: { courseId: number }) {
+  const location = useLocation()
   const { course, quizzes, lessons } = useQuizWorkspace(courseId)
   const { remove } = useQuizWrites(courseId)
   const [params, setParams] = useSearchParams()
   const [deleting, setDeleting] = useState<ManagedQuiz | null>(null)
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState((location.state as { quizSaved?: boolean } | null)?.quizSaved ? 'Đã lưu quiz thành công.' : '')
   const confirmation = useRef<HTMLElement>(null)
   useEffect(() => { if (deleting) confirmation.current?.scrollIntoView({ behavior: 'instant', block: 'center' }) }, [deleting])
   const search = params.get('q') ?? ''

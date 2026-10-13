@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useQuizDetail, useQuizWorkspace, useQuizWrites, validId } from '../../shared/hooks/useQuizManagement'
 import type { ManagedQuiz, QuizInput, QuizLesson } from '../../shared/types/quiz'
 import { canManageQuiz, QuizError } from './QuizShared'
+import { QuestionPicker } from './QuestionPicker'
 
 export function QuizEditorPage({ readOnly = false }: { readOnly?: boolean }) {
   const params = useParams()
@@ -25,7 +26,7 @@ export function QuizEditorPage({ readOnly = false }: { readOnly?: boolean }) {
       {locked && <p className="qm-feedback">Khóa học hiện chỉ cho phép xem quiz. Chỉnh sửa chỉ khả dụng khi khóa học ở trạng thái Nháp hoặc Bị từ chối.</p>}
       {readOnly || locked ? detail.data ? <ExpertQuizDetails quiz={detail.data} lessons={workspace.lessons.data ?? []} /> : null :
         workspace.lessons.isPending ? <p role="status">Đang tải bài học...</p> : workspace.lessons.isError ? <QuizError error={workspace.lessons.error} retry={() => { void workspace.lessons.refetch() }} /> :
-        <QuizForm key={`${courseId}-${quizId ?? 'new'}`} courseId={courseId} initial={detail.data} lessons={workspace.lessons.data ?? []} />}
+        <QuizForm key={`${courseId}-${quizId ?? 'new'}`} courseId={courseId} category={workspace.course.data.category} initial={detail.data} lessons={workspace.lessons.data ?? []} />}
     </>}
   </div>
 }
@@ -33,7 +34,7 @@ function ExpertQuizDetails({ quiz, lessons }: { quiz: ManagedQuiz; lessons: Quiz
   return <section className="qm-panel"><h2>{quiz.title}</h2><dl className="qm-facts"><div><dt>Bài học</dt><dd>{quiz.lessonId === null ? 'Toàn khóa học' : lessons.find(l => l.id === quiz.lessonId)?.title ?? `#${quiz.lessonId}`}</dd></div><div><dt>Thời lượng</dt><dd>{quiz.durationMinutes ?? '—'} phút</dd></div><div><dt>Tỷ lệ đạt</dt><dd>{quiz.passRate ?? '—'}%</dd></div><div><dt>Số lượt tối đa</dt><dd>{quiz.maxAttempts ?? '—'}</dd></div><div><dt>Trạng thái</dt><dd>{quiz.active ? 'Hoạt động' : 'Không hoạt động'}</dd></div></dl><h2>Câu hỏi ({quiz.questions.length})</h2>{quiz.questions.length === 0 && <p className="qm-empty">Quiz chưa có câu hỏi.</p>}{quiz.questions.map(q => <article key={q.questionId} className="qm-question"><strong>Câu {q.position} · #{q.questionId} · {q.points} điểm</strong><p className="qm-text">{q.content}</p></article>)}</section>
 }
 interface QuestionDraft { key: string; questionId: string; position: string; points: string; content?: string }
-function QuizForm({ courseId, initial, lessons }: { courseId: number; initial?: ManagedQuiz; lessons: QuizLesson[] }) {
+function QuizForm({ courseId, category, initial, lessons }: { courseId: number; category: string; initial?: ManagedQuiz; lessons: QuizLesson[] }) {
   const navigate = useNavigate()
   const { save } = useQuizWrites(courseId)
   const [title, setTitle] = useState(initial?.title ?? '')
@@ -66,18 +67,19 @@ function QuizForm({ courseId, initial, lessons }: { courseId: number; initial?: 
     const input: QuizInput = { title: title.trim(), durationMinutes: Number(duration), passRate: Number(passRate), maxAttempts: Number(attempts), active, lessonId: lessonId ? Number(lessonId) : null,
       questions: questions.map(q => ({ questionId: Number(q.questionId), position: Number(q.position), points: Number(q.points) })) }
     try {
-      const result = await save.mutateAsync({ id: initial?.id ?? null, input })
-      navigate(`/expert/courses/${courseId}/quizzes/${result.id}`, { state: { quizSaved: true } })
+      await save.mutateAsync({ id: initial?.id ?? null, input })
+      navigate(`/expert/courses/${courseId}/quizzes`, { state: { quizSaved: true } })
     } catch { /* Keep user input and display the backend's ownership/state/retention error. */ }
   }
   return <form className="qm-panel qm-editor" onSubmit={event => { void submit(event) }}>
     <fieldset disabled={busy}><legend>Thông tin quiz</legend>
+      <p className="qm-muted">Danh mục: {category || 'Chưa phân loại'}</p>
       <label>Tên quiz <span aria-hidden="true">*</span><input required maxLength={255} value={title} onChange={e => setTitle(e.target.value)} placeholder="Nhập tên bài kiểm tra" /></label>
       <div className="qm-form-grid"><label>Thời lượng (phút)<input type="number" required min={1} max={2147483647} step={1} value={duration} onChange={e => setDuration(e.target.value)} /></label><label>Tỷ lệ đạt (%)<input type="number" required min={0} max={100} step={1} value={passRate} onChange={e => setPassRate(e.target.value)} /></label><label>Số lượt làm tối đa<input type="number" required min={1} max={2147483647} step={1} value={attempts} onChange={e => setAttempts(e.target.value)} /></label></div>
       <div className="qm-form-grid"><label>Gắn bài học<select value={lessonId} onChange={e => setLessonId(e.target.value)}><option value="">Không gắn bài học — thuộc toàn khóa học</option>{lessons.map(l => <option key={l.id} value={l.id}>{l.position}. {l.title}{l.active ? '' : ' (Không hoạt động)'}</option>)}</select></label><label>Trạng thái<select value={String(active)} onChange={e => setActive(e.target.value === 'true')}><option value="false">Không hoạt động</option><option value="true">Hoạt động</option></select></label></div>
-      <h2>Câu hỏi trong quiz</h2><p className="qm-muted">Nhập mã câu hỏi có sẵn trong ngân hàng của khóa học. Bạn có thể lưu quiz chưa có câu hỏi để tiếp tục soạn sau.</p>
+      <h2>Câu hỏi trong quiz</h2>
       {questions.length === 0 && <p className="qm-empty">Chưa gắn câu hỏi nào.</p>}
-      {questions.map((q, index) => <div className="qm-question" key={q.key}><div className="qm-question-fields"><label>Mã câu hỏi<input aria-label={`Mã câu hỏi dòng ${index + 1}`} type="number" required min={1} step={1} value={q.questionId} onChange={e => changeQuestion(q.key, 'questionId', e.target.value)} /></label><label>Thứ tự<input aria-label={`Thứ tự dòng ${index + 1}`} type="number" required min={1} step={1} value={q.position} onChange={e => changeQuestion(q.key, 'position', e.target.value)} /></label><label>Điểm<input aria-label={`Điểm dòng ${index + 1}`} type="number" required min={1} step={1} value={q.points} onChange={e => changeQuestion(q.key, 'points', e.target.value)} /></label><button type="button" className="qm-danger" onClick={() => setQuestions(rows => rows.filter(row => row.key !== q.key))}>Bỏ câu hỏi</button></div>{q.content && <p className="qm-text">{q.content}</p>}</div>)}
+      {questions.map((q, index) => <div className="qm-question" key={q.key}><QuestionPicker courseId={courseId} value={q.questionId} content={q.content} index={index} onChange={(id, content) => setQuestions(rows => rows.map(row => row.key === q.key ? { ...row, questionId: id, content } : row))} /><div className="qm-question-fields"><label>Thứ tự<input aria-label={`Thứ tự dòng ${index + 1}`} type="number" required min={1} step={1} value={q.position} onChange={e => changeQuestion(q.key, 'position', e.target.value)} /></label><label>Điểm<input aria-label={`Điểm dòng ${index + 1}`} type="number" required min={1} step={1} value={q.points} onChange={e => changeQuestion(q.key, 'points', e.target.value)} /></label><button type="button" className="qm-danger" onClick={() => setQuestions(rows => rows.filter(row => row.key !== q.key))}>Bỏ câu hỏi</button></div>{q.content && <p className="qm-text">{q.content}</p>}</div>)}
       <button type="button" onClick={() => setQuestions(rows => [...rows, { key: crypto.randomUUID(), questionId: '', position: String(Math.max(0, ...rows.map(q => Number(q.position) || 0)) + 1), points: '1' }])}>+ Thêm câu hỏi</button>
     </fieldset>
     {validation && <p className="qm-feedback qm-error" role="alert">{validation}</p>}

@@ -32,6 +32,7 @@ export function useQuizWrites(courseId: number) {
       client.invalidateQueries({ queryKey: ['managed-quiz'] }),
       client.invalidateQueries({ queryKey: ['quiz-course'] }),
       client.invalidateQueries({ queryKey: ['quiz-review'] }),
+      client.invalidateQueries({ queryKey: ['expert-quiz-list'] }),
     ])
   }
   const save = useMutation({ mutationFn: ({ id, input }: { id: number | null; input: QuizInput }) =>
