@@ -10,4 +10,3 @@ export function ChatAvatar({ person, online = false, community = false }: { pers
     {online && <i className="ms-online-dot" aria-label="Đang mở chat" />}
   </span>
 }
-
