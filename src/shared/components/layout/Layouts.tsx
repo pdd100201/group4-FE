@@ -19,7 +19,7 @@ export function PublicLayout() {
   const [menuOpen, setMenuOpen] = useState(false)
   useEffect(() => setMenuOpen(false), [location.pathname])
   return <div className="public-layout"><header className={`public-header ${menuOpen ? 'menu-open' : ''}`}><Logo/><button className="nav-toggle" aria-label="Mở menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(value => !value)}><span/><span/><span/></button><nav><NavLink to="/" end>Trang chủ</NavLink><NavLink to="/courses">Khóa học</NavLink><NavLink to="/blog">Bài viết</NavLink><a href="#about">Về chúng tôi</a></nav>
-    <div className="header-actions">{user ? <><Link to={user.roles.includes('ROLE_STUDENT') ? '/student/courses' : landingRoute(user)}>Không gian của tôi</Link><LogoutButton /></> : <><Link to="/login">Đăng nhập</Link><Link className="primary-button small" to="/register">Đăng ký</Link></>}</div>
+    <div className="header-actions">{user ? <><Link to="/chat">Trò chuyện</Link><Link to={user.roles.includes('ROLE_STUDENT') ? '/student/courses' : landingRoute(user)}>Không gian của tôi</Link><LogoutButton /></> : <><Link to="/login">Đăng nhập</Link><Link className="primary-button small" to="/register">Đăng ký</Link></>}</div>
   </header><main><Outlet/></main><footer id="about"><Logo/><p>Nền tảng học tập & ôn luyện kiến thức trực tuyến hiện đại.</p><div><b>LIÊN HỆ</b><p>Email: hotro@edulearn.vn · Hotline: 1900 6688</p></div><div><b>KẾT NỐI VỚI CHÚNG TÔI</b><p>© 2026 EduLearn. Bảo lưu mọi quyền.</p></div></footer></div>
 }
 
@@ -43,11 +43,11 @@ function AppFrame({ children, admin = false }: { children: ReactNode; admin?: bo
 }
 
 export function StudentLayout() {
-  return <AppFrame><p className="side-label">HỌC TẬP</p><SideLink to="/student/courses" end>▣ Khóa học của tôi</SideLink><SideLink to="/student/registrations">▤ Đăng ký của tôi</SideLink><p className="side-label">TÀI KHOẢN</p><SideLink to="/profile">Hồ sơ cá nhân</SideLink></AppFrame>
+  return <AppFrame><p className="side-label">HỌC TẬP</p><SideLink to="/student/courses" end>▣ Khóa học của tôi</SideLink><SideLink to="/student/registrations">▤ Đăng ký của tôi</SideLink><p className="side-label">TÀI KHOẢN</p><SideLink to="/chat">Trò chuyện</SideLink><SideLink to="/profile">Hồ sơ cá nhân</SideLink></AppFrame>
 }
 
 export function ExpertLayout() {
-  return <AppFrame><p className="side-label">GIẢNG DẠY</p><SideLink to="/expert/courses">▣ Quản lý khóa học</SideLink><SideLink to="/expert/questions">▤ Ngân hàng câu hỏi</SideLink><SideLink to="/expert/quizzes">◫ Quản lý bài kiểm tra</SideLink><p className="side-label">TÀI KHOẢN</p><SideLink to="/profile">Hồ sơ cá nhân</SideLink></AppFrame>
+  return <AppFrame><p className="side-label">GIẢNG DẠY</p><SideLink to="/expert/courses">▣ Quản lý khóa học</SideLink><SideLink to="/expert/questions">▤ Ngân hàng câu hỏi</SideLink><SideLink to="/expert/quizzes">◫ Quản lý bài kiểm tra</SideLink><p className="side-label">TÀI KHOẢN</p><SideLink to="/chat">Trò chuyện</SideLink><SideLink to="/profile">Hồ sơ cá nhân</SideLink></AppFrame>
 }
 
 export function DashboardLayout() {
@@ -58,7 +58,7 @@ export function DashboardLayout() {
     {admin ? <><p className="side-label">TỔNG QUAN HỆ THỐNG</p><SideLink to="/dashboard">▥ Bảng điều khiển</SideLink><SideLink to="/admin/registrations">▧ Quản lý Đăng ký</SideLink><SideLink to="/admin/transactions">▣ Giao dịch & Dòng tiền</SideLink><SideLink to="/admin/reports">◫ Báo cáo & Xuất dữ liệu</SideLink><p className="side-label">QUẢN TRỊ NGƯỜI DÙNG</p><SideLink to="/admin/accounts">♟ Tài khoản & Phân quyền</SideLink></>
       : <><p className="side-label">QUẢN LÝ</p><SideLink to="/manager/courses/review">▤ Duyệt khóa học</SideLink><SideLink to="/manager/registrations">▧ Quản lý Đăng ký</SideLink><SideLink to="/manager/transactions">▣ Giao dịch & Dòng tiền</SideLink><SideLink to="/manager/posts">▤ Quản lý bài viết</SideLink></>}
     {!admin && <SideLink to="/manager/courses/review/quizzes">◫ Xem trước bài kiểm tra</SideLink>}
-    <p className="side-label">TÀI KHOẢN</p><SideLink to="/profile">Hồ sơ cá nhân</SideLink>
+    <p className="side-label">TÀI KHOẢN</p><SideLink to="/chat">Trò chuyện</SideLink><SideLink to="/profile">Hồ sơ cá nhân</SideLink>
   </AppFrame>
 }
 
