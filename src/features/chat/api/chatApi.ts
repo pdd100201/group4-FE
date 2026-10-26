@@ -17,6 +17,8 @@ export const chatApi = {
   users: async (query: string, page: number) => (await apiClient.get<ChatDirectory>('/chat/users', { params: { query, page } })).data,
   messages: async (peerId: number | null, before?: number) =>
     (await apiClient.get<ChatMessage[]>('/chat/messages', { params: { peerId: peerId ?? undefined, before } })).data,
+  searchMessages: async (peerId: number | null, query: string, before?: number) =>
+    (await apiClient.get<ChatMessage[]>('/chat/messages/search', { params: { peerId: peerId ?? undefined, query, before } })).data,
   // This authenticated request also refreshes an expired access token using the existing interceptor.
   prepareSocket: () => apiClient.get('/profile'),
   socketUrl: () => {

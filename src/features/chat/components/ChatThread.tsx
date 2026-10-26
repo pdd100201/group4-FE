@@ -1,4 +1,5 @@
-import type { ReactNode, RefObject } from 'react'
+import { useState, type ReactNode, type RefObject } from 'react'
+import { ChatMessageSearch } from './ChatMessageSearch'
 import type { useChatHistory, useChatSocket } from '../../../shared/hooks/useChat'
 import type { ChatMessage, ChatUser } from '../api/chatApi'
 import { ChatAvatar } from './ChatAvatar'
@@ -11,12 +12,14 @@ type Props = {
 }
 
 export function ChatThread({ peer, userId, chat, history, messages, messageBox, onBack, children }: Props) {
+  const [searchOpen, setSearchOpen] = useState(false)
   // Message content stays React text so HTML sent by another user cannot execute here.
   return (
     <section className="ms-thread" aria-label="Nội dung cuộc trò chuyện">
-      <header className="ms-thread-header"><button className="ms-back" aria-label="Quay lại danh sách chat" onClick={onBack}>‹</button><ChatAvatar person={peer ?? undefined} community={!peer} online={peer ? chat.onlineIds.includes(peer.id) : chat.connected} /><div><h2>{peer?.fullName ?? 'Phòng chat chung'}</h2><small>{!chat.connected ? 'Đang kết nối…' : !peer ? 'Không gian trò chuyện của mọi người' : chat.onlineIds.includes(peer.id) ? 'Đang mở chat' : 'Ngoại tuyến'}</small></div><span className={`ms-connection ${chat.connected ? 'connected' : ''}`} aria-label={chat.connected ? 'Đã kết nối' : 'Chưa kết nối'} /></header>
+      <header className="ms-thread-header"><button className="ms-back" aria-label="Quay lại danh sách chat" onClick={onBack}>‹</button><ChatAvatar person={peer ?? undefined} community={!peer} online={peer ? chat.onlineIds.includes(peer.id) : chat.connected} /><div><h2>{peer?.fullName ?? 'Phòng chat chung'}</h2><small>{!chat.connected ? 'Đang kết nối…' : !peer ? 'Không gian trò chuyện của mọi người' : chat.onlineIds.includes(peer.id) ? 'Đang mở chat' : 'Ngoại tuyến'}</small></div><button className="ms-thread-search-toggle" aria-label="Tìm tin nhắn" aria-expanded={searchOpen} onClick={() => setSearchOpen(open => !open)}>⌕</button><span className={`ms-connection ${chat.connected ? 'connected' : ''}`} aria-label={chat.connected ? 'Đã kết nối' : 'Chưa kết nối'} /></header>
       {chat.connectionError && <p className="ms-notice" role="status">{chat.connectionError}</p>}
-      <div className="ms-messages" aria-label="Lịch sử tin nhắn" ref={messageBox}>
+      {searchOpen && <ChatMessageSearch key={`search-${peer?.id ?? 'community'}`} peerId={peer?.id ?? null} userId={userId} onClose={() => setSearchOpen(false)} />}
+      <div hidden={searchOpen} className="ms-messages" aria-label="Lịch sử tin nhắn" ref={messageBox}>
         {history.isPending && <p className="ms-hint">Đang tải tin nhắn…</p>}
         {history.isError && <p className="ms-hint" role="alert">Không tải được tin nhắn. <button onClick={() => void history.refetch()}>Thử lại</button></p>}
         {history.hasNextPage && <button className="ms-older" disabled={history.isFetchingNextPage} onClick={() => void history.fetchNextPage()}>{history.isFetchingNextPage ? 'Đang tải…' : 'Xem tin nhắn trước'}</button>}

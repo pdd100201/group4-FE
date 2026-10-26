@@ -13,6 +13,20 @@ export const useChatHistory = (peerId: number | null, userId: number) => useInfi
   getNextPageParam: last => last.length >= 50 ? last[0].id : undefined,
 })
 
+export function useDebouncedChatSearch(value: string) {
+  const [query, setQuery] = useState(value.trim())
+  useEffect(() => { const timer = setTimeout(() => setQuery(value.trim()), 250); return () => clearTimeout(timer) }, [value])
+  return query
+}
+
+export const useChatMessageSearch = (peerId: number | null, userId: number, query: string) => useInfiniteQuery({
+  queryKey: ['chat', 'search', userId, peerId, query],
+  queryFn: ({ pageParam }) => chatApi.searchMessages(peerId, query, pageParam),
+  enabled: Boolean(query), staleTime: 0,
+  initialPageParam: undefined as number | undefined,
+  getNextPageParam: last => last.length >= 50 ? last[last.length - 1].id : undefined,
+})
+
 type Pending = { resolve: () => void; reject: (error: Error) => void; timer: ReturnType<typeof setTimeout> }
 type SocketEvent = { type: string; message?: ChatMessage | string; clientMessageId?: string; userIds?: number[] }
 
