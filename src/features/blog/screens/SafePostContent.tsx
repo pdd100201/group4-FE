@@ -8,6 +8,18 @@ export function SafePostContent({ content }: { content: string }) {
   const nodes = useMemo(() => {
     const template = document.createElement('template')
     template.innerHTML = content
+    const containsMarkup = Boolean(template.content.querySelector('*'))
+    if (!containsMarkup) {
+      const plainText = (template.content.textContent ?? '').trim()
+      if (!plainText) return []
+      return plainText.split(/\n\s*\n/).filter(Boolean).map((paragraph, paragraphIndex) => {
+        const lines = paragraph.split(/\r?\n/)
+        const children = lines.flatMap((line, lineIndex) => lineIndex === 0
+          ? [line]
+          : [createElement('br', { key: `break-${lineIndex}` }), line])
+        return createElement('p', { key: `paragraph-${paragraphIndex}` }, children)
+      })
+    }
     const render = (node: Node, key: string, depth: number): ReactNode => {
       if (depth > 50) return null
       if (node.nodeType === Node.TEXT_NODE) return node.textContent

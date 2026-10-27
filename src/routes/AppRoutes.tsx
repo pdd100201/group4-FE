@@ -2,8 +2,11 @@ import { Route, Routes } from 'react-router-dom'
 import { ProtectedRoute } from '../shared/components/auth/ProtectedRoute'
 import { DashboardLayout, ExpertLayout, ProfileLayout, PublicLayout, StudentLayout } from '../shared/components/layout/Layouts'
 import { HomePage } from '../features/home/screens/HomePage'
+import { AboutCoursesPage } from '../features/about/screens/AboutCoursesPage'
 import { BlogListPage } from '../features/blog/screens/BlogListPage'
 import { BlogDetailPage } from '../features/blog/screens/BlogDetailPage'
+import { BlogPostSubmissionPage } from '../features/blog/screens/BlogPostSubmissionPage'
+import { MyPostSubmissionsPage } from '../features/blog/screens/MyPostSubmissionsPage'
 import { CourseDetailPage } from '../features/courses/screens/CourseDetailPage'
 import { CourseCatalogPage } from '../features/courses/screens/CourseCatalogPage'
 import { LoginPage } from '../features/auth/screens/LoginPage'
@@ -34,11 +37,14 @@ import { QuestionBankPage } from '../features/questions/screens/QuestionBankPage
 import { LessonLearningPage } from '../features/learning/screens/LessonLearningPage'
 import { StudentQuizPage } from '../features/learning/screens/StudentQuizPage'
 import { StudentQuizResultPage } from '../features/learning/screens/StudentQuizResultPage'
+import { ManagerPostsPage } from '../features/management/screens/ManagerPostsPage'
+import { ManagerPostDetailPage } from '../features/management/screens/ManagerPostDetailPage'
 
 export function AppRoutes() {
   return <Routes>
     <Route element={<PublicLayout />}>
       <Route path="/" element={<HomePage />} />
+      <Route path="/about" element={<AboutCoursesPage />} />
       <Route path="/courses" element={<CourseCatalogPage />} />
       <Route path="/courses/:courseId" element={<CourseDetailPage />} />
       <Route element={<ProtectedRoute roles={['ROLE_STUDENT']} />}>
@@ -48,6 +54,10 @@ export function AppRoutes() {
       </Route>
       <Route path="/blog" element={<BlogListPage />} />
       <Route path="/blog/:postId" element={<BlogDetailPage />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="/blog/submit" element={<BlogPostSubmissionPage />} />
+        <Route path="/blog/my-submissions" element={<MyPostSubmissionsPage />} />
+      </Route>
     </Route>
     <Route path="/login" element={<LoginPage />} />
     <Route path="/register" element={<RegisterPage />} />
@@ -107,7 +117,8 @@ export function AppRoutes() {
         <Route path="/manager/transactions/:id" element={<ManagementRecordDetailPage kind="transactions" />} />
         <Route path="/manager/courses/review/quizzes" element={<ManagerQuizPreviewPage />} />
         <Route path="/manager/courses/:courseId/review/quizzes" element={<ManagerQuizPreviewPage />} />
-        <Route path="/manager/posts" element={<PlaceholderPage title="Quản lý bài viết" />} />
+        <Route path="/manager/posts" element={<ManagerPostsPage />} />
+        <Route path="/manager/posts/:postId" element={<ManagerPostDetailPage />} />
       </Route>
     </Route>
     <Route path="/forbidden" element={<PlaceholderPage title="Bạn không có quyền truy cập" />} />

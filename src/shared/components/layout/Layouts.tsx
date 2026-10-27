@@ -18,7 +18,7 @@ export function PublicLayout() {
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
   useEffect(() => setMenuOpen(false), [location.pathname])
-  return <div className="public-layout"><header className={`public-header ${menuOpen ? 'menu-open' : ''}`}><Logo/><button className="nav-toggle" aria-label="Mở menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(value => !value)}><span/><span/><span/></button><nav><NavLink to="/" end>Trang chủ</NavLink><NavLink to="/courses">Khóa học</NavLink><NavLink to="/blog">Bài viết</NavLink><a href="#about">Về chúng tôi</a></nav>
+  return <div className="public-layout"><header className={`public-header ${menuOpen ? 'menu-open' : ''}`}><Logo/><button className="nav-toggle" aria-label="Mở menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(value => !value)}><span/><span/><span/></button><nav><NavLink to="/" end>Trang chủ</NavLink><NavLink to="/courses">Khóa học</NavLink><NavLink to="/blog">Bài viết</NavLink><NavLink to="/about">Về chúng tôi</NavLink></nav>
     <div className="header-actions">{user ? <><Link to={user.roles.includes('ROLE_STUDENT') ? '/student/courses' : landingRoute(user)}>Không gian của tôi</Link><LogoutButton /></> : <><Link to="/login">Đăng nhập</Link><Link className="primary-button small" to="/register">Đăng ký</Link></>}</div>
   </header><main><Outlet/></main><footer id="about"><Logo/><p>Nền tảng học tập & ôn luyện kiến thức trực tuyến hiện đại.</p><div><b>LIÊN HỆ</b><p>Email: hotro@edulearn.vn · Hotline: 1900 6688</p></div><div><b>KẾT NỐI VỚI CHÚNG TÔI</b><p>© 2026 EduLearn. Bảo lưu mọi quyền.</p></div></footer></div>
 }
