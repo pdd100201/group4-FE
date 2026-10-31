@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext'
 import { landingRoute } from '../../utils/roleRoutes'
 import './public-layout.css'
 import './workspace-layout.css'
+import './student-learning-layout.css'
 
 const Logo = ({ admin = false }: { admin?: boolean }) => <Link className="brand" to={admin ? '/dashboard' : '/'}><b>E</b> Edu<span>{admin ? 'Admin' : 'Learn'}</span></Link>
 
@@ -43,6 +44,15 @@ function AppFrame({ children, admin = false }: { children: ReactNode; admin?: bo
 }
 
 export function StudentLayout() {
+  const { pathname } = useLocation()
+  const { user } = useAuth()
+  if (/^\/student\/courses\/[^/]+\/(learn|lessons)(\/|$)/.test(pathname)) return <Outlet />
+  if (pathname === '/student/courses' || /^\/student\/(quizzes|quiz-attempts)\//.test(pathname)) {
+    return <div className="student-portal"><header className="student-portal-header"><Logo />
+      <nav aria-label="Điều hướng học viên"><NavLink to="/courses">Khám phá</NavLink><NavLink to="/student/courses">Khóa học của tôi</NavLink><NavLink to="/student/registrations">Đăng ký của tôi</NavLink></nav>
+      <Link className="student-portal-profile" to="/profile"><span className="student-avatar">{user?.fullName?.[0] ?? 'H'}</span><span><b>{user?.fullName || user?.email}</b><small>Học viên</small></span></Link>
+    </header><Outlet /><div className="student-portal-footer">© 2026 EduLearn. Nền tảng học tập và đánh giá trực tuyến.</div></div>
+  }
   return <AppFrame><p className="side-label">HỌC TẬP</p><SideLink to="/student/courses" end>▣ Khóa học của tôi</SideLink><SideLink to="/student/registrations">▤ Đăng ký của tôi</SideLink><p className="side-label">TÀI KHOẢN</p><SideLink to="/profile">Hồ sơ cá nhân</SideLink></AppFrame>
 }
 
