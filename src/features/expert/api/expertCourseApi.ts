@@ -1,7 +1,7 @@
 import apiClient from '../../../shared/services/apiClient'
 export type CourseStatus = 'DRAFT' | 'REJECTED' | 'PENDING_REVIEW' | 'PUBLISHED' | 'APPROVED' | 'ARCHIVED'
 export interface CourseInput { title: string; description: string; category: string; price: number; thumbnailMediaId?: number | null }
-export interface ExpertCourse extends CourseInput { id: number; status: CourseStatus; rejectionReason: string | null; editable: boolean; deletable: boolean; thumbnailUrl: string | null }
+export interface ExpertCourse extends CourseInput { displayPrice: number | null; id: number; status: CourseStatus; rejectionReason: string | null; editable: boolean; deletable: boolean; thumbnailUrl: string | null }
 export interface CourseFilters { search: string; category: string; status: string; page: number }
 export interface CoursePage { content: ExpertCourse[]; totalElements: number; totalPages: number; number: number }
 export interface SubmissionReadiness { eligible: boolean; ready: boolean; checks: { code: string; label: string; complete: boolean }[] }

@@ -4,7 +4,7 @@ import type { CourseInput, CourseStatus } from '../../expert/api/expertCourseApi
 export interface LessonPreview { id: number; title: string; content: string | null; position: number | null; active: boolean; videoMediaId: number | null }
 export interface QuestionPreview { id: number; content: string; type: string | null; explanation: string | null; points: number | null; options: { id: number; content: string; correct: boolean }[] }
 export interface QuizPreview { id: number; title: string; durationMinutes: number | null; passRate: number | null; maxAttempts: number | null; active: boolean; questions: QuestionPreview[] }
-export interface ManagerCourse extends CourseInput { id: number; status: CourseStatus; expertName: string; rejectionReason: string | null; reviewedBy: string | null; lessons: LessonPreview[]; quizzes: QuizPreview[]; thumbnailUrl: string | null }
+export interface ManagerCourse extends Omit<CourseInput, 'price'> { price: number | null; id: number; status: CourseStatus; expertName: string; rejectionReason: string | null; reviewedBy: string | null; lessons: LessonPreview[]; quizzes: QuizPreview[]; thumbnailUrl: string | null }
 export interface ReviewFilters { search: string; category: string; status: string; page: number }
 export interface ReviewPage { content: ManagerCourse[]; totalElements: number; totalPages: number; number: number }
 export const managerCourseApi = {
