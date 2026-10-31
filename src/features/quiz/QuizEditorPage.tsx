@@ -1,3 +1,6 @@
+import { useQuery } from '@tanstack/react-query'
+import { useAuth } from '../../shared/context/AuthContext'
+import { quizService } from './api/quizService'
 import { useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useQuizDetail, useQuizWorkspace, useQuizWrites, validId } from '../../shared/hooks/useQuizManagement'
@@ -45,6 +48,11 @@ function QuizForm({ courseId, category, initial, lessons }: { courseId: number; 
   const [lessonId, setLessonId] = useState(initial?.lessonId?.toString() ?? '')
   const [questions, setQuestions] = useState<QuestionDraft[]>(() => initial?.questions.map(q => ({ key: crypto.randomUUID(), questionId: String(q.questionId), position: String(q.position), points: String(q.points), content: q.content })) ?? [])
   const [validation, setValidation] = useState('')
+  const [questionSearch, setQuestionSearch] = useState('')
+  const [questionPage, setQuestionPage] = useState(0)
+  const { user } = useAuth()
+  const bank = useQuery({ queryKey: ['quiz-question-bank', user?.id, courseId, questionSearch, questionPage],
+    queryFn: () => quizService.questionBank(courseId, questionSearch, questionPage) })
   const busy = save.isPending
   function changeQuestion(key: string, field: 'questionId' | 'position' | 'points', value: string) {
     setQuestions(rows => rows.map(row => row.key === key ? { ...row, [field]: value, ...(field === 'questionId' ? { content: undefined } : {}) } : row))
@@ -77,9 +85,14 @@ function QuizForm({ courseId, category, initial, lessons }: { courseId: number; 
       <label>Tên quiz <span aria-hidden="true">*</span><input required maxLength={255} value={title} onChange={e => setTitle(e.target.value)} placeholder="Nhập tên bài kiểm tra" /></label>
       <div className="qm-form-grid"><label>Thời lượng (phút)<input type="number" required min={1} max={2147483647} step={1} value={duration} onChange={e => setDuration(e.target.value)} /></label><label>Tỷ lệ đạt (%)<input type="number" required min={0} max={100} step={1} value={passRate} onChange={e => setPassRate(e.target.value)} /></label><label>Số lượt làm tối đa<input type="number" required min={1} max={2147483647} step={1} value={attempts} onChange={e => setAttempts(e.target.value)} /></label></div>
       <div className="qm-form-grid"><label>Gắn bài học<select value={lessonId} onChange={e => setLessonId(e.target.value)}><option value="">Không gắn bài học — thuộc toàn khóa học</option>{lessons.map(l => <option key={l.id} value={l.id}>{l.position}. {l.title}{l.active ? '' : ' (Không hoạt động)'}</option>)}</select></label><label>Trạng thái<select value={String(active)} onChange={e => setActive(e.target.value === 'true')}><option value="false">Không hoạt động</option><option value="true">Hoạt động</option></select></label></div>
-      <h2>Câu hỏi trong quiz</h2>
+      <h2>Câu hỏi trong quiz</h2><label>Tìm câu hỏi<input type="search" aria-label="Tìm câu hỏi trong ngân hàng" placeholder="Tìm câu hỏi cho tất cả các dòng bên dưới..." value={questionSearch} maxLength={200} onChange={event => { setQuestionSearch(event.target.value); setQuestionPage(0) }} /></label>
+      {bank.isPending && <p role="status">Đang tìm câu hỏi...</p>}
+      {bank.isError && <QuizError error={bank.error} retry={() => void bank.refetch()} />}
+      {bank.data && <div className="qm-actions"><small role="status">{bank.data.totalElements} kết quả tìm kiếm · Trang {questionPage + 1} / {Math.max(1, bank.data.totalPages)}</small><button type="button" aria-label="Câu hỏi trang trước" disabled={questionPage === 0 || bank.isFetching} onClick={() => setQuestionPage(page => page - 1)}>‹</button><button type="button" aria-label="Câu hỏi trang sau" disabled={questionPage + 1 >= bank.data.totalPages || bank.isFetching} onClick={() => setQuestionPage(page => page + 1)}>›</button></div>}
+      {bank.data?.totalElements === 0 && <p className="qm-muted">Không có câu hỏi phù hợp. Các câu đã chọn vẫn được giữ nguyên.</p>}
+      <p className="qm-muted">Kết quả tìm kiếm dùng chung cho mọi dòng. Câu hỏi đã được chọn ở dòng khác sẽ không xuất hiện trong danh sách lựa chọn.</p>
       {questions.length === 0 && <p className="qm-empty">Chưa gắn câu hỏi nào.</p>}
-      {questions.map((q, index) => <div className="qm-question" key={q.key}><QuestionPicker courseId={courseId} value={q.questionId} content={q.content} index={index} onChange={(id, content) => setQuestions(rows => rows.map(row => row.key === q.key ? { ...row, questionId: id, content } : row))} /><div className="qm-question-fields"><label>Thứ tự<input aria-label={`Thứ tự dòng ${index + 1}`} type="number" required min={1} step={1} value={q.position} onChange={e => changeQuestion(q.key, 'position', e.target.value)} /></label><label>Điểm<input aria-label={`Điểm dòng ${index + 1}`} type="number" required min={1} step={1} value={q.points} onChange={e => changeQuestion(q.key, 'points', e.target.value)} /></label><button type="button" className="qm-danger" onClick={() => setQuestions(rows => rows.filter(row => row.key !== q.key))}>Bỏ câu hỏi</button></div>{q.content && <p className="qm-text">{q.content}</p>}</div>)}
+      {questions.map((q, index) => <div className="qm-question" key={q.key}><QuestionPicker choices={bank.data?.content ?? []} selectedIds={questions.map(row => row.questionId)} loading={bank.isFetching} value={q.questionId} content={q.content} index={index} onChange={(id, content) => setQuestions(rows => rows.map(row => row.key === q.key ? { ...row, questionId: id, content } : row))} /><div className="qm-question-fields"><label>Thứ tự<input aria-label={`Thứ tự dòng ${index + 1}`} type="number" required min={1} step={1} value={q.position} onChange={e => changeQuestion(q.key, 'position', e.target.value)} /></label><label>Điểm<input aria-label={`Điểm dòng ${index + 1}`} type="number" required min={1} step={1} value={q.points} onChange={e => changeQuestion(q.key, 'points', e.target.value)} /></label><button type="button" className="qm-danger" onClick={() => setQuestions(rows => rows.filter(row => row.key !== q.key))}>Bỏ câu hỏi</button></div>{q.content && <p className="qm-text">{q.content}</p>}</div>)}
       <button type="button" onClick={() => setQuestions(rows => [...rows, { key: crypto.randomUUID(), questionId: '', position: String(Math.max(0, ...rows.map(q => Number(q.position) || 0)) + 1), points: '1' }])}>+ Thêm câu hỏi</button>
     </fieldset>
     {validation && <p className="qm-feedback qm-error" role="alert">{validation}</p>}

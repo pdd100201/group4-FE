@@ -12,7 +12,7 @@ export function ExpertQuizPage() {
     {rawId === undefined ? <><QuizList /><details className="qm-course-picker"><summary>Tạo quiz · Chọn khóa học</summary><QuizCoursePicker role="expert" /></details></> : courseId === null ? <p role="alert">Mã khóa học không hợp lệ.</p> : <QuizWorkspace key={courseId} courseId={courseId} />}
   </div>
 }
-function QuizWorkspace({ courseId }: { courseId: number }) {
+export function QuizWorkspace({ courseId, embedded = false }: { courseId: number; embedded?: boolean }) {
   const location = useLocation()
   const { course, quizzes, lessons } = useQuizWorkspace(courseId)
   const { remove } = useQuizWrites(courseId)
@@ -35,10 +35,10 @@ function QuizWorkspace({ courseId }: { courseId: number }) {
     try { await remove.mutateAsync(deleting.id); setDeleting(null); setMessage('Đã xóa quiz thành công.') } catch { /* Server error stays visible in the confirmation. */ }
   }
   return <>
-    <Link to="/expert/quizzes">← Chọn khóa học khác</Link>
+    {!embedded && <Link to="/expert/quizzes">← Chọn khóa học khác</Link>}
     {course.isPending && <p role="status">Đang tải khóa học...</p>}
     {course.isError && <QuizError error={course.error} retry={() => { void course.refetch() }} />}
-    {course.data && <><section className="qm-panel qm-course-heading"><div><h2>{course.data.title}</h2><span>{courseStatusLabel(course.data.status)}</span></div>{editable && <Link className="primary-button qm-link-button" to={`/expert/courses/${courseId}/quizzes/new`}>+ Tạo quiz</Link>}</section>
+    {course.data && <><section className="qm-panel qm-course-heading"><div><h2>{embedded ? 'Bài kiểm tra / Quiz' : course.data.title}</h2>{embedded ? <p>Tạo bài kiểm tra cho toàn khóa học hoặc liên kết với bài học đã tạo.</p> : <span>{courseStatusLabel(course.data.status)}</span>}</div><div className="qm-actions">{embedded && <Link to={`/expert/courses/${courseId}/questions`}>Ngân hàng câu hỏi</Link>}{editable && <Link className="primary-button qm-link-button" to={`/expert/courses/${courseId}/quizzes/new`}>+ Tạo quiz</Link>}</div></section>
       {!editable && <p className="qm-feedback">Chỉ được thay đổi quiz khi khóa học ở trạng thái Nháp hoặc Bị từ chối.</p>}
       {message && <p className="qm-feedback qm-success" role="status">{message}</p>}
       <section className="qm-panel"><div className="qm-filters"><label className="qm-grow">Tìm quiz<input value={search} maxLength={200} placeholder="Nhập tên quiz..." onChange={e => updateFilter('q', e.target.value)} /></label><label>Trạng thái<select value={active} onChange={e => updateFilter('active', e.target.value)}><option value="">Tất cả</option><option value="true">Hoạt động</option><option value="false">Không hoạt động</option></select></label></div>
