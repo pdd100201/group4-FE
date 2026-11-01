@@ -21,6 +21,7 @@ export function BlogDetailPage() {
     <p><Link to="/">Trang chủ</Link> / <Link to="/blog">Bài viết</Link> / {post.category}</p>
     <h1>{post.title}</h1><p className="blog-meta">{post.authorName} · {postDate(post.updatedAt)}</p>
     {post.thumbnailUrl && <div className="post-cover"><img src={post.thumbnailUrl} alt={post.title} /></div>}
+    {post.summary && <p className="blog-post-summary">{post.summary}</p>}
     <SafePostContent content={content} /><CommentSection key={id} postId={id} />
   </article><BlogSidebar /></div>
 }

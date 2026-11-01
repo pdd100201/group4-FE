@@ -7,11 +7,15 @@ export interface BlogPost {
 }
 export interface BlogDetail { post: BlogPost; content: string }
 export interface PostFilters { search?: string; category?: string; page?: number; size?: number }
+export type PostSubmissionStatus = 'DRAFT' | 'PENDING_REVIEW' | 'PUBLISHED' | 'REJECTED'
+export interface PostSubmission { post: BlogPost; content: string; published: boolean; status: PostSubmissionStatus }
+export interface PostSubmissionInput { title: string; category: string; summary: string; content: string; thumbnailMediaId: number }
 export interface BlogComment {
   id: number; postId: number; postTitle: string; authorName: string; avatarUrl: string | null; content: string
   status: 'VISIBLE' | 'HIDDEN' | 'DISABLED' | 'DELETED'; createdAt: string | null; updatedAt: string | null
   canEdit: boolean; canDelete: boolean
 }
+export interface NewsletterSubscriptionResponse { message: string }
 export const blogApi = {
   list: async (params: PostFilters): Promise<BlogPage<BlogPost>> => (await apiClient.get<BlogPage<BlogPost>>('/public/posts', { params })).data,
   categories: async (): Promise<string[]> => (await apiClient.get<string[]>('/public/posts/categories')).data,
@@ -21,4 +25,10 @@ export const blogApi = {
   createComment: async (postId: number, content: string): Promise<BlogComment> => (await apiClient.post<BlogComment>(`/student/posts/${postId}/comments`, { content })).data,
   editComment: async (id: number, content: string): Promise<BlogComment> => (await apiClient.put<BlogComment>(`/student/comments/${id}`, { content })).data,
   deleteComment: async (id: number): Promise<void> => { await apiClient.delete(`/comments/${id}`) },
+  subscribeNewsletter: async (email: string): Promise<NewsletterSubscriptionResponse> =>
+    (await apiClient.post<NewsletterSubscriptionResponse>('/public/newsletter/subscriptions', { email })).data,
+  submitPost: async (input: PostSubmissionInput): Promise<PostSubmission> =>
+    (await apiClient.post<PostSubmission>('/posts/submissions', input)).data,
+  myPostSubmissions: async (page = 0, size = 10): Promise<BlogPage<PostSubmission>> =>
+    (await apiClient.get<BlogPage<PostSubmission>>('/posts/submissions/mine', { params: { page, size } })).data,
 }
