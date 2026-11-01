@@ -95,6 +95,8 @@ export function AppRoutes() {
     <Route element={<ProtectedRoute roles={['ROLE_ADMIN']} />}>
       <Route element={<DashboardLayout />}>
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/admin/posts" element={<ManagerPostsPage role="admin" />} />
+        <Route path="/admin/posts/:postId" element={<ManagerPostDetailPage role="admin" />} />
         <Route path="/admin/courses/archived" element={<ArchivedCoursesPage role="admin" />} />
         <Route path="/admin/registrations" element={<ManagementRecordsPage kind="registrations" />} />
         <Route path="/admin/registrations/:id" element={<ManagementRecordDetailPage kind="registrations" />} />

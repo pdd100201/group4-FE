@@ -11,16 +11,20 @@ export interface PostInput {
   thumbnailMediaId: number | null
   published: boolean
 }
-export type ModerationStatus = 'VISIBLE' | 'HIDDEN' | 'DISABLED'
+export type ModerationStatus = 'VISIBLE' | 'HIDDEN'
+export type PostManagementRole = 'manager' | 'admin'
+export const managerPostPageSize = 10
+
+const postsPath = (role: PostManagementRole) => `/${role}/posts`
 
 export const managerPostApi = {
-  list: async (page: number, size = 10) => (await apiClient.get<BlogPage<ManagedPost>>('/manager/posts', { params: { page, size } })).data,
-  detail: async (id: number) => (await apiClient.get<ManagedPost>(`/manager/posts/${id}`)).data,
-  create: async (input: PostInput) => (await apiClient.post<ManagedPost>('/manager/posts', input)).data,
-  update: async (id: number, input: PostInput) => (await apiClient.put<ManagedPost>(`/manager/posts/${id}`, input)).data,
-  review: async (id: number, decision: 'APPROVE' | 'REJECT') => (await apiClient.patch<ManagedPost>(`/manager/posts/${id}/review`, { decision })).data,
-  delete: async (id: number) => { await apiClient.delete(`/manager/posts/${id}`) },
-  moderationComments: async (postId: number, status: ModerationStatus | '', page: number) => (await apiClient.get<BlogPage<BlogComment>>(`/manager/posts/${postId}/comments`, { params: { page, size: 10, ...(status ? { status } : {}) } })).data,
+  list: async (page: number, size = 10, role: PostManagementRole = 'manager') => (await apiClient.get<BlogPage<ManagedPost>>(postsPath(role), { params: { page, size } })).data,
+  detail: async (id: number, role: PostManagementRole = 'manager') => (await apiClient.get<ManagedPost>(`${postsPath(role)}/${id}`)).data,
+  create: async (input: PostInput, role: PostManagementRole = 'manager') => (await apiClient.post<ManagedPost>(postsPath(role), input)).data,
+  update: async (id: number, input: PostInput, role: PostManagementRole = 'manager') => (await apiClient.put<ManagedPost>(`${postsPath(role)}/${id}`, input)).data,
+  review: async (id: number, decision: 'APPROVE' | 'REJECT', role: PostManagementRole = 'manager') => (await apiClient.patch<ManagedPost>(`${postsPath(role)}/${id}/review`, { decision })).data,
+  delete: async (id: number, role: PostManagementRole = 'manager') => { await apiClient.delete(`${postsPath(role)}/${id}`) },
+  moderationComments: async (postId: number, status: ModerationStatus | '', page: number, role: PostManagementRole = 'manager') => (await apiClient.get<BlogPage<BlogComment>>(`${postsPath(role)}/${postId}/comments`, { params: { page, size: 10, ...(status ? { status } : {}) } })).data,
   setCommentStatus: async (id: number, status: ModerationStatus) => (await apiClient.patch<BlogComment>(`/comments/${id}/status`, { status })).data,
   deleteComment: async (id: number) => { await apiClient.delete(`/comments/${id}`) },
 }

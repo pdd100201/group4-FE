@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { blogApi } from '../../features/blog/api/blogApi'
+import { blogApi, type CommentAuthorRole } from '../../features/blog/api/blogApi'
 import { useAuth } from '../context/AuthContext'
 
 export function useBlogComments(postId: number, page: number) {
@@ -16,8 +16,8 @@ export function useCommentActions(postId: number) {
     await client.invalidateQueries({ queryKey: ['post-comments', postId] })
     await client.invalidateQueries({ queryKey: ['post-comment', postId] })
   }
-  const create = useMutation({ mutationFn: (content: string) => blogApi.createComment(postId, content), onSuccess: refresh })
-  const edit = useMutation({ mutationFn: ({ id, content }: { id: number; content: string }) => blogApi.editComment(id, content), onSuccess: refresh })
+  const create = useMutation({ mutationFn: ({ content, role }: { content: string; role: CommentAuthorRole }) => blogApi.createComment(postId, content, role), onSuccess: refresh })
+  const edit = useMutation({ mutationFn: ({ id, content, role }: { id: number; content: string; role: CommentAuthorRole }) => blogApi.editComment(id, content, role), onSuccess: refresh })
   const remove = useMutation({ mutationFn: blogApi.deleteComment, onSuccess: refresh })
   return { create, edit, remove }
 }

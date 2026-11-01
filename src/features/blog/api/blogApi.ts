@@ -15,6 +15,7 @@ export interface BlogComment {
   status: 'VISIBLE' | 'HIDDEN' | 'DISABLED' | 'DELETED'; createdAt: string | null; updatedAt: string | null
   canEdit: boolean; canDelete: boolean
 }
+export type CommentAuthorRole = 'student' | 'expert' | 'manager' | 'admin'
 export interface NewsletterSubscriptionResponse { message: string }
 export const blogApi = {
   list: async (params: PostFilters): Promise<BlogPage<BlogPost>> => (await apiClient.get<BlogPage<BlogPost>>('/public/posts', { params })).data,
@@ -22,8 +23,8 @@ export const blogApi = {
   detail: async (id: number): Promise<BlogDetail> => (await apiClient.get<BlogDetail>(`/public/posts/${id}`)).data,
   comments: async (id: number, page: number): Promise<BlogPage<BlogComment>> => (await apiClient.get<BlogPage<BlogComment>>(`/public/posts/${id}/comments`, { params: { page, size: 10 } })).data,
   comment: async (postId: number, id: number): Promise<BlogComment> => (await apiClient.get<BlogComment>(`/public/posts/${postId}/comments/${id}`)).data,
-  createComment: async (postId: number, content: string): Promise<BlogComment> => (await apiClient.post<BlogComment>(`/student/posts/${postId}/comments`, { content })).data,
-  editComment: async (id: number, content: string): Promise<BlogComment> => (await apiClient.put<BlogComment>(`/student/comments/${id}`, { content })).data,
+  createComment: async (postId: number, content: string, role: CommentAuthorRole): Promise<BlogComment> => (await apiClient.post<BlogComment>(`/${role}/posts/${postId}/comments`, { content })).data,
+  editComment: async (id: number, content: string, role: CommentAuthorRole): Promise<BlogComment> => (await apiClient.put<BlogComment>(`/${role}/comments/${id}`, { content })).data,
   deleteComment: async (id: number): Promise<void> => { await apiClient.delete(`/comments/${id}`) },
   subscribeNewsletter: async (email: string): Promise<NewsletterSubscriptionResponse> =>
     (await apiClient.post<NewsletterSubscriptionResponse>('/public/newsletter/subscriptions', { email })).data,

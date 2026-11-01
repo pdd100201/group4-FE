@@ -2,22 +2,22 @@ import { useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { MediaUpload } from '../../../shared/components/media/MediaUpload'
-import { useManagerPosts } from '../../../shared/hooks/useManagerPosts'
-import { managerPostApi, type ManagedPost, type ModerationStatus, type PostInput } from '../api/managerPostApi'
+import { useManagerPostActions, useManagerPosts } from '../../../shared/hooks/useManagerPosts'
+import { managerPostApi, managerPostPageSize, type ManagedPost, type ModerationStatus, type PostInput, type PostManagementRole } from '../api/managerPostApi'
 import type { BlogComment } from '../../blog/api/blogApi'
 import { courseError } from '../../expert/screens/ExpertCoursesPage'
 import '../../expert/screens/courses.css'
 import './manager-posts.css'
 
 export type Editor = { mode: 'create' } | { mode: 'edit'; post: ManagedPost }
-const managerPostPageSize = 10
-const moderationLabels: Record<ModerationStatus, string> = { VISIBLE: 'Đang hiển thị', HIDDEN: 'Đã ẩn', DISABLED: 'Đã tắt' }
+const moderationLabels: Record<ModerationStatus, string> = { VISIBLE: 'Đang hiển thị', HIDDEN: 'Đã ẩn' }
 const postStatusLabels: Record<ManagedPost['status'], string> = { DRAFT: 'Bản nháp', PENDING_REVIEW: 'Chờ duyệt', PUBLISHED: 'Đã xuất bản', REJECTED: 'Không được duyệt' }
 
-export function ManagerPostsPage() {
+export function ManagerPostsPage({ role = 'manager' }: { role?: PostManagementRole }) {
   const [page, setPage] = useState(0)
   const [editor, setEditor] = useState<Editor | null>(null)
-  const query = useManagerPosts(page, managerPostPageSize)
+  const rootPath = `/${role}/posts`
+  const query = useManagerPosts(page, managerPostPageSize, role)
 
   return <section className="expert-courses manager-posts">
     <header className="course-heading">
@@ -34,7 +34,7 @@ export function ManagerPostsPage() {
           <h2>Bài viết</h2>
           <div className="manager-post-card-list">
             {query.data.content.map((item, index) => <article className="manager-post-card" key={item.post.id}>
-              <Link className="manager-post-card-select" to={`/manager/posts/${item.post.id}`} aria-label={`Mở chi tiết bài viết ${item.post.title}`}>
+              <Link className="manager-post-card-select" to={`${rootPath}/${item.post.id}`} aria-label={`Mở chi tiết bài viết ${item.post.title}`}>
                 {item.post.thumbnailUrl ? <img className="manager-post-card-image" src={item.post.thumbnailUrl} alt="" loading="lazy" /> : <span className="manager-post-card-placeholder">{item.post.category?.slice(0, 3).toUpperCase() || 'BLOG'}</span>}
                 <span className="manager-post-card-content"><span className="manager-post-card-category">{item.post.category || 'Chưa phân loại'}</span><strong>{item.post.title}</strong><span className="manager-post-card-summary">{item.post.summary || 'Chưa có tóm tắt.'}</span><small>{item.post.authorName} · {item.post.updatedAt ? new Date(item.post.updatedAt).toLocaleDateString('vi-VN') : 'Chưa cập nhật'}</small></span>
               </Link>
@@ -46,17 +46,19 @@ export function ManagerPostsPage() {
       <div className="course-pagination"><span>{query.data.totalElements} bài viết · Trang {page + 1}/{Math.max(1, query.data.totalPages)}</span><button disabled={page === 0 || query.isFetching} onClick={() => setPage(current => current - 1)}>Trước</button><button disabled={page + 1 >= query.data.totalPages || query.isFetching} onClick={() => setPage(current => current + 1)}>Sau</button></div>
     </>}
 
-    {editor && <PostEditor key={editor.mode === 'create' ? 'new' : editor.post.post.id} editor={editor} onClose={() => setEditor(null)} />}
+    {editor && <PostEditor key={editor.mode === 'create' ? 'new' : editor.post.post.id} editor={editor} role={role} onClose={() => setEditor(null)} />}
   </section>
 }
 
-export function PostEditor({ editor, onClose }: { editor: Editor; onClose: () => void }) {
-  const actions = useManagerPostActions()
+export function PostEditor({ editor, role = 'manager', onClose }: { editor: Editor; role?: PostManagementRole; onClose: () => void }) {
+  const actions = useManagerPostActions(role)
   const original = editor.mode === 'edit' ? editor.post : undefined
   const [form, setForm] = useState<PostInput>({
     title: original?.post.title ?? '', category: original?.post.category ?? '',
     summary: original?.post.summary ?? '', content: original?.content ?? '',
-    thumbnailMediaId: null, published: original?.published ?? false,
+    // The explicit moderation status is the source of truth. Older API/data
+    // records may have `published: true` while still marked as DRAFT.
+    thumbnailMediaId: null, published: original?.status === 'PUBLISHED',
   })
   const [thumbnailUrl, setThumbnailUrl] = useState(original?.post.thumbnailUrl ?? '')
   const [uploading, setUploading] = useState(false)
@@ -107,17 +109,17 @@ export function PostEditor({ editor, onClose }: { editor: Editor; onClose: () =>
   </div>
 }
 
-export function CommentModerationDialog({ post, onClose }: { post: ManagedPost; onClose: () => void }) {
+export function CommentModerationDialog({ post, role = 'manager', onClose }: { post: ManagedPost; role?: PostManagementRole; onClose: () => void }) {
   const client = useQueryClient()
   const [status, setStatus] = useState<ModerationStatus | ''>('')
   const [page, setPage] = useState(0)
   const query = useQuery({
-    queryKey: ['manager-post-comments', post.post.id, status, page],
-    queryFn: () => managerPostApi.moderationComments(post.post.id, status, page),
+    queryKey: ['manager-post-comments', role, post.post.id, status, page],
+    queryFn: () => managerPostApi.moderationComments(post.post.id, status, page, role),
   })
   const refresh = async () => {
     await Promise.all([
-      client.invalidateQueries({ queryKey: ['manager-post-comments', post.post.id] }),
+      client.invalidateQueries({ queryKey: ['manager-post-comments', role, post.post.id] }),
       client.invalidateQueries({ queryKey: ['post-comments', post.post.id] }),
       client.invalidateQueries({ queryKey: ['post-comment', post.post.id] }),
     ])
@@ -140,10 +142,9 @@ export function CommentModerationDialog({ post, onClose }: { post: ManagedPost; 
   return <div className="course-modal-backdrop manager-post-backdrop" onMouseDown={event => { if (event.target === event.currentTarget && !busy) onClose() }}>
     <section className="course-modal manager-post-editor manager-comment-moderation" role="dialog" aria-modal="true" aria-labelledby="comment-moderation-title">
       <header className="manager-post-editor-heading"><div><h2 id="comment-moderation-title">Kiểm duyệt bình luận</h2><p>{post.post.title}</p></div><button type="button" aria-label="Đóng" disabled={busy} onClick={onClose}>×</button></header>
-      <label className="manager-comment-filter">Lọc trạng thái<select value={status} onChange={event => { setStatus(event.target.value as ModerationStatus | ''); setPage(0) }}><option value="">Tất cả trạng thái</option><option value="VISIBLE">Đang hiển thị</option><option value="HIDDEN">Đã ẩn</option><option value="DISABLED">Đã tắt</option></select></label>
+      <label className="manager-comment-filter">Lọc trạng thái<select value={status} onChange={event => { setStatus(event.target.value as ModerationStatus | ''); setPage(0) }}><option value="">Tất cả trạng thái</option><option value="VISIBLE">Hiển thị</option><option value="HIDDEN">Ẩn</option></select></label>
       {(updateStatus.isError || remove.isError) && <p role="alert" className="course-error">{courseError(updateStatus.error ?? remove.error)}</p>}
       {query.isPending ? <p role="status">Đang tải bình luận…</p> : query.isError ? <div role="alert" className="course-error"><p>{courseError(query.error)}</p><button onClick={() => void query.refetch()}>Thử lại</button></div> : <>
-        <p className="manager-comment-count">{query.data.totalElements} bình luận cần kiểm duyệt</p>
         <div className="manager-comment-list">{query.data.content.map(comment => <ModerationCommentRow key={comment.id} comment={comment} busy={busy} onStatus={async next => { try { await updateStatus.mutateAsync({ id: comment.id, next }) } catch { /* Error is displayed above the list. */ } }} onDelete={() => void deleteComment(comment)} />)}</div>
         {!query.data.content.length && <p className="manager-post-empty">Không có bình luận ở trạng thái này.</p>}
         <div className="course-pagination"><span>Trang {page + 1}/{Math.max(1, query.data.totalPages)}</span><button disabled={page === 0 || query.isFetching || busy} onClick={() => setPage(current => current - 1)}>Trước</button><button disabled={page + 1 >= query.data.totalPages || query.isFetching || busy} onClick={() => setPage(current => current + 1)}>Sau</button></div>
@@ -153,10 +154,11 @@ export function CommentModerationDialog({ post, onClose }: { post: ManagedPost; 
 }
 
 function ModerationCommentRow({ comment, busy, onStatus, onDelete }: { comment: BlogComment; busy: boolean; onStatus: (status: ModerationStatus) => Promise<void>; onDelete: () => void }) {
-  const current = comment.status === 'DELETED' ? 'VISIBLE' : comment.status
+  // DISABLED is kept in stored data for compatibility, but is now presented as hidden.
+  const current: ModerationStatus = comment.status === 'VISIBLE' ? 'VISIBLE' : 'HIDDEN'
   const [nextStatus, setNextStatus] = useState<ModerationStatus>(current)
   return <article className="manager-comment-row">
-    <div className="manager-comment-body"><div><b>{comment.authorName}</b><small>{comment.createdAt ? new Date(comment.createdAt).toLocaleString('vi-VN') : '—'} · #{comment.id}</small></div><span className={`course-status manager-comment-status status-${comment.status.toLowerCase()}`}>{moderationLabels[current]}</span><p>{comment.content}</p></div>
-    <div className="manager-comment-actions"><label><span className="sr-only">Trạng thái bình luận</span><select value={nextStatus} disabled={busy} onChange={event => setNextStatus(event.target.value as ModerationStatus)}><option value="VISIBLE">Hiển thị</option><option value="HIDDEN">Ẩn</option><option value="DISABLED">Tắt</option></select></label><button disabled={busy || nextStatus === current} onClick={() => void onStatus(nextStatus)}>Lưu trạng thái</button><button className="course-danger" disabled={busy} onClick={onDelete}>Gỡ bình luận</button></div>
+    <div className="manager-comment-body"><div><b>{comment.authorName}</b><small>{comment.createdAt ? new Date(comment.createdAt).toLocaleString('vi-VN') : '—'}</small></div><span className={`course-status manager-comment-status status-${current.toLowerCase()}`}>{moderationLabels[current]}</span><p>{comment.content}</p></div>
+    <div className="manager-comment-actions"><label><span className="sr-only">Trạng thái bình luận</span><select value={nextStatus} disabled={busy} onChange={event => setNextStatus(event.target.value as ModerationStatus)}><option value="VISIBLE">Hiển thị</option><option value="HIDDEN">Ẩn</option></select></label><button disabled={busy || nextStatus === current} onClick={() => void onStatus(nextStatus)}>Lưu trạng thái</button><button className="course-danger" disabled={busy} onClick={onDelete}>Gỡ bình luận</button></div>
   </article>
 }

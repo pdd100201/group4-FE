@@ -74,3 +74,18 @@
 @media(max-width:760px){.blog-showcase-list-only .blog-showcase-list-body{grid-template-columns:1fr}.blog-showcase-list-only .blog-showcase-cards{grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr))}}
 @media(max-width:760px){.blog-showcase-list-only .blog-showcase-list-header h1{font-size:22px}.blog-showcase-list-only .blog-showcase-list-header>p{font-size:12px}}
 @media(max-width:520px){.blog-showcase-list-only .blog-showcase-list-body{grid-template-columns:1fr}.blog-showcase-list-only .blog-showcase-sidebar{display:grid;grid-template-columns:1fr 1fr}.blog-showcase-list-only .showcase-newsletter{grid-column:1/-1}.blog-showcase-list-only .showcase-card-cover{height:125px}}
+
+/* Keep public and manager comment areas comfortably readable. */
+.showcase-comments h3{font-size:16px}
+.showcase-comment-composer textarea{font-size:13px!important;line-height:1.5}
+.showcase-comment-composer button{font-size:11px}
+.showcase-real-comment-composer>button{display:inline-flex;align-items:center;justify-content:center;gap:5px;line-height:1;font-family:inherit;text-align:center;white-space:nowrap}
+.showcase-real-comment-composer>button>span{display:inline-flex;align-items:center;line-height:1}
+.showcase-real-comment-composer>small{font-size:10px}
+.showcase-comment>div>b{font-size:12px}
+.showcase-comment>div>small{font-size:10px}
+.showcase-comment>div>p{font-size:13px;line-height:1.6}
+.showcase-comment-actions button{font-size:10px}
+.showcase-comment form textarea{font-size:12px}
+.showcase-comment form button{font-size:10px}
+.showcase-comments>[role=status],.showcase-comments>[role=alert]{font-size:11px}
