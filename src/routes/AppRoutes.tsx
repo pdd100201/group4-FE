@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router-dom'
+import { ChatPage } from '../features/chat/screens/ChatPage'
 import { ProtectedRoute } from '../shared/components/auth/ProtectedRoute'
 import { DashboardLayout, ExpertLayout, ProfileLayout, PublicLayout, StudentLayout } from '../shared/components/layout/Layouts'
 import { HomePage } from '../features/home/screens/HomePage'
@@ -55,6 +56,7 @@ export function AppRoutes() {
     <Route path="/reset-password" element={<ResetPasswordPage />} />
     <Route path="/verify-email" element={<VerifyEmailPage />} />
     <Route element={<ProtectedRoute />}>
+      <Route element={<ProfileLayout />}><Route path="/chat" element={<ChatPage />} /></Route>
       <Route element={<ProfileLayout />}><Route path="/profile" element={<ProfilePage />} /></Route>
     </Route>
     <Route element={<ProtectedRoute roles={['ROLE_STUDENT']} />}>
