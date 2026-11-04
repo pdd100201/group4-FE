@@ -1,3 +1,4 @@
+import { NotificationBell } from '../../../features/notifications/components/NotificationCenter'
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
@@ -20,7 +21,7 @@ export function PublicLayout() {
   const [menuOpen, setMenuOpen] = useState(false)
   useEffect(() => setMenuOpen(false), [location.pathname])
   return <div className="public-layout"><header className={`public-header ${menuOpen ? 'menu-open' : ''}`}><Logo/><button className="nav-toggle" aria-label="Mở menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(value => !value)}><span/><span/><span/></button><nav><NavLink to="/" end>Trang chủ</NavLink><NavLink to="/courses">Khóa học</NavLink><NavLink to="/blog">Bài viết</NavLink><NavLink to="/about">Về chúng tôi</NavLink></nav>
-    <div className="header-actions">{user ? <><Link to="/chat">Trò chuyện</Link><Link to={user.roles.includes('ROLE_STUDENT') ? '/student/courses' : landingRoute(user)}>Không gian của tôi</Link><LogoutButton /></> : <><Link to="/login">Đăng nhập</Link><Link className="primary-button small" to="/register">Đăng ký</Link></>}</div>
+    <div className="header-actions">{user ? <><NotificationBell /><Link to="/chat">Trò chuyện</Link><Link to={user.roles.includes('ROLE_STUDENT') ? '/student/courses' : landingRoute(user)}>Không gian của tôi</Link><LogoutButton /></> : <><Link to="/login">Đăng nhập</Link><Link className="primary-button small" to="/register">Đăng ký</Link></>}</div>
   </header><main><Outlet/></main><footer id="about"><Logo/><p>Nền tảng học tập & ôn luyện kiến thức trực tuyến hiện đại.</p><div><b>LIÊN HỆ</b><p>Email: hotro@edulearn.vn · Hotline: 1900 6688</p></div><div><b>KẾT NỐI VỚI CHÚNG TÔI</b><p>© 2026 EduLearn. Bảo lưu mọi quyền.</p></div></footer></div>
 }
 
@@ -29,7 +30,7 @@ const SideLink = ({ to, children, end = false }: { to: string; children: React.R
 function Topbar({ onMenu }: { onMenu: () => void }) {
   const { user } = useAuth()
   const roleLabel = user?.roles.includes('ROLE_ADMIN') ? 'Quản trị viên' : user?.roles.includes('ROLE_MANAGER') ? 'Quản lý' : user?.roles.includes('ROLE_EXPERT') ? 'Chuyên gia' : 'Học viên'
-  return <header className="topbar"><button className="sidebar-toggle" aria-label="Mở thanh điều hướng" onClick={onMenu}>☰</button><label><span>⌕</span><input placeholder="Tìm kiếm nhanh..."/></label><span className="topbar-spacer" />{user && <div className="topbar-profile">{user.avatarUrl ? <img className="avatar" src={user.avatarUrl} alt="Ảnh đại diện" /> : <span className="avatar">{user.fullName?.[0]?.toUpperCase() ?? user.email?.[0]?.toUpperCase() ?? 'U'}</span>}<div><b>{user.fullName || user.email}</b><small>{roleLabel}</small></div></div>}</header>
+  return <header className="topbar"><button className="sidebar-toggle" aria-label="Mở thanh điều hướng" onClick={onMenu}>☰</button><label><span>⌕</span><input placeholder="Tìm kiếm nhanh..."/></label><span className="topbar-spacer" /><NotificationBell />{user && <div className="topbar-profile">{user.avatarUrl ? <img className="avatar" src={user.avatarUrl} alt="Ảnh đại diện" /> : <span className="avatar">{user.fullName?.[0]?.toUpperCase() ?? user.email?.[0]?.toUpperCase() ?? 'U'}</span>}<div><b>{user.fullName || user.email}</b><small>{roleLabel}</small></div></div>}</header>
 }
 
 function AppFrame({ children, admin = false }: { children: ReactNode; admin?: boolean }) {
@@ -47,28 +48,28 @@ export function StudentLayout() {
   const { pathname } = useLocation()
   const { user } = useAuth()
   if (/^\/student\/courses\/[^/]+\/(learn|lessons)(\/|$)/.test(pathname)) return <Outlet />
-  if (pathname === '/student/courses' || /^\/student\/(quizzes|quiz-attempts)\//.test(pathname)) {
+  if (pathname === '/student/courses' || pathname === '/certificates' || /^\/student\/(quizzes|quiz-attempts)\//.test(pathname)) {
     return <div className="student-portal"><header className="student-portal-header"><Logo />
-      <nav aria-label="Điều hướng học viên"><NavLink to="/courses">Khám phá</NavLink><NavLink to="/student/courses">Khóa học của tôi</NavLink><NavLink to="/student/registrations">Đăng ký của tôi</NavLink><NavLink to="/chat">Trò chuyện</NavLink></nav>
-      <Link className="student-portal-profile" to="/profile"><span className="student-avatar">{user?.fullName?.[0] ?? 'H'}</span><span><b>{user?.fullName || user?.email}</b><small>Học viên</small></span></Link>
-    </header><Outlet /><div className="student-portal-footer">© 2026 EduLearn. Nền tảng học tập và đánh giá trực tuyến.</div></div>
+      <nav aria-label="Điều hướng học viên"><NavLink to="/courses">Khám phá</NavLink><NavLink to="/student/courses">Khóa học của tôi</NavLink><NavLink to="/student/registrations">Đăng ký của tôi</NavLink><NavLink to="/certificates">Chứng nhận</NavLink><NavLink to="/chat">Trò chuyện</NavLink></nav>
+      <div className="student-portal-notification-profile"><NotificationBell /><Link className="student-portal-profile" to="/profile"><span className="student-avatar">{user?.fullName?.[0] ?? 'H'}</span><span><b>{user?.fullName || user?.email}</b><small>Học viên</small></span></Link>
+    </div></header><Outlet /><div className="student-portal-footer">© 2026 EduLearn. Nền tảng học tập và đánh giá trực tuyến.</div></div>
   }
-  return <AppFrame><p className="side-label">HỌC TẬP</p><SideLink to="/student/courses" end>▣ Khóa học của tôi</SideLink><SideLink to="/student/registrations">▤ Đăng ký của tôi</SideLink><p className="side-label">TÀI KHOẢN</p><SideLink to="/chat">Trò chuyện</SideLink><SideLink to="/profile">Hồ sơ cá nhân</SideLink></AppFrame>
+  return <AppFrame><p className="side-label">HỌC TẬP</p><SideLink to="/student/courses" end>▣ Khóa học của tôi</SideLink><SideLink to="/certificates">Chứng nhận</SideLink><SideLink to="/student/registrations">▤ Đăng ký của tôi</SideLink><p className="side-label">TÀI KHOẢN</p><SideLink to="/chat">Trò chuyện</SideLink><SideLink to="/notifications">Thông báo</SideLink><SideLink to="/profile">Hồ sơ cá nhân</SideLink></AppFrame>
 }
 
 export function ExpertLayout() {
-  return <AppFrame><p className="side-label">GIẢNG DẠY</p><SideLink to="/expert/courses">▣ Quản lý khóa học</SideLink><SideLink to="/expert/questions">▤ Ngân hàng câu hỏi</SideLink><SideLink to="/expert/quizzes">◫ Quản lý bài kiểm tra</SideLink><p className="side-label">TÀI KHOẢN</p><SideLink to="/chat">Trò chuyện</SideLink><SideLink to="/profile">Hồ sơ cá nhân</SideLink></AppFrame>
+  return <AppFrame><p className="side-label">GIẢNG DẠY</p><SideLink to="/expert/courses">▣ Quản lý khóa học</SideLink><SideLink to="/expert/discussions">Hỏi đáp bài học</SideLink><SideLink to="/expert/questions">▤ Ngân hàng câu hỏi</SideLink><SideLink to="/expert/quizzes">◫ Quản lý bài kiểm tra</SideLink><p className="side-label">TÀI KHOẢN</p><SideLink to="/chat">Trò chuyện</SideLink><SideLink to="/notifications">Thông báo</SideLink><SideLink to="/profile">Hồ sơ cá nhân</SideLink></AppFrame>
 }
 
 export function DashboardLayout() {
   const { user } = useAuth()
   const admin = Boolean(user?.roles.includes('ROLE_ADMIN'))
   return <AppFrame admin={admin}>
-    <SideLink to={admin ? '/admin/courses/archived' : '/manager/courses/archived'}>▣ Trạng thái khóa học</SideLink>
+    <SideLink to={admin ? '/admin/certificates' : '/manager/certificates'}>Chứng nhận</SideLink><SideLink to={admin ? '/admin/discussions' : '/manager/discussions'}>Hỏi đáp bài học</SideLink><SideLink to={admin ? '/admin/courses/archived' : '/manager/courses/archived'}>▣ Trạng thái khóa học</SideLink>
     {admin ? <><p className="side-label">TỔNG QUAN HỆ THỐNG</p><SideLink to="/dashboard">▥ Bảng điều khiển</SideLink><SideLink to="/admin/registrations">▧ Quản lý Đăng ký</SideLink><SideLink to="/admin/transactions">▣ Giao dịch & Dòng tiền</SideLink><SideLink to="/admin/reports">◫ Báo cáo & Xuất dữ liệu</SideLink><p className="side-label">QUẢN TRỊ NGƯỜI DÙNG</p><SideLink to="/admin/accounts">♟ Tài khoản & Phân quyền</SideLink></>
       : <><p className="side-label">QUẢN LÝ</p><SideLink to="/manager/courses/review">▤ Duyệt khóa học</SideLink><SideLink to="/manager/registrations">▧ Quản lý Đăng ký</SideLink><SideLink to="/manager/transactions">▣ Giao dịch & Dòng tiền</SideLink><SideLink to="/manager/posts">▤ Quản lý bài viết</SideLink></>}
     {!admin && <SideLink to="/manager/courses/review/quizzes">◫ Xem trước bài kiểm tra</SideLink>}
-    <p className="side-label">TÀI KHOẢN</p><SideLink to="/chat">Trò chuyện</SideLink><SideLink to="/profile">Hồ sơ cá nhân</SideLink>
+    <p className="side-label">TÀI KHOẢN</p><SideLink to="/chat">Trò chuyện</SideLink><SideLink to="/notifications">Thông báo</SideLink><SideLink to="/profile">Hồ sơ cá nhân</SideLink>
   </AppFrame>
 }
 

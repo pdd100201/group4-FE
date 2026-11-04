@@ -6,8 +6,8 @@ import type { QuizPage, QuestionPage } from '../../../shared/types/quiz'
 const base = (courseId: number) => `/expert/courses/${courseId}/quizzes`
 export const quizService = {
   search: async (params: URLSearchParams): Promise<QuizPage> => (await apiClient.get<QuizPage>('/expert/quizzes', { params })).data,
-  questionBank: async (courseId: number, search: string, page: number): Promise<QuestionPage> =>
-    (await apiClient.get<QuestionPage>(`${base(courseId)}/question-bank`, { params: { search, page, size: 20 } })).data,
+  questionBank: async (courseId: number, search: string, page: number, lessonId?: number): Promise<QuestionPage> =>
+    (await apiClient.get<QuestionPage>(`${base(courseId)}/question-bank`, { params: { search, page, size: 20, lessonId } })).data,
   courses: async (role: 'expert' | 'manager', search: string, page: number): Promise<CoursePage> =>
     (await apiClient.get<CoursePage>(`/${role}/courses`, { params: { search, page, size: 10, ...(role === 'manager' ? { status: 'PENDING_REVIEW' } : {}) } })).data,
   course: async (id: number): Promise<QuizCourse> => (await apiClient.get<QuizCourse>(`/expert/courses/${id}`)).data,

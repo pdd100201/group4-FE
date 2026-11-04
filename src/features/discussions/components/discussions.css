@@ -1,0 +1,208 @@
+/* Component-scoped tokens keep the staff workspace and lesson player consistent. */
+.lesson-discussions {
+ --qa-text: #172b4d;
+ --qa-muted: #64748b;
+ --qa-border: #e2e8f0;
+ --qa-primary: #2563eb;
+ --qa-primary-hover: #1d4ed8;
+ --qa-radius: 14px;
+ width: 100%;
+ max-width: 1080px;
+ margin: 0 auto;
+ color: var(--qa-text);
+ font-size: 14px;
+ line-height: 1.6;
+}
+.lesson-discussions *, .lesson-discussions *::before, .lesson-discussions *::after { box-sizing: border-box; }
+.discussion-management { padding: clamp(20px, 3vw, 40px); }
+.lesson-discussions .discussion-page-heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin: 0 0 28px; }
+.discussion-heading-copy { min-width: 0; }
+.lesson-discussions .discussion-eyebrow { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 8px; color: #45658f; font-size: 11px; font-weight: 700; letter-spacing: .09em; }
+.lesson-discussions .discussion-page-heading h1, .lesson-discussions .discussion-page-heading h2 { color: #172b4d; font-size: clamp(23px, 2.2vw, 28px); line-height: 1.3; font-weight: 750; letter-spacing: -.6px; margin: 0; }
+.lesson-discussions .discussion-page-heading p { max-width: 66ch; margin: 9px 0 0; font-size: 14px; color: var(--qa-muted); }
+.lesson-discussions .discussion-scope { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; color: #49617f; border: 1px solid #dde6f2; background: #fff; border-radius: 8px; padding: 9px 12px; font-size: 12px; }
+.lesson-discussions .discussion-toolbar { background: #fff; border: 1px solid var(--qa-border); border-radius: 12px; padding: 16px; }
+.lesson-discussions .discussion-search { display: flex; align-items: stretch; gap: 12px; margin: 0; }
+.lesson-discussions .discussion-search-field { display: flex; flex: 1; align-items: center; gap: 10px; min-width: 0; background: #f8fafc; border: 1px solid #dbe3ee; border-radius: 8px; padding: 0 12px; color: #7c8ba1; }
+.lesson-discussions .discussion-search-field:focus-within { border-color: #2563eb; outline: 3px solid #dbeafe; }
+.lesson-discussions .discussion-search-field input { flex: 1; width: 100%; min-width: 0; min-height: 44px; padding: 10px 0; font: inherit; font-size: 14px; border: 0; outline: 0; color: var(--qa-text); background: transparent; box-shadow: none; }
+.lesson-discussions .discussion-search-field svg { flex-shrink: 0; }
+.lesson-discussions input::placeholder, .lesson-discussions textarea::placeholder { color: #7b8a9e; opacity: 1; }
+.lesson-discussions .discussion-toolbar-bottom { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; }
+.lesson-discussions .discussion-filter-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.lesson-discussions button { font-family: inherit; font-size: 13px; font-weight: 600; line-height: 1.45; letter-spacing: 0; cursor: pointer; transition: background-color .15s, border-color .15s, color .15s; }
+.lesson-discussions .discussion-filter-tabs button { min-height: 38px; padding: 8px 13px; border: 1px solid transparent; border-radius: 7px; background: transparent; color: #52637b; white-space: nowrap; }
+.lesson-discussions .discussion-filter-tabs button:hover { color: #1d4ed8; background: #f1f5f9; }
+.lesson-discussions .discussion-filter-tabs button[aria-pressed=true] { background: #eff6ff; border-color: #dbeafe; color: #1d4ed8; }
+.lesson-discussions .discussion-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 10px 16px; border: 1px solid transparent; border-radius: 8px; text-align: center; white-space: nowrap; text-decoration: none; }
+.lesson-discussions .discussion-button-primary { background: var(--qa-primary); border-color: var(--qa-primary); color: #fff; box-shadow: 0 1px 2px #172b4d0d; }
+.lesson-discussions .discussion-button-primary:hover:not(:disabled) { background: var(--qa-primary-hover); border-color: var(--qa-primary-hover); }
+.lesson-discussions .discussion-button-secondary { background: #fff; border-color: #dbe3ee; color: #425875; }
+.lesson-discussions .discussion-button-secondary:hover:not(:disabled) { border-color: #b4c7e6; background: #f8fafc; }
+.lesson-discussions button:disabled { cursor: not-allowed; box-shadow: none; }
+.lesson-discussions .discussion-button-primary:disabled { background: #e8edf5; color: #66778e; border-color: #e8edf5; opacity: 1; }
+.lesson-discussions .discussion-button-secondary:disabled, .lesson-discussions .discussion-text-button:disabled { color: #94a3b8; opacity: .65; }
+.lesson-discussions .discussion-text-button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; border: 0; border-radius: 6px; padding: 7px 8px; color: #42618a; background: transparent; font-size: 12px; }
+.lesson-discussions .discussion-text-button:hover:not(:disabled) { color: #1d4ed8; background: #eff6ff; }
+.lesson-discussions :is(button, input, textarea):focus-visible { outline: 3px solid #93c5fd; outline-offset: 3px; }
+.lesson-discussions .discussion-search-field input:focus-visible { outline: none; }
+.lesson-discussions .discussion-results-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 20px 0 12px; }
+.lesson-discussions .discussion-results-heading p { margin: 0; color: var(--qa-muted); font-size: 13px; overflow-wrap: anywhere; }
+.lesson-discussions .discussion-results-heading strong { color: var(--qa-text); font-weight: 700; }
+.lesson-discussions .discussion-results-heading button { flex-shrink: 0; }
+.discussion-list { display: grid; gap: 20px; }
+.lesson-discussions .discussion-thread { margin: 0; border: 1px solid #dfe6f0; background: #fff; border-radius: var(--qa-radius); box-shadow: 0 2px 6px #172b4d03; overflow: hidden; min-width: 0; }
+.lesson-discussions .discussion-thread-hidden { border-style: dashed; }
+.discussion-question { padding: 24px 26px 20px; }
+.discussion-thread-heading, .discussion-answer-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.discussion-author { display: flex; align-items: center; gap: 11px; min-width: 0; }
+.lesson-discussions .discussion-avatar { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 36px; width: 36px; height: 36px; border-radius: 50%; background: #eef2ff; color: #5266a6; font-size: 12px; font-weight: 750; user-select: none; }
+.lesson-discussions .discussion-avatar-expert { color: #1d4ed8; background: #dbeafe; }
+.discussion-author > div { min-width: 0; }
+.lesson-discussions .discussion-author b { display: block; color: #263c5a; font-size: 13px; font-weight: 650; line-height: 1.55; overflow-wrap: anywhere; }
+.lesson-discussions .discussion-author > div > span, .lesson-discussions .discussion-author time { color: #6b7b91; font-size: 12px; line-height: 1.5; }
+.lesson-discussions .discussion-status { display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex-shrink: 0; border-radius: 20px; padding: 5px 10px; font-size: 11px; line-height: 1.5; font-weight: 650; white-space: nowrap; }
+.lesson-discussions .discussion-status svg { width: 14px; height: 14px; }
+.discussion-status-dot { height: 5px; width: 5px; background: currentColor; border-radius: 50%; }
+.lesson-discussions .discussion-status-open { background: #fff7ed; color: #9a4d0a; }
+.lesson-discussions .discussion-status-resolved { background: #ecfdf5; color: #087955; }
+.lesson-discussions .discussion-status-hidden { background: #f1f5f9; color: #52637b; }
+.discussion-question-content { padding-left: 47px; margin-top: 16px; }
+.lesson-discussions .discussion-context { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-bottom: 9px; color: #61738d; font-size: 11px; line-height: 1.5; }
+.discussion-context svg { width: 14px; height: 14px; flex-shrink: 0; }
+.discussion-context span { overflow-wrap: anywhere; }
+.lesson-discussions .discussion-question h3 { margin: 0 0 9px; color: #172b4d; font-size: 17px; font-weight: 700; line-height: 1.5; letter-spacing: -.2px; overflow-wrap: anywhere; }
+.lesson-discussions .discussion-body { max-width: 80ch; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; line-height: 1.8; color: #334760; margin: 0; }
+.discussion-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; }
+.lesson-discussions .discussion-responses { border-top: 1px solid #edf1f6; padding: 20px 26px 24px; }
+.lesson-discussions .discussion-replies-heading { display: flex; align-items: center; gap: 8px; margin: 0 0 16px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: #60738d; font-weight: 700; }
+.discussion-replies-heading > span { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 5px; font-size: 11px; border-radius: 5px; background: #edf2f7; color: #52637b; }
+.lesson-discussions .discussion-answer { border: 0; border-left: 2px solid #e5ebf4; padding: 0 0 0 16px; margin: 0 0 24px 17px; }
+.lesson-discussions .discussion-answer:last-of-type { margin-bottom: 16px; }
+.lesson-discussions .discussion-answer-accepted { border-left-color: #16a574; }
+.lesson-discussions .discussion-answer .discussion-avatar { flex-basis: 30px; height: 30px; width: 30px; font-size: 11px; }
+.lesson-discussions .discussion-answer .discussion-body { margin: 11px 0 0 41px; }
+.discussion-answer .discussion-controls { margin-left: 33px; }
+.lesson-discussions .discussion-expert-label { display: inline-block; margin-left: 6px; color: #1d4ed8; font-size: 10px; font-weight: 600; background: #eff6ff; border-radius: 4px; padding: 1px 5px; }
+.lesson-discussions .discussion-accepted-label { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: #087955; flex-shrink: 0; }
+.discussion-accepted-label svg { height: 14px; width: 14px; }
+.lesson-discussions .discussion-awaiting { display: flex; align-items: center; gap: 9px; margin: 0 0 0 47px; color: #677b95; font-size: 13px; }
+.discussion-awaiting svg { height: 16px; width: 16px; flex-shrink: 0; }
+.lesson-discussions .discussion-reply-form { padding: 16px; border: 0; border-radius: 10px; margin: 8px 0 0 47px; background: #f7f9fc; }
+.discussion-reply-heading { display: flex; align-items: center; gap: 8px; color: #526a8c; margin-bottom: 10px; }
+.lesson-discussions .discussion-reply-heading label { font-size: 12px; font-weight: 650; margin: 0; color: #334c6c; }
+.lesson-discussions textarea, .lesson-discussions .discussion-ask-form > input { display: block; width: 100%; max-width: 100%; min-width: 0; padding: 11px 13px; font: inherit; font-size: 14px; line-height: 1.7; color: var(--qa-text); background: #fff; border: 1px solid #d5dfec; border-radius: 8px; box-shadow: 0 1px 2px #172b4d03; }
+.lesson-discussions textarea { resize: vertical; min-height: 100px; }
+.lesson-discussions textarea:hover, .lesson-discussions .discussion-ask-form > input:hover { border-color: #b6c7e0; }
+.lesson-discussions :is(textarea, .discussion-ask-form > input):focus { outline: 3px solid #dbeafe; outline-offset: 0; border-color: #2563eb; }
+.lesson-discussions textarea:disabled, .lesson-discussions input:disabled { background: #f1f5f9; color: #64748b; cursor: wait; }
+.discussion-compose-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+.lesson-discussions .discussion-input-hint { color: #687b93; font-size: 11px; line-height: 1.5; }
+.discussion-shortcut { color: #6d7c90; }
+.lesson-discussions .discussion-error { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border-radius: 8px; background: #fff1f2; color: #a1213b; font-size: 13px; margin-top: 12px; }
+.lesson-discussions .discussion-error p { margin: 0; max-width: 80ch; overflow-wrap: anywhere; color: inherit; }
+.lesson-discussions .discussion-success { display: flex; align-items: center; gap: 8px; color: #087955; font-size: 12px; margin: 14px 0 0; }
+.discussion-thread-feedback { padding: 0 26px 20px; }
+.lesson-discussions .discussion-muted { color: var(--qa-muted); font-size: 13px; margin: 0; }
+.lesson-discussions .discussion-pagination { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 24px 0 0; color: #67768b; font-size: 12px; }
+.discussion-responses .discussion-pagination { margin: 18px 0; }
+.lesson-discussions .discussion-ask-form { margin: 0 0 24px; padding: 22px 24px; background: #fff; border: 1px solid var(--qa-border); border-radius: var(--qa-radius); }
+.lesson-discussions .discussion-form-heading h3 { font-size: 16px; color: #263c5a; margin: 0; font-weight: 700; }
+.lesson-discussions .discussion-form-heading p { font-size: 13px; color: var(--qa-muted); margin: 5px 0 18px; }
+.lesson-discussions .discussion-ask-form > label { display: block; font-size: 13px; font-weight: 650; margin: 16px 0 7px; color: #3a506e; }
+.discussion-ask-form > label > span { color: #a1213b; }
+.lesson-discussions .discussion-empty { padding: 40px 20px; border: 1px dashed #d4deec; border-radius: var(--qa-radius); background: #fff; text-align: center; }
+.discussion-empty-icon { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; margin-bottom: 12px; border-radius: 14px; color: #6784ad; background: #eff4fb; }
+.discussion-empty-icon svg { width: 24px; height: 24px; }
+.lesson-discussions .discussion-empty h3 { margin: 0 0 6px; color: #334c6c; font-size: 16px; }
+.lesson-discussions .discussion-empty p { margin: 0 auto 16px; max-width: 52ch; color: var(--qa-muted); font-size: 13px; }
+.discussion-loading { padding: 28px; border: 1px solid var(--qa-border); border-radius: var(--qa-radius); background: #fff; }
+.discussion-skeleton { display: block; width: 90%; height: 12px; background: #edf2f7; margin-bottom: 16px; border-radius: 5px; }
+.discussion-skeleton-title { width: 40%; height: 20px; }
+.discussion-skeleton-short { width: 65%; margin-bottom: 0; }
+.discussion-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.discussion-spinning { animation: discussion-spin 1s linear infinite; }
+@keyframes discussion-spin { to { transform: rotate(360deg); } }
+@media (max-width: 900px) {
+ .lesson-discussions .discussion-scope { display: none; }
+ .discussion-question { padding: 20px; }
+ .lesson-discussions .discussion-responses { padding: 18px 20px 20px; }
+ .lesson-discussions .discussion-reply-form { margin-left: 0; }
+ .discussion-shortcut { display: none; }
+}
+@media (max-width: 600px) {
+ .discussion-management { padding: 20px 14px; }
+ .lesson-discussions .discussion-page-heading { margin-bottom: 20px; }
+ .lesson-discussions .discussion-page-heading p { font-size: 13px; }
+ .lesson-discussions .discussion-toolbar { padding: 12px; }
+ .lesson-discussions .discussion-search { gap: 8px; }
+ .lesson-discussions .discussion-search-field { padding: 0 9px; gap: 7px; }
+ .lesson-discussions .discussion-search-field input { font-size: 13px; }
+ .lesson-discussions .discussion-search > button { padding-inline: 12px; }
+ .lesson-discussions .discussion-toolbar-bottom { display: block; margin-top: 10px; }
+ .lesson-discussions .discussion-filter-tabs { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 4px; }
+ .lesson-discussions .discussion-filter-tabs button { padding: 8px 6px; min-height: 44px; font-size: 12px; }
+ .discussion-list { gap: 14px; }
+ .discussion-question { padding: 16px; }
+ .discussion-thread-heading { flex-wrap: wrap; gap: 12px; }
+ .discussion-question-content { padding-left: 0; margin-top: 16px; }
+ .lesson-discussions .discussion-question h3 { font-size: 16px; }
+ .lesson-discussions .discussion-responses { padding: 16px; }
+ .lesson-discussions .discussion-answer { margin-left: 0; padding-left: 12px; }
+ .discussion-answer-heading { flex-wrap: wrap; gap: 8px; }
+ .lesson-discussions .discussion-answer .discussion-body { margin-left: 0; }
+ .discussion-answer .discussion-controls { margin-left: 0; }
+ .lesson-discussions .discussion-awaiting { margin-left: 0; align-items: flex-start; }
+ .lesson-discussions .discussion-ask-form { padding: 16px; }
+ .lesson-discussions .discussion-reply-form { padding: 12px; }
+ .lesson-discussions .discussion-compose-footer { flex-wrap: wrap; }
+ .discussion-compose-footer > .discussion-button { margin-left: auto; }
+ .lesson-discussions .discussion-text-button { min-height: 44px; }
+ .discussion-thread-feedback { padding: 0 16px 16px; }
+ .lesson-discussions .discussion-pagination { gap: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+ .lesson-discussions button { transition: none; }
+ .discussion-spinning { animation: none; }
+}
+
+/* List/detail navigation: only the selected question fetches and renders replies. */
+.lesson-discussions .discussion-question-list { display: grid; border: 1px solid #dfe6f0; border-radius: 12px; background: #fff; overflow: hidden; }
+.lesson-discussions .discussion-question-row { display: grid; grid-template-columns: 36px minmax(0,1fr) auto; align-items: start; gap: 14px; min-width: 0; padding: 18px 22px; color: inherit; text-decoration: none; border-bottom: 1px solid #e8edf4; transition: background-color .15s; }
+.lesson-discussions .discussion-question-row:last-child { border-bottom: 0; }
+.lesson-discussions .discussion-question-row:hover { background: #f8faff; }
+.lesson-discussions .discussion-question-row:focus-visible { outline: 3px solid #93c5fd; outline-offset: -3px; background: #f8faff; }
+.discussion-row-content { flex: 1; min-width: 0; }
+.discussion-row-title { min-width: 0; }
+.lesson-discussions .discussion-row-title h3 { margin: 0; color: #243c5d; font-size: 16px; line-height: 1.5; font-weight: 700; overflow-wrap: anywhere; }
+.lesson-discussions .discussion-row-preview { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: #64748b; font-size: 13px; line-height: 1.65; margin: 5px 0 8px; overflow-wrap: anywhere; }
+.discussion-row-context, .discussion-row-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; font-size: 11px; line-height: 1.6; color: #627791; overflow-wrap: anywhere; }
+.discussion-row-context svg { width: 14px; height: 14px; flex-shrink: 0; }
+.discussion-row-meta { margin-top: 5px; color: #77879c; }
+.discussion-row-actions { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; align-self: stretch; gap: 16px; min-width: 150px; padding-left: 16px; }
+.discussion-row-open { display: inline-flex; align-items: center; justify-content: flex-end; gap: 6px; color: #456b9b; font-size: 12px; white-space: nowrap; min-height: 28px; }
+.lesson-discussions .discussion-back-link { margin: 0 0 20px; padding-left: 0; }
+.discussion-page-numbers, .discussion-page-item { display: inline-flex; align-items: center; gap: 5px; }
+.lesson-discussions .discussion-page-number { min-width: 40px; min-height: 40px; padding: 7px; border: 1px solid transparent; border-radius: 7px; color: #5a708c; background: transparent; }
+.lesson-discussions .discussion-page-number:hover { background: #eff6ff; }
+.lesson-discussions .discussion-page-number[aria-current=page] { color: #fff; border-color: #2563eb; background: #2563eb; }
+.discussion-page-gap { padding: 0 3px; }
+@media(max-width:760px) {
+ .discussion-row-actions { min-width: 128px; padding-left: 4px; }
+ .lesson-discussions .discussion-question-row { padding: 18px; gap: 11px; }
+
+ .lesson-discussions .discussion-pagination { flex-wrap: wrap; gap: 8px; }
+ .discussion-page-numbers, .discussion-page-item { gap: 2px; }
+ .lesson-discussions .discussion-page-number { min-width: 34px; min-height: 44px; }
+}
+@media(max-width:420px) {
+
+ .lesson-discussions .discussion-question-row { padding: 14px; gap: 10px; }
+ .discussion-row-open { padding-left: 0; }
+ .lesson-discussions .discussion-pagination > .discussion-button { padding: 8px; min-width: 40px; }
+}
+@media(max-width:640px) {
+ .lesson-discussions .discussion-question-row { grid-template-columns: 36px minmax(0,1fr); gap: 10px 12px; }
+ .discussion-row-actions { grid-column: 2; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; min-width: 0; padding-left: 0; gap: 8px; }
+ .discussion-row-open { min-height: 32px; font-size: 11px; }
+}

@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '../../shared/context/AuthContext'
 import { quizService } from './api/quizService'
 import { useState, type FormEvent } from 'react'
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useQuizDetail, useQuizWorkspace, useQuizWrites, validId } from '../../shared/hooks/useQuizManagement'
 import type { ManagedQuiz, QuizInput, QuizLesson } from '../../shared/types/quiz'
 import { canManageQuiz, QuizError } from './QuizShared'
@@ -19,7 +19,7 @@ export function QuizEditorPage({ readOnly = false }: { readOnly?: boolean }) {
   if (courseId === null || (existing && quizId === null)) return <div className="qm-page"><p role="alert">Mã khóa học hoặc quiz không hợp lệ.</p></div>
   const locked = workspace.course.data ? !canManageQuiz(workspace.course.data.status) : true
   return <div className="qm-page"><Link to={`/expert/courses/${courseId}/quizzes`}>← Danh sách quiz</Link>
-    <header className="qm-heading"><div><p className="qm-eyebrow">EDUPORTAL · QUIZ</p><h1>{readOnly ? 'Chi tiết quiz' : existing ? 'Chỉnh sửa quiz' : 'Tạo quiz'}</h1><p>{workspace.course.data?.title}</p></div></header>
+    <Link to={`/expert/courses/${courseId}`}>Giáo trình khóa học</Link><header className="qm-heading"><div><p className="qm-eyebrow">EDUPORTAL · QUIZ</p><h1>{readOnly ? 'Chi tiết quiz' : existing ? 'Chỉnh sửa quiz' : 'Tạo quiz'}</h1><p>{workspace.course.data?.title}</p></div></header>
     {(location.state as { quizSaved?: boolean } | null)?.quizSaved && <p className="qm-feedback qm-success" role="status">Đã lưu quiz thành công.</p>}
     {workspace.course.isPending && <p role="status">Đang tải khóa học...</p>}
     {workspace.course.isError && <QuizError error={workspace.course.error} retry={() => { void workspace.course.refetch() }} />}
@@ -45,14 +45,17 @@ function QuizForm({ courseId, category, initial, lessons }: { courseId: number; 
   const [passRate, setPassRate] = useState(String(initial?.passRate ?? ''))
   const [attempts, setAttempts] = useState(String(initial?.maxAttempts ?? ''))
   const [active, setActive] = useState(initial?.active ?? false)
-  const [lessonId, setLessonId] = useState(initial?.lessonId?.toString() ?? '')
+  const [params] = useSearchParams()
+  const requestedLesson = params.get('lessonId')
+  const [lessonId, setLessonId] = useState(initial ? initial.lessonId?.toString() ?? '' : lessons.some(l => String(l.id) === requestedLesson) ? requestedLesson! : '')
+  const [bankScope, setBankScope] = useState(initial ? initial.lessonId?.toString() ?? '' : lessons.some(l => String(l.id) === requestedLesson) ? requestedLesson! : '')
   const [questions, setQuestions] = useState<QuestionDraft[]>(() => initial?.questions.map(q => ({ key: crypto.randomUUID(), questionId: String(q.questionId), position: String(q.position), points: String(q.points), content: q.content })) ?? [])
   const [validation, setValidation] = useState('')
   const [questionSearch, setQuestionSearch] = useState('')
   const [questionPage, setQuestionPage] = useState(0)
   const { user } = useAuth()
-  const bank = useQuery({ queryKey: ['quiz-question-bank', user?.id, courseId, questionSearch, questionPage],
-    queryFn: () => quizService.questionBank(courseId, questionSearch, questionPage) })
+  const bank = useQuery({ queryKey: ['quiz-question-bank', user?.id, courseId, questionSearch, questionPage, bankScope],
+    queryFn: () => quizService.questionBank(courseId, questionSearch, questionPage, bankScope === '' ? undefined : Number(bankScope)) })
   const busy = save.isPending
   function changeQuestion(key: string, field: 'questionId' | 'position' | 'points', value: string) {
     setQuestions(rows => rows.map(row => row.key === key ? { ...row, [field]: value, ...(field === 'questionId' ? { content: undefined } : {}) } : row))
@@ -85,7 +88,7 @@ function QuizForm({ courseId, category, initial, lessons }: { courseId: number; 
       <label>Tên quiz <span aria-hidden="true">*</span><input required maxLength={255} value={title} onChange={e => setTitle(e.target.value)} placeholder="Nhập tên bài kiểm tra" /></label>
       <div className="qm-form-grid"><label>Thời lượng (phút)<input type="number" required min={1} max={2147483647} step={1} value={duration} onChange={e => setDuration(e.target.value)} /></label><label>Tỷ lệ đạt (%)<input type="number" required min={0} max={100} step={1} value={passRate} onChange={e => setPassRate(e.target.value)} /></label><label>Số lượt làm tối đa<input type="number" required min={1} max={2147483647} step={1} value={attempts} onChange={e => setAttempts(e.target.value)} /></label></div>
       <div className="qm-form-grid"><label>Gắn bài học<select value={lessonId} onChange={e => setLessonId(e.target.value)}><option value="">Không gắn bài học — thuộc toàn khóa học</option>{lessons.map(l => <option key={l.id} value={l.id}>{l.position}. {l.title}{l.active ? '' : ' (Không hoạt động)'}</option>)}</select></label><label>Trạng thái<select value={String(active)} onChange={e => setActive(e.target.value === 'true')}><option value="false">Không hoạt động</option><option value="true">Hoạt động</option></select></label></div>
-      <h2>Câu hỏi trong quiz</h2><label>Tìm câu hỏi<input type="search" aria-label="Tìm câu hỏi trong ngân hàng" placeholder="Tìm câu hỏi cho tất cả các dòng bên dưới..." value={questionSearch} maxLength={200} onChange={event => { setQuestionSearch(event.target.value); setQuestionPage(0) }} /></label>
+      <h2>Câu hỏi trong quiz ({questions.length})</h2><p className="qm-muted">Tổng điểm: {questions.reduce((sum, q) => sum + (Number(q.points) || 0), 0)}. Phạm vi câu hỏi dùng để tổ chức ngân hàng; quiz tổng hợp có thể chọn từ nhiều bài.</p><label>Lọc ngân hàng theo bài<select value={bankScope} onChange={e => { setBankScope(e.target.value); setQuestionPage(0) }}><option value="">Tất cả câu hỏi trong khóa</option><option value="0">Dùng chung toàn khóa</option>{lessons.map(l => <option key={l.id} value={l.id}>{l.position}. {l.title}</option>)}</select></label><div className="qm-actions"><button type="button" disabled={!questions.length} onClick={() => setQuestions(rows => rows.map((q, i) => ({...q, position: String(i + 1)})))}>Đánh lại thứ tự 1–{questions.length}</button><button type="button" disabled={!questions.length} onClick={() => setQuestions(rows => rows.map(q => ({...q, points: '1'})))}>Chia đều: 1 điểm / câu</button></div><label>Tìm câu hỏi<input type="search" aria-label="Tìm câu hỏi trong ngân hàng" placeholder="Tìm câu hỏi cho tất cả các dòng bên dưới..." value={questionSearch} maxLength={200} onChange={event => { setQuestionSearch(event.target.value); setQuestionPage(0) }} /></label>
       {bank.isPending && <p role="status">Đang tìm câu hỏi...</p>}
       {bank.isError && <QuizError error={bank.error} retry={() => void bank.refetch()} />}
       {bank.data && <div className="qm-actions"><small role="status">{bank.data.totalElements} kết quả tìm kiếm · Trang {questionPage + 1} / {Math.max(1, bank.data.totalPages)}</small><button type="button" aria-label="Câu hỏi trang trước" disabled={questionPage === 0 || bank.isFetching} onClick={() => setQuestionPage(page => page - 1)}>‹</button><button type="button" aria-label="Câu hỏi trang sau" disabled={questionPage + 1 >= bank.data.totalPages || bank.isFetching} onClick={() => setQuestionPage(page => page + 1)}>›</button></div>}

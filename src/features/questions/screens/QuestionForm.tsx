@@ -5,10 +5,10 @@ import { QuizError } from '../../quiz/QuizShared'
 import { SafePostContent } from '../../blog/screens/SafePostContent'
 import { questionApi, type BankQuestion, type QuestionInput } from '../api/questionApi'
 
-export function QuestionForm({ courseId, initial, readOnly, onCancel, onSaved }: {
-  courseId: number; initial?: BankQuestion; readOnly: boolean; onCancel: () => void; onSaved: () => Promise<void>
+export function QuestionForm({ courseId, initial, defaultLessonId, lessons, readOnly, onCancel, onSaved }: {
+  courseId: number; initial?: BankQuestion; defaultLessonId?: number | null; lessons: {id: number; title: string; position: number}[]; readOnly: boolean; onCancel: () => void; onSaved: () => Promise<void>
 }) {
-  const [data, setData] = useState<QuestionInput>(() => ({ content: initial?.content ?? '', type: initial?.type ?? 'SINGLE_CHOICE', explanation: initial?.explanation ?? '', active: initial?.active ?? true,
+  const [data, setData] = useState<QuestionInput>(() => ({ lessonId: initial ? initial.lessonId ?? null : defaultLessonId ?? null, content: initial?.content ?? '', type: initial?.type ?? 'SINGLE_CHOICE', explanation: initial?.explanation ?? '', active: initial?.active ?? true,
     imageMediaId: initial?.imageMediaId ?? null, options: Array.from({ length: 4 }, (_, index) => ({ content: initial?.options[index]?.content ?? '', correct: initial?.options[index]?.correct ?? false })) }))
   const [imageUrl, setImageUrl] = useState(initial?.imageUrl ?? '')
   const [uploading, setUploading] = useState(false)
@@ -30,7 +30,7 @@ export function QuestionForm({ courseId, initial, readOnly, onCancel, onSaved }:
     await save.mutateAsync().catch(()=>{})
   }
   const disabled=readOnly || save.isPending || uploading
-  return <form className="question-editor" onSubmit={event => void submit(event)}><h2>{readOnly ? 'Chi tiết câu hỏi' : initial ? `Sửa câu hỏi #${initial.id}` : 'Tạo câu hỏi'}</h2><fieldset disabled={disabled}>
+  return <form className="question-editor" onSubmit={event => void submit(event)}><h2>{readOnly ? 'Chi tiết câu hỏi' : initial ? `Sửa câu hỏi #${initial.id}` : 'Tạo câu hỏi'}</h2><fieldset disabled={disabled}><label>Phạm vi kiến thức<select value={data.lessonId ?? ''} onChange={e => setData({...data, lessonId: e.target.value ? Number(e.target.value) : null})}><option value="">Dùng chung toàn khóa</option>{lessons.map(l => <option key={l.id} value={l.id}>{l.position}. {l.title}</option>)}</select></label>
     <label>Loại câu hỏi<select value={data.type} onChange={event=>setData({ ...data, type:event.target.value as QuestionInput['type'], options:data.options.map(o=>({...o,correct:false})) })}><option value="SINGLE_CHOICE">Một đáp án đúng</option><option value="MULTIPLE_CHOICE">Nhiều đáp án đúng</option></select></label>
     <label>Nội dung câu hỏi<div className="question-toolbar"><button type="button" title="In đậm" aria-label="In đậm" onClick={()=>format('<strong>','</strong>')}><b>B</b></button><button type="button" title="In nghiêng" aria-label="In nghiêng" onClick={()=>format('<em>','</em>')}><i>I</i></button><button type="button" title="Chèn ký hiệu toán" aria-label="Chèn ký hiệu toán" onClick={()=>format('∑')}>∑</button><button type="button" onClick={()=>setPreview(!preview)}>{preview ? 'Soạn' : 'Xem trước'}</button></div><textarea ref={textarea} required maxLength={4000} value={data.content} onChange={event=>setData({...data,content:event.target.value})} /></label>
     {preview && <div className="question-preview"><SafePostContent content={data.content} /></div>}

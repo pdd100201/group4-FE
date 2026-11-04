@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useCourseActions, useExpertCourse } from '../../../shared/hooks/useExpertCourses'
 import { courseStatusLabels, type CourseInput, type ExpertCourse } from '../api/expertCourseApi'
 import { courseError } from './ExpertCoursesPage'
+import { CourseCurriculum } from './CourseCurriculum'
 import { CourseLessons } from './CourseLessons'
 import { QuizWorkspace } from '../../quiz/ExpertQuizPage'
 import { MediaUpload } from '../../../shared/components/media/MediaUpload'
@@ -16,7 +17,7 @@ export function CourseEditorPage() {
   if (id !== undefined && (!Number.isSafeInteger(id) || id <= 0)) return <p role="alert">Mã khóa học không hợp lệ.</p>
   if (id !== undefined && query.isPending) return <p role="status">Đang tải khóa học…</p>
   if (id !== undefined && query.isError) return <div role="alert"><p>{courseError(query.error)}</p><button onClick={() => void query.refetch()}>Thử lại</button></div>
-  return <><CourseForm key={id ?? 'new'} course={query.data} />{query.data && <div className="expert-courses"><CourseLessons key={query.data.id} courseId={query.data.id} editable={query.data.status === 'DRAFT' || query.data.status === 'REJECTED'} /><section className="course-quiz-section" aria-label="Bài kiểm tra của khóa học"><QuizWorkspace courseId={query.data.id} embedded /></section></div>}</>
+  return <><CourseForm key={id ?? 'new'} course={query.data} />{query.data && <div className="expert-courses"><CourseContent key={query.data.id} courseId={query.data.id} editable={query.data.editable} /></div>}</>
 }
 function CourseForm({ course }: { course?: ExpertCourse }) {
   const navigate = useNavigate()
@@ -44,4 +45,11 @@ function CourseForm({ course }: { course?: ExpertCourse }) {
     <CourseSubmissionPanel course={course} dirty={dirty || packagesDirty} busy={busy} onBusy={setSubmitting} /></div>
     {course ? <CoursePackagesPanel id={course.id} disabled={!editable || save.isPending || uploading || submitting} onDirty={setPackagesDirty} onBusy={setPackagesBusy} /> : <p>Lưu bản nháp trước để cấu hình gói giá.</p>}
     </section>
+}
+
+function CourseContent({ courseId, editable }: { courseId: number; editable: boolean }) {
+  const [tab, setTab] = useState<'outline' | 'lessons' | 'quizzes'>('outline')
+  return <section className="curriculum-workspace"><div className="curriculum-tabs" role="group" aria-label="Quản lý nội dung khóa học"><button aria-pressed={tab === 'outline'} onClick={() => setTab('outline')}>Tổng quan giáo trình</button><button aria-pressed={tab === 'lessons'} onClick={() => setTab('lessons')}>Quản lý bài học</button><button aria-pressed={tab === 'quizzes'} onClick={() => setTab('quizzes')}>Quản lý quiz</button></div>
+    {tab === 'outline' ? <CourseCurriculum courseId={courseId} editable={editable} /> : tab === 'lessons' ? <CourseLessons courseId={courseId} editable={editable} /> : <section className="course-quiz-section" aria-label="Bài kiểm tra của khóa học"><QuizWorkspace courseId={courseId} embedded /></section>}
+  </section>
 }

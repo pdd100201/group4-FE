@@ -1,3 +1,8 @@
+import { StudentCertificatesPage } from '../features/certificates/screens/StudentCertificatesPage'
+import { VerifyCertificatePage } from '../features/certificates/screens/VerifyCertificatePage'
+import { ManageCertificatesPage } from '../features/certificates/screens/ManageCertificatesPage'
+import { NotificationsPage } from '../features/notifications/components/NotificationCenter'
+import { LessonDiscussions } from '../features/discussions/components/LessonDiscussions'
 import { Route, Routes } from 'react-router-dom'
 import { ChatPage } from '../features/chat/screens/ChatPage'
 import { ProtectedRoute } from '../shared/components/auth/ProtectedRoute'
@@ -45,6 +50,7 @@ export function AppRoutes() {
   return <Routes>
     <Route element={<PublicLayout />}>
       <Route path="/" element={<HomePage />} />
+      <Route path="/verify-certificate" element={<VerifyCertificatePage />} />
       <Route path="/about" element={<AboutCoursesPage />} />
       <Route path="/courses" element={<CourseCatalogPage />} />
       <Route path="/courses/:courseId" element={<CourseDetailPage />} />
@@ -67,10 +73,12 @@ export function AppRoutes() {
     <Route path="/verify-email" element={<VerifyEmailPage />} />
     <Route element={<ProtectedRoute />}>
       <Route element={<ProfileLayout />}><Route path="/chat" element={<ChatPage />} /></Route>
+      <Route element={<ProfileLayout />}><Route path="/notifications" element={<NotificationsPage />} /></Route>
       <Route element={<ProfileLayout />}><Route path="/profile" element={<ProfilePage />} /></Route>
     </Route>
     <Route element={<ProtectedRoute roles={['ROLE_STUDENT']} />}>
       <Route element={<StudentLayout />}>
+        <Route path="/certificates" element={<StudentCertificatesPage />} />
         <Route path="/student/courses" element={<StudentCoursesPage />} />
         <Route path="/student/courses/:courseId/learn" element={<LessonLearningPage />} />
         <Route path="/student/courses/:courseId/lessons/:lessonId" element={<LessonLearningPage />} />
@@ -82,6 +90,7 @@ export function AppRoutes() {
     </Route>
     <Route element={<ProtectedRoute roles={['ROLE_EXPERT']} />}>
       <Route element={<ExpertLayout />}>
+        <Route path="/expert/discussions" element={<div className="discussion-management"><LessonDiscussions /></div>} />
         <Route path="/expert/courses" element={<ExpertCoursesPage />} />
         <Route path="/expert/courses/new" element={<CourseEditorPage />} />
         <Route path="/expert/courses/:courseId" element={<CourseEditorPage />} />
@@ -102,7 +111,9 @@ export function AppRoutes() {
         <Route path="/admin/registrations/:id" element={<ManagementRecordDetailPage kind="registrations" />} />
         <Route path="/admin/transactions" element={<ManagementRecordsPage kind="transactions" />} />
         <Route path="/admin/transactions/:id" element={<ManagementRecordDetailPage kind="transactions" />} />
+        <Route path="/admin/certificates" element={<ManageCertificatesPage />} />
         <Route path="/admin/reports" element={<ReportsPage />} />
+        <Route path="/admin/discussions" element={<div className="discussion-management"><LessonDiscussions /></div>} />
         <Route path="/admin/accounts" element={<AccountsPage />} />
         <Route path="/admin/accounts/new" element={<AccountEditorPage create />} />
         <Route path="/admin/accounts/:id" element={<AccountEditorPage />} />
@@ -119,6 +130,8 @@ export function AppRoutes() {
         <Route path="/manager/transactions/:id" element={<ManagementRecordDetailPage kind="transactions" />} />
         <Route path="/manager/courses/review/quizzes" element={<ManagerQuizPreviewPage />} />
         <Route path="/manager/courses/:courseId/review/quizzes" element={<ManagerQuizPreviewPage />} />
+        <Route path="/manager/discussions" element={<div className="discussion-management"><LessonDiscussions /></div>} />
+        <Route path="/manager/certificates" element={<ManageCertificatesPage />} />
         <Route path="/manager/posts" element={<ManagerPostsPage />} />
         <Route path="/manager/posts/:postId" element={<ManagerPostDetailPage />} />
       </Route>
