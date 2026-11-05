@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { useChatMessageSearch, useDebouncedChatSearch } from '../../../shared/hooks/useChat'
 
-export function ChatMessageSearch({ peerId, userId, onClose }: { peerId: number | null; userId: number; onClose: () => void }) {
+export function ChatMessageSearch({ peerId, courseId, userId, onClose }: { peerId: number; courseId: number; userId: number; onClose: () => void }) {
   const [input, setInput] = useState('')
   const query = useDebouncedChatSearch(input)
-  const results = useChatMessageSearch(peerId, userId, query)
+  const results = useChatMessageSearch(peerId, courseId, userId, query)
   const waiting = input.trim() !== query
   const messages = waiting ? [] : results.data?.pages.flat() ?? []
   return <div className="ms-message-search">
