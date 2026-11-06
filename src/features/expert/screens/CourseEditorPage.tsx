@@ -5,7 +5,7 @@ import { courseStatusLabels, type CourseInput, type ExpertCourse } from '../api/
 import { courseError } from './ExpertCoursesPage'
 import { CourseCurriculum } from './CourseCurriculum'
 import { CourseLessons } from './CourseLessons'
-import { QuizWorkspace } from '../../quiz/ExpertQuizPage'
+import { CourseQuizPanel } from '../../quiz/CourseQuizPanel'
 import { MediaUpload } from '../../../shared/components/media/MediaUpload'
 import { CourseSubmissionPanel } from './CourseSubmissionPanel'
 import { CoursePackagesPanel } from './CoursePackagesPanel'
@@ -38,6 +38,8 @@ function CourseStudio({ course }: { course?: ExpertCourse }) {
  const [uploading, setUploading] = useState(false)
  const [submitting, setSubmitting] = useState(false)
  const [packagesDirty, setPackagesDirty] = useState(false)
+ const [quizDirty, setQuizDirty] = useState(false)
+ const [quizBusy, setQuizBusy] = useState(false)
  const [packagesBusy, setPackagesBusy] = useState(false)
  const [message, setMessage] = useState('')
  const [leavingTo, setLeavingTo] = useState<string | null>(null)
@@ -45,12 +47,12 @@ function CourseStudio({ course }: { course?: ExpertCourse }) {
  const readiness = useSubmissionReadiness(course?.id)
  const editable = !course || course.editable
  const contentEditable = !!course && (course.status === 'DRAFT' || course.status === 'REJECTED')
- const busy = save.isPending || uploading || submitting || packagesBusy
+ const busy = save.isPending || uploading || submitting || packagesBusy || quizBusy
  const dirty = !course || form.title !== course.title || form.description !== course.description || form.category !== course.category || form.price !== course.price || (form.thumbnailMediaId ?? null) !== (course.thumbnailMediaId ?? null)
  const checks = readiness.data?.checks ?? []
  const completed = checks.filter(c => c.complete).length
  const progress = checks.length ? Math.round(completed * 100 / checks.length) : 0
- const hasUnsavedChanges = packagesDirty || (course ? dirty : !!(form.title || form.description || form.category))
+ const hasUnsavedChanges = quizDirty || packagesDirty || (course ? dirty : !!(form.title || form.description || form.category))
  const currentIndex = steps.findIndex(s => s.id === step)
  useEffect(() => {
   if (!hasUnsavedChanges) return
@@ -113,26 +115,28 @@ function CourseStudio({ course }: { course?: ExpertCourse }) {
      <div className="studio-actionbar"><span>{!course ? 'Bản nháp chỉ hiển thị trong không gian của bạn.' : dirty ? 'Có thay đổi chưa lưu' : 'Thông tin đã được lưu'}</span><div>{editable && <button className="course-primary" type="submit" form="course-info-form" disabled={busy || (!!course && !dirty)}>{save.isPending ? 'Đang lưu…' : course ? 'Lưu thay đổi' : 'Tạo bản nháp'}<CourseIcon name="check" /></button>}{course && <button disabled={busy || dirty} onClick={() => selectStep('content')}>Tiếp: Giáo trình <CourseIcon name="next" /></button>}</div></div>
     </section>
     {course && <>
-     <section hidden={step !== 'content'} aria-label="Xây dựng giáo trình"><div className="studio-section-heading"><span className="studio-section-icon"><CourseIcon name="book" /></span><div><p>BƯỚC 02</p><h2>Một hành trình học có định hướng</h2><span>Tổ chức bài học và quiz để học viên tiến bộ từng bước.</span></div></div><CourseContent courseId={course.id} editable={contentEditable} /></section>
+     <section hidden={step !== 'content'} aria-label="Xây dựng giáo trình"><div className="studio-section-heading"><span className="studio-section-icon"><CourseIcon name="book" /></span><div><p>BƯỚC 02</p><h2>Một hành trình học có định hướng</h2><span>Tổ chức bài học và quiz để học viên tiến bộ từng bước.</span></div></div><CourseContent courseId={course.id} editable={contentEditable} busy={busy} onDirty={setQuizDirty} onBusy={setQuizBusy} /></section>
      <section hidden={step !== 'pricing'} aria-label="Gói học và học phí"><div className="studio-section-heading"><span className="studio-section-icon"><CourseIcon name="price" /></span><div><p>BƯỚC 03</p><h2>Gói học phù hợp với từng nhu cầu</h2><span>Thiết lập thời hạn truy cập, học phí và ưu đãi minh bạch.</span></div></div><CoursePackagesPanel id={course.id} disabled={!editable || save.isPending || uploading || submitting} onDirty={setPackagesDirty} onBusy={setPackagesBusy} /></section>
-     <section hidden={step !== 'review'} aria-label="Kiểm tra và gửi duyệt"><div className="studio-section-heading"><span className="studio-section-icon"><CourseIcon name="check" /></span><div><p>BƯỚC 04</p><h2>Sẵn sàng chia sẻ kiến thức?</h2><span>Kiểm tra lần cuối trước khi gửi khóa học đến Manager.</span></div></div><CourseSubmissionPanel course={course} dirty={dirty || packagesDirty} busy={busy} onBusy={setSubmitting} onFix={selectStep} /></section>
+     <section hidden={step !== 'review'} aria-label="Kiểm tra và gửi duyệt"><div className="studio-section-heading"><span className="studio-section-icon"><CourseIcon name="check" /></span><div><p>BƯỚC 04</p><h2>Sẵn sàng chia sẻ kiến thức?</h2><span>Kiểm tra lần cuối trước khi gửi khóa học đến Manager.</span></div></div><CourseSubmissionPanel course={course} dirty={dirty || packagesDirty || quizDirty} busy={busy} onBusy={setSubmitting} onFix={selectStep} /></section>
      {step !== 'info' && <div className="studio-actionbar"><button disabled={busy} onClick={() => selectStep(steps[currentIndex - 1].id)}><CourseIcon name="back" /> Quay lại</button><span>Bước {currentIndex + 1} / 4</span>{currentIndex < 3 && <button className="course-primary" disabled={busy} onClick={() => selectStep(steps[currentIndex + 1].id)}>Tiếp: {currentIndex === 1 ? 'Gói học' : 'Kiểm tra'}<CourseIcon name="next" /></button>}</div>}
     </>}
    </div>
   </div>
-  {leavingTo && <CourseDialog title="Bạn có thay đổi chưa lưu" onClose={() => setLeavingTo(null)}><p>Thông tin hoặc gói học đang chỉnh sửa chưa được lưu. Lưu nội dung trước khi rời trang để giữ các thay đổi.</p><div className="studio-dialog-actions"><button autoFocus onClick={() => setLeavingTo(null)}>Tiếp tục chỉnh sửa</button><button className="course-danger" onClick={() => navigate(leavingTo)}>Rời trang, bỏ thay đổi</button></div></CourseDialog>}
+  {leavingTo && <CourseDialog title="Bạn có thay đổi chưa lưu" onClose={() => setLeavingTo(null)}><p>Thông tin, gói học hoặc quiz đang chỉnh sửa chưa được lưu. Lưu nội dung trước khi rời trang để giữ các thay đổi.</p><div className="studio-dialog-actions"><button autoFocus onClick={() => setLeavingTo(null)}>Tiếp tục chỉnh sửa</button><button className="course-danger" onClick={() => navigate(leavingTo)}>Rời trang, bỏ thay đổi</button></div></CourseDialog>}
  </main>
 }
-function CourseContent({ courseId, editable }: { courseId: number; editable: boolean }) {
- const [tab, setTab] = useState<'outline' | 'lessons' | 'quizzes'>('outline')
- const [visited, setVisited] = useState({ outline: true, lessons: false, quizzes: false })
- function openTab(next: typeof tab) {
-  setVisited(current => ({ ...current, [next]: true }))
-  setTab(next)
+function CourseContent({ courseId, editable, busy, onDirty, onBusy }: { courseId: number; editable: boolean; busy: boolean; onDirty: (dirty: boolean) => void; onBusy: (busy: boolean) => void }) {
+ const [params, setParams] = useSearchParams()
+ const tab = params.get('tab') === 'quiz' ? 'quiz' : params.get('tab') === 'lessons' ? 'lessons' : 'outline'
+ const [lessonsVisited, setLessonsVisited] = useState(tab === 'lessons')
+ function openTab(next: string) {
+  if (busy) return
+  if (next === 'lessons') setLessonsVisited(true)
+  const nextParams = new URLSearchParams(params); nextParams.set('step', 'content'); nextParams.set('tab', next); setParams(nextParams, { replace: true })
  }
- return <section className="curriculum-workspace"><div className="curriculum-tabs" role="group" aria-label="Quản lý nội dung khóa học"><button aria-pressed={tab === 'outline'} onClick={() => openTab('outline')}>Tổng quan giáo trình</button><button aria-pressed={tab === 'lessons'} onClick={() => openTab('lessons')}>Bài học</button><button aria-pressed={tab === 'quizzes'} onClick={() => openTab('quizzes')}>Quiz & đánh giá</button><Link to={`/expert/courses/${courseId}/questions`}>Ngân hàng câu hỏi ↗</Link></div>
-  <div hidden={tab !== 'outline'}><CourseCurriculum courseId={courseId} editable={editable} /></div>
-  {visited.lessons && <div hidden={tab !== 'lessons'}><CourseLessons courseId={courseId} editable={editable} /></div>}
-  {visited.quizzes && <section hidden={tab !== 'quizzes'} className="course-quiz-section" aria-label="Bài kiểm tra của khóa học"><QuizWorkspace courseId={courseId} embedded /></section>}
+ return <section className="curriculum-workspace"><div className="curriculum-tabs" role="group" aria-label="Quản lý nội dung khóa học"><button disabled={busy} aria-pressed={tab === 'outline'} onClick={() => openTab('outline')}>Tổng quan giáo trình</button><button disabled={busy} aria-pressed={tab === 'lessons'} onClick={() => openTab('lessons')}>Bài học</button><button disabled={busy} aria-pressed={tab === 'quiz'} onClick={() => openTab('quiz')}>Quiz cuối khóa</button></div>
+  <div hidden={tab !== 'outline'}><CourseCurriculum courseId={courseId} editable={editable} onOpenQuiz={() => openTab('quiz')} /></div>
+  {(lessonsVisited || tab === 'lessons') && <div hidden={tab !== 'lessons'}><CourseLessons courseId={courseId} editable={editable} /></div>}
+  <div hidden={tab !== 'quiz'}><CourseQuizPanel courseId={courseId} editable={editable} onDirty={onDirty} onBusy={onBusy} /></div>
  </section>
 }

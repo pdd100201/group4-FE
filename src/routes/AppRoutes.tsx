@@ -39,7 +39,6 @@ import { ProfilePage } from '../features/profile/screens/ProfilePage'
 import { ExpertQuizPage } from '../features/quiz/ExpertQuizPage'
 import { QuizEditorPage } from '../features/quiz/QuizEditorPage'
 import { ManagerQuizPreviewPage } from '../features/quiz/ManagerQuizPreviewPage'
-import { QuestionBankPage } from '../features/questions/screens/QuestionBankPage'
 import { LessonLearningPage } from '../features/learning/screens/LessonLearningPage'
 import { StudentQuizPage } from '../features/learning/screens/StudentQuizPage'
 import { StudentQuizResultPage } from '../features/learning/screens/StudentQuizResultPage'
@@ -94,8 +93,8 @@ export function AppRoutes() {
         <Route path="/expert/courses" element={<ExpertCoursesPage />} />
         <Route path="/expert/courses/new" element={<CourseEditorPage />} />
         <Route path="/expert/courses/:courseId" element={<CourseEditorPage />} />
-        <Route path="/expert/questions" element={<QuestionBankPage />} />
-        <Route path="/expert/courses/:courseId/questions" element={<QuestionBankPage />} />
+        <Route path="/expert/questions" element={<ExpertQuizPage />} />
+        <Route path="/expert/courses/:courseId/questions" element={<ExpertQuizPage />} />
         <Route path="/expert/quizzes" element={<ExpertQuizPage />} />
         <Route path="/expert/courses/:courseId/quizzes" element={<ExpertQuizPage />} />
         <Route path="/expert/courses/:courseId/quizzes/new" element={<QuizEditorPage />} />
