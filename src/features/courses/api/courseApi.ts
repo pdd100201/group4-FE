@@ -7,6 +7,7 @@ export interface CourseSummary {
   description: string | null
   category: string | null
   price: number | null
+  packagePrices?: number[]
   thumbnailUrl: string | null
   expertName: string | null
 }

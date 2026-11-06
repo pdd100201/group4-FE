@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { usePublishedCourses } from '../../../shared/hooks/usePublishedCourses'
 import { PublicCourseCard } from './PublicCourseCard'
+import { matchesCoursePrice } from './coursePriceFilter'
 import './public-courses.css'
 
 const prices = [['all', 'Tất cả mức giá'], ['under500', 'Dưới 500.000đ'], ['500to1000', 'Từ 500.000đ - 1.000.000đ'], ['over1000', 'Trên 1.000.000đ']] as const
@@ -23,9 +24,7 @@ export function CourseCatalogPage() {
   const results = courses.filter(course => {
     if (!course.title.toLocaleLowerCase('vi').includes(search.trim().toLocaleLowerCase('vi'))) return false
     if (selected.length && !selected.includes(course.category?.trim() || '')) return false
-    if (price === 'all') return true
-    if (course.price == null) return false
-    return price === 'under500' ? course.price < 500000 : price === '500to1000' ? course.price >= 500000 && course.price <= 1000000 : course.price > 1000000
+    return matchesCoursePrice(course, price)
   }).sort((a, b) => sort === 'title' ? a.title.localeCompare(b.title, 'vi') : sort === 'newest' ? b.id - a.id : a.price == null ? (b.price == null ? 0 : 1) : b.price == null ? -1 : sort === 'priceAsc' ? a.price - b.price : b.price - a.price)
   const pages = Math.max(1, Math.ceil(results.length / pageSize))
   const rawPage = Number(params.get('page') || 1)

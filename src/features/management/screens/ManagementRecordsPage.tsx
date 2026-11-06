@@ -16,7 +16,7 @@ function errorMessage(error: unknown) {
   if (isAxiosError(error)) {
     if (error.response?.status === 404) return 'Không tìm thấy bản ghi.'
     if (error.response?.status === 403) return 'Bạn không có quyền xem dữ liệu này.'
-    if (error.response?.status === 400) return 'Bộ lọc không hợp lệ. Kiểm tra ngày, số tiền và mã khóa học.'
+    if (error.response?.status === 400) return 'Bộ lọc không hợp lệ. Kiểm tra ngày và mã khóa học.'
   }
   return 'Không tải được dữ liệu. Vui lòng thử lại.'
 }
@@ -41,14 +41,17 @@ export function ManagementRecordsPage({ kind }: { kind: ManagementKind }) {
   const reportReturnTo = scope === 'admin' ? reportOrigin(location.state) : null
   const [params, setParams] = useSearchParams()
   const [validation, setValidation] = useState('')
+  const transactions = kind === 'transactions'
   const request = new URLSearchParams(params)
   const rawPage = Number(params.get('page') ?? 0)
   const page = Number.isInteger(rawPage) && rawPage >= 0 ? rawPage : 0
-  const size = ['10', '20', '50'].includes(params.get('size') ?? '') ? Number(params.get('size')) : 20
+  const size = 20
+  request.delete('minAmount')
+  request.delete('maxAmount')
+  if (!transactions) request.delete('courseId')
   request.set('page', String(page))
   request.set('size', String(size))
   const { data, isLoading, isFetching, error, refetch } = useManagementRecords(scope, kind, request)
-  const transactions = kind === 'transactions'
   const statuses = transactions ? ['PENDING', 'SUCCEEDED', 'FAILED', 'CANCELLED', 'REFUNDED'] : ['PENDING_PAYMENT', 'ACTIVE', 'CANCELLED', 'EXPIRED', 'FAILED']
 
   function applyFilters(event: FormEvent<HTMLFormElement>) {
@@ -57,19 +60,13 @@ export function ManagementRecordsPage({ kind }: { kind: ManagementKind }) {
     const next = new URLSearchParams()
     for (const [key, value] of values.entries()) if (String(value).trim()) next.set(key, String(value).trim())
     const from = next.get('from'), to = next.get('to')
-    const min = next.get('minAmount'), max = next.get('maxAmount')
     const courseId = next.get('courseId')
     if (courseId && (!Number.isSafeInteger(Number(courseId)) || Number(courseId) <= 0)) {
       setValidation('Mã khóa học phải là số nguyên dương.')
       return
     }
-    const amounts = [min, max].filter((value): value is string => Boolean(value))
-    if (amounts.some(value => !Number.isFinite(Number(value)) || Number(value) < 0 || Number(value) >= 1e12 || !/^\d+(\.\d{1,2})?$/.test(value))) {
-      setValidation('Số tiền phải không âm, nhỏ hơn 1.000.000.000.000 và tối đa 2 chữ số thập phân.')
-      return
-    }
-    if ((from && to && from > to) || (min && max && Number(min) > Number(max))) {
-      setValidation('Khoảng ngày hoặc số tiền không hợp lệ.')
+    if (from && to && from > to) {
+      setValidation('Khoảng ngày không hợp lệ.')
       return
     }
     setValidation('')
@@ -78,6 +75,8 @@ export function ManagementRecordsPage({ kind }: { kind: ManagementKind }) {
   }
   function changePage(nextPage: number) {
     const next = new URLSearchParams(params)
+    if (!transactions) next.delete('courseId')
+    next.delete('size'); next.delete('minAmount'); next.delete('maxAmount')
     next.set('page', String(nextPage))
     setParams(next, { state: location.state })
   }
@@ -88,14 +87,11 @@ export function ManagementRecordsPage({ kind }: { kind: ManagementKind }) {
       <button type="button" onClick={() => refetch()} disabled={isFetching}>Làm mới</button></header>
     <form className="management-filters" key={params.toString()} onSubmit={applyFilters}>
       <label className="management-search">Tìm kiếm<input name="q" defaultValue={params.get('q') ?? ''} maxLength={200} placeholder={transactions ? 'Mã giao dịch/QR, tên, email, khóa học' : 'Tên, email, khóa học'} /></label>
-      <label>Mã khóa học<input name="courseId" type="number" min="1" step="1" defaultValue={params.get('courseId') ?? ''} /></label>
+      {transactions && <label>Mã khóa học<input name="courseId" type="number" min="1" step="1" defaultValue={params.get('courseId') ?? ''} /></label>}
       <label>{transactions ? 'Kết quả giao dịch' : 'Trạng thái'}<select name="status" defaultValue={params.get('status') ?? ''}><option value="">Tất cả</option>{statuses.map(s => <option key={s} value={s}>{labels[s]}</option>)}</select></label>
       <label>Từ ngày (UTC)<input name="from" type="date" defaultValue={params.get('from') ?? ''} /></label>
       <label>Đến ngày (UTC)<input name="to" type="date" defaultValue={params.get('to') ?? ''} /></label>
-      {transactions && <><label>Phương thức<select name="provider" defaultValue={params.get('provider') ?? ''}><option value="">Tất cả</option><option value="SEPAY">SePay</option><option value="SEPAY_TEST">SePay Test Mode</option></select></label>
-        <label>Số tiền từ (VND)<input name="minAmount" type="number" min="0" max="999999999999.99" step="0.01" defaultValue={params.get('minAmount') ?? ''} /></label>
-        <label>Số tiền đến (VND)<input name="maxAmount" type="number" min="0" max="999999999999.99" step="0.01" defaultValue={params.get('maxAmount') ?? ''} /></label></>}
-      <label>Số dòng<select name="size" defaultValue={size}><option>10</option><option>20</option><option>50</option></select></label>
+      {transactions && <label>Phương thức<select name="provider" defaultValue={params.get('provider') ?? ''}><option value="">Tất cả</option><option value="SEPAY">SePay</option><option value="SEPAY_TEST">SePay Test Mode</option></select></label>}
       <div className="management-filter-actions"><button className="primary-button" type="submit">Áp dụng</button><button type="button" onClick={() => { setValidation(''); setParams({}, { state: location.state }) }}>Xóa lọc</button></div>
     </form>
     {validation && <p role="alert" className="management-error">{validation}</p>}

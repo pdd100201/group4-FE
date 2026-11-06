@@ -1,0 +1,36 @@
+.lesson-comments{font-size:14px;line-height:1.6;color:#24324a;min-width:0}
+.lesson-comments-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px}
+.learning-overview .lesson-comments h2{font-size:20px;margin:0 0 6px;line-height:1.4}
+.lesson-comments-heading p{margin:0;color:#64748b}
+.lesson-comments button{min-height:40px;font-size:14px;border:1px solid #dce5f0;border-radius:8px;padding:8px 12px;background:#fff;color:#365377;box-shadow:none;transform:none}
+.lesson-comments button:disabled{opacity:.6;cursor:default}
+.lesson-comments :is(button,textarea):focus-visible{outline:3px solid #93c5fd;outline-offset:2px}
+.lesson-comment-form{display:grid;gap:8px;padding:16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;margin:16px 0}
+.lesson-comment-form label{font-weight:600}
+.lesson-comment-form textarea{width:100%;min-height:90px;resize:vertical;border:1px solid #d4dfed;border-radius:8px;padding:12px;background:white;font:inherit;color:inherit}
+.lesson-comment-form-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.lesson-comment-form-actions small{margin-right:auto;color:#64748b;font-size:12px}
+.lesson-comments .lesson-comment-primary{background:#2563eb;border-color:#2563eb;color:#fff;font-weight:600}
+.lesson-comment{display:flex;gap:12px;padding:20px 0;border-bottom:1px solid #edf1f7;min-width:0}
+.lesson-comment-avatar{width:38px;height:38px;flex-shrink:0;border-radius:50%;background:#e8efff;color:#2563eb;display:grid;place-items:center;font-weight:700;overflow:hidden}
+.lesson-comment-avatar img{width:100%;height:100%;object-fit:cover}
+.lesson-comment-body{min-width:0;flex:1}
+.lesson-comment-body>header{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.lesson-comment-body time{font-size:12px;color:#8291a7}
+.lesson-comment-content{margin:8px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.lesson-comment-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.lesson-comment-actions button{display:inline-flex;align-items:center;gap:6px;border-color:transparent;color:#64748b;padding:5px 8px;min-height:36px}
+.lesson-comment-actions button:hover,.lesson-comment-actions button[aria-pressed=true]{background:#eff6ff;color:#2563eb}
+.lesson-comment-replies{margin-top:12px;padding-left:16px;border-left:2px solid #e7efff}
+.lesson-comment-replies .lesson-comment:last-child{border-bottom:0}
+.lesson-comment-error{color:#b42332;background:#fff1f2;border-radius:8px;padding:12px;overflow-wrap:anywhere}
+.lesson-comments-empty{text-align:center;padding:28px 12px;color:#64748b}
+.lesson-comment-pagination{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:20px}
+.lesson-comment-edited{font-size:12px;color:#8291a7}
+.lesson-comment-deleted{color:#8291a7;font-style:italic}
+.lesson-comments button.lesson-comment-delete{color:#b42332}
+.lesson-comment-delete-confirm{padding:12px;margin:12px 0;border:1px solid #fecdd3;border-radius:8px;background:#fff7f8}
+.lesson-comment-delete-confirm p{margin:0 0 10px}
+.lesson-comment-delete-confirm button+button{margin-left:8px}
+.learning-tabs{flex-wrap:wrap;row-gap:0}
+@media(max-width:600px){.lesson-comments-heading{flex-wrap:wrap}.lesson-comment{gap:8px}.lesson-comment-avatar{width:30px;height:30px}.lesson-comment-replies{padding-left:8px}.lesson-comment-form{padding:12px}.lesson-comment-body>header{gap:4px 10px}}

@@ -8,6 +8,30 @@
 .public-layout .public-header nav .active{border-bottom-color:#2460e8}
 .public-layout .header-actions{gap:12px;font-size:14px;margin-left:auto;flex-wrap:wrap}
 .public-layout .header-actions .logout{width:auto;margin:0;font-size:14px;white-space:nowrap}
+.account-identity{display:flex;align-items:center;gap:10px;min-width:0;color:#17213a;text-align:left}
+.account-identity .avatar{width:36px;height:36px;border-radius:50%;flex-shrink:0;object-fit:cover;font-size:14px}
+.account-identity-text{min-width:0;font-size:14px;line-height:1.5}
+.account-identity-text b{display:block;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.account-identity-text small{display:block;margin-top:2px;color:#8492a6;font-size:12px;font-weight:400}
+.public-layout .header-actions .account-identity{padding:6px 8px;flex:0 1 auto}
+.public-layout .header-actions .account-identity:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}
+.account-menu{position:relative;min-width:0}
+.account-menu .account-identity{width:100%;border:0;background:transparent;padding:6px 8px;border-radius:9px;font:inherit;box-shadow:none}
+.account-menu .account-identity:hover{background:#f1f5fb}
+.account-menu .account-identity:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}
+.account-menu-chevron{flex-shrink:0;color:#64748b;transition:transform .15s}
+.account-identity[aria-expanded=true] .account-menu-chevron{transform:rotate(180deg)}
+.account-menu-panel{position:absolute;right:0;top:calc(100% + 8px);z-index:100;width:210px;max-width:calc(100vw - 32px);margin:0;padding:6px;list-style:none;background:#fff;border:1px solid #e1e8f2;border-radius:12px;box-shadow:0 12px 32px #17213a1f;text-align:left}
+.account-menu-panel li{margin:0;padding:0}
+.account-menu-panel li+li{border-top:1px solid #edf1f7;margin-top:4px;padding-top:4px}
+.account-menu .account-menu-panel li>a,.account-menu .account-menu-panel li>.logout{display:flex;align-items:center;justify-content:flex-start;gap:10px;width:100%;min-height:44px;margin:0;padding:10px 12px;border:0;border-radius:7px;background:transparent;color:#334155;font-size:14px;font-weight:500;line-height:1.5;text-align:left;box-shadow:none;transform:none}
+.public-layout .account-menu-panel .logout,.app-shell .account-menu-panel .logout{margin:0;width:100%;color:#dc2626;font-size:14px}
+.account-menu .account-menu-panel li>.logout{color:#dc2626}
+.account-menu .account-menu-panel li>a:hover,.account-menu .account-menu-panel li>.logout:hover{background:#f1f5fb;box-shadow:none;transform:none}
+.account-menu-panel svg{width:18px;height:18px;flex-shrink:0}
+.account-menu-panel :is(a,button):focus-visible{outline:2px solid #60a5fa;outline-offset:-2px}
+.app-shell .topbar .account-menu{padding:0;overflow:visible;flex-shrink:0}
+.app-shell .topbar .account-identity-text{display:block;min-width:0}
 .public-layout>footer{padding:32px max(24px,calc((100% - 1180px)/2));grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;font-size:13px}
 .public-layout>footer>*{min-width:0;overflow-wrap:anywhere}
 .public-layout>footer b{font-size:13px}

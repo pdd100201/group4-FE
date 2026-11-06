@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { MediaUpload } from '../../../shared/components/media/MediaUpload'
 import { useAuth } from '../../../shared/context/AuthContext'
 import { profileApi } from '../api/profileApi'
+import { ExpertApplicationSection } from '../../expert-applications/components/ExpertApplicationSection'
 import './profile.css'
 
 function errorMessage(error: unknown) {
@@ -37,5 +38,6 @@ export function ProfilePage() {
       <label>Xác nhận mật khẩu mới<input name="confirmation" type="password" required minLength={8} maxLength={72} autoComplete="new-password" /></label>
       <button className="primary-button" disabled={change.isPending}>{change.isPending ? 'Đang đổi...' : 'Đổi mật khẩu'}</button>{change.error && <p role="alert" className="profile-error">{errorMessage(change.error)}</p>}{passwordMessage && <p role="status" className="profile-success">{passwordMessage}</p>}
     </form></div>}
+    {query.data && <ExpertApplicationSection />}
   </section>
 }

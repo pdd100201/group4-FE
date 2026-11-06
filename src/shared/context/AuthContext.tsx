@@ -1,5 +1,6 @@
-import { createContext, useCallback, useContext, useMemo, useState, type PropsWithChildren } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type PropsWithChildren } from 'react'
 import { authApi } from '../../features/auth/api/authApi'
+import { profileApi } from '../../features/profile/api/profileApi'
 import { authStorage } from '../utils/authStorage'
 import type { AuthUser } from '../types/auth'
 
@@ -8,6 +9,7 @@ type AuthContextValue = {
   login: (email: string, password: string, remember: boolean) => Promise<AuthUser>
   loginWithGoogle: (credential: string, remember: boolean) => Promise<AuthUser>
   updateCurrentUser: (changes: Partial<AuthUser>) => void
+  refreshCurrentUser: () => Promise<void>
   logout: () => Promise<void>
 }
 
@@ -45,7 +47,26 @@ export function AuthProvider({ children }: PropsWithChildren) {
     if (updated) setUser(updated)
   }, [])
 
-  const value = useMemo(() => ({ user, login, loginWithGoogle, updateCurrentUser, logout }), [user, login, loginWithGoogle, updateCurrentUser, logout])
+  const refreshCurrentUser = useCallback(async () => {
+    const current = authStorage.user()
+    if (!current) return
+    const profile = await profileApi.current()
+    if (authStorage.user()?.id !== current.id || profile.id !== current.id) return
+    const updated = authStorage.updateUser({ fullName: profile.fullName, email: profile.email,
+      avatarUrl: profile.avatarUrl ?? undefined, roles: profile.roles })
+    if (updated) setUser(previous => JSON.stringify(previous) === JSON.stringify(updated) ? previous : updated)
+  }, [])
+  useEffect(() => {
+    if (!user?.id) return
+    const refresh = () => { if (document.visibilityState === 'visible') void refreshCurrentUser().catch(() => {}) }
+    refresh()
+    window.addEventListener('focus', refresh)
+    document.addEventListener('visibilitychange', refresh)
+    const interval = window.setInterval(refresh, 60000)
+    return () => { window.removeEventListener('focus', refresh); document.removeEventListener('visibilitychange', refresh); window.clearInterval(interval) }
+  }, [user?.id, refreshCurrentUser])
+
+  const value = useMemo(() => ({ user, login, loginWithGoogle, updateCurrentUser, refreshCurrentUser, logout }), [user, login, loginWithGoogle, updateCurrentUser, refreshCurrentUser, logout])
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 

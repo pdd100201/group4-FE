@@ -3,7 +3,7 @@ import { VerifyCertificatePage } from '../features/certificates/screens/VerifyCe
 import { ManageCertificatesPage } from '../features/certificates/screens/ManageCertificatesPage'
 import { NotificationsPage } from '../features/notifications/components/NotificationCenter'
 import { LessonDiscussions } from '../features/discussions/components/LessonDiscussions'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
 import { ChatPage } from '../features/chat/screens/ChatPage'
 import { ProtectedRoute } from '../shared/components/auth/ProtectedRoute'
 import { DashboardLayout, ExpertLayout, ProfileLayout, PublicLayout, StudentLayout } from '../shared/components/layout/Layouts'
@@ -44,8 +44,10 @@ import { StudentQuizPage } from '../features/learning/screens/StudentQuizPage'
 import { StudentQuizResultPage } from '../features/learning/screens/StudentQuizResultPage'
 import { ManagerPostsPage } from '../features/management/screens/ManagerPostsPage'
 import { ManagerPostDetailPage } from '../features/management/screens/ManagerPostDetailPage'
+import { ExpertApplicationReviewsPage } from '../features/expert-applications/screens/ExpertApplicationReviewsPage'
 
 export function AppRoutes() {
+  const location = useLocation()
   return <Routes>
     <Route element={<PublicLayout />}>
       <Route path="/" element={<HomePage />} />
@@ -114,6 +116,8 @@ export function AppRoutes() {
         <Route path="/admin/reports" element={<ReportsPage />} />
         <Route path="/admin/discussions" element={<div className="discussion-management"><LessonDiscussions /></div>} />
         <Route path="/admin/accounts" element={<AccountsPage />} />
+        <Route path="/admin/expert-applications" element={<ExpertApplicationReviewsPage />} />
+        <Route path="/admin/expert-applications/:id" element={<ExpertApplicationReviewsPage key={location.pathname} />} />
         <Route path="/admin/accounts/new" element={<AccountEditorPage create />} />
         <Route path="/admin/accounts/:id" element={<AccountEditorPage />} />
       </Route>

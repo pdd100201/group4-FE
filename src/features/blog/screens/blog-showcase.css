@@ -43,34 +43,59 @@
 .blog-showcase-list-only .blog-showcase-cards{grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));grid-auto-rows:minmax(325px,auto);overflow:visible;align-content:start;gap:16px;padding:2px}
 .blog-showcase-list-only .showcase-post-card{height:100%;min-height:0}
 .blog-showcase-list-only .showcase-card-select{display:flex;height:100%;flex-direction:column;text-decoration:none;color:inherit}
-.blog-showcase-list-only .showcase-card-cover{height:150px;flex:none}
-.blog-showcase-list-only .showcase-card-body{box-sizing:border-box;flex:1;min-height:175px;padding:14px}
-.blog-showcase-list-only .showcase-card-category{font-size:10px}
-.blog-showcase-list-only .showcase-card-body>strong{font-size:15px}
-.blog-showcase-list-only .showcase-card-meta{font-size:10px}
-.blog-showcase-list-only .showcase-card-summary{font-size:11px}
-.blog-showcase-list-only .showcase-read-link{margin:10px 0 0;color:#1760ed;font-size:11px;font-weight:750}
+.blog-showcase-list-only .showcase-card-cover{height:auto;aspect-ratio:16/9;flex:none}
+.blog-showcase-list-only .showcase-card-body{box-sizing:border-box;flex:1;min-height:175px;padding:20px}
+.blog-showcase-list-only .showcase-card-category{font-size:12px}
+.blog-showcase-list-only .showcase-card-body>strong{font-size:16px}
+.blog-showcase-list-only .showcase-card-meta{font-size:12px}
+.blog-showcase-list-only .showcase-card-summary{font-size:14px}
+.blog-showcase-list-only .showcase-read-link{margin:10px 0 0;color:#1760ed;font-size:14px;font-weight:750}
 .blog-showcase-list-only .showcase-card-select:hover .showcase-read-link{text-decoration:underline}
 .blog-showcase-list-only .showcase-recent-item{text-decoration:none}
 .blog-showcase-list-only .showcase-recent-item:hover b{text-decoration:underline}
 .blog-showcase-list-only .blog-showcase-list-header h1{font-size:28px}
 .blog-showcase-list-only .blog-showcase-list-header>p{font-size:14px}
-.blog-showcase-list-only .showcase-search input{font-size:13px}
+.blog-showcase-list-only .showcase-search input{font-size:14px}
 .blog-showcase-list-only .showcase-sidebar-card,.blog-showcase-list-only .showcase-newsletter{padding:16px}
-.blog-showcase-list-only .showcase-sidebar-card h2,.blog-showcase-list-only .showcase-newsletter h2{font-size:15px}
-.blog-showcase-list-only .showcase-category-card button{padding:8px 0;font-size:12px}
+.blog-showcase-list-only .showcase-sidebar-card h2,.blog-showcase-list-only .showcase-newsletter h2{font-size:16px}
+.blog-showcase-list-only .showcase-category-card button{padding:8px 0;font-size:14px}
 .blog-showcase-list-only .showcase-recent-item{grid-template-columns:36px minmax(0,1fr);gap:10px;margin:11px 0}
-.blog-showcase-list-only .showcase-recent-icon{width:36px;height:36px;font-size:10px}
-.blog-showcase-list-only .showcase-recent-item b{font-size:11px}
-.blog-showcase-list-only .showcase-recent-item small{font-size:9px}
-.blog-showcase-list-only .showcase-newsletter p{font-size:11px}
-.blog-showcase-list-only .showcase-newsletter input,.blog-showcase-list-only .showcase-newsletter button{height:38px;font-size:11px}
-.blog-showcase-list-only .blog-showcase-copyright{font-size:10px}
-.showcase-submit-post{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:0 12px;border:1px solid #2860e7;border-radius:7px;background:#2860e7;color:#fff!important;font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap}
+.blog-showcase-list-only .showcase-recent-icon{width:36px;height:36px;font-size:12px}
+.blog-showcase-list-only .showcase-recent-item b{font-size:14px}
+.blog-showcase-list-only .showcase-recent-item small{font-size:12px}
+.blog-showcase-list-only .showcase-newsletter p{font-size:14px}
+.blog-showcase-list-only .showcase-newsletter input,.blog-showcase-list-only .showcase-newsletter button{height:44px;font-size:14px}
+.blog-showcase-list-only .blog-showcase-copyright{font-size:12px}
+.showcase-submit-post{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 12px;border:1px solid #2860e7;border-radius:7px;background:#2860e7;color:#fff!important;font-size:14px;font-weight:700;text-decoration:none;white-space:nowrap}
 .showcase-submit-post:hover{background:#194bc4}
 .showcase-post-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.showcase-my-submissions{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:0 12px;border:1px solid #d8e2f2;border-radius:7px;background:#fff;color:#2860e7!important;font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap}
+.showcase-my-submissions{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 12px;border:1px solid #d8e2f2;border-radius:7px;background:#fff;color:#2860e7!important;font-size:14px;font-weight:700;text-decoration:none;white-space:nowrap}
 .showcase-my-submissions:hover{background:#f2f6ff}
+
+/* Match the public catalogue's readable type and control sizes. */
+.blog-showcase-list-only{font-size:14px;line-height:1.6;padding-top:24px}
+.blog-showcase-list-only .blog-showcase-topline{flex-wrap:wrap;row-gap:12px;margin-bottom:16px}
+.blog-showcase-list-only .blog-showcase-topline>small{font-size:13px}
+.blog-showcase-list-only .showcase-list-breadcrumb{flex-wrap:wrap}
+.blog-showcase-list-only .showcase-list-breadcrumb>span{font-size:12px}
+.blog-showcase-list-only .showcase-list-breadcrumb small{font-size:13px}
+.blog-showcase-list-only .blog-showcase-list-header{padding:20px}
+.blog-showcase-list-only .blog-showcase-list-header h1{line-height:1.35;margin:8px 0}
+.blog-showcase-list-only .blog-showcase-list-header>p{line-height:1.7;margin-bottom:16px}
+.blog-showcase-list-only .showcase-search{height:44px;padding:4px 8px}
+.blog-showcase-list-only .showcase-search button{width:36px;height:36px;padding:0;flex-shrink:0}
+.blog-showcase-list-only .showcase-card-cover>b{font-size:12px}
+.blog-showcase-list-only .showcase-card-cover>span{font-size:14px;line-height:1.5}
+.blog-showcase-list-only .showcase-card-body>strong{font-size:18px;line-height:1.5}
+.blog-showcase-list-only .showcase-card-meta{line-height:1.6}
+.blog-showcase-list-only .showcase-card-summary{line-height:1.7}
+.blog-showcase-list-only .showcase-category-card button{line-height:1.6}
+.blog-showcase-list-only .showcase-empty-small{font-size:13px;line-height:1.6}
+.blog-showcase-list-only .showcase-newsletter p{line-height:1.6}
+.blog-showcase-list-only .showcase-loading{font-size:14px;line-height:1.7}
+.blog-showcase-list-only .showcase-pagination button{width:40px;height:40px;padding:0;font-size:14px}
+.blog-showcase-list-only .showcase-pagination>span{font-size:14px}
+.blog-showcase-list-only .showcase-post-actions{flex-wrap:wrap;max-width:100%}
 @media(max-width:760px){.blog-showcase-list-only .blog-showcase-list-body{grid-template-columns:1fr}.blog-showcase-list-only .blog-showcase-cards{grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr))}}
-@media(max-width:760px){.blog-showcase-list-only .blog-showcase-list-header h1{font-size:22px}.blog-showcase-list-only .blog-showcase-list-header>p{font-size:12px}}
-@media(max-width:520px){.blog-showcase-list-only .blog-showcase-list-body{grid-template-columns:1fr}.blog-showcase-list-only .blog-showcase-sidebar{display:grid;grid-template-columns:1fr 1fr}.blog-showcase-list-only .showcase-newsletter{grid-column:1/-1}.blog-showcase-list-only .showcase-card-cover{height:125px}}
+@media(max-width:760px){.blog-showcase-list-only .blog-showcase-list-header h1{font-size:24px}.blog-showcase-list-only .blog-showcase-list-header>p{font-size:14px}}
+@media(max-width:520px){.blog-showcase-list-only .blog-showcase-list-body{grid-template-columns:1fr}.blog-showcase-list-only .blog-showcase-sidebar{display:grid;grid-template-columns:1fr}.blog-showcase-list-only .showcase-newsletter{grid-column:1/-1}.blog-showcase-list-only .showcase-card-cover{height:auto;aspect-ratio:16/9}}

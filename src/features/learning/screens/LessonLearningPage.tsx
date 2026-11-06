@@ -1,4 +1,6 @@
+import { LessonComments } from '../components/LessonComments'
 import { NotificationBell } from '../../notifications/components/NotificationCenter'
+import { AccountIdentity } from '../../../shared/components/layout/Layouts'
 import { LessonDiscussions } from '../../discussions/components/LessonDiscussions'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
@@ -21,8 +23,8 @@ export function LessonLearningPage() {
   const [syllabus, setSyllabus] = useState(true)
   const [searchParams, setSearchParams] = useSearchParams()
   const requestedTab = searchParams.get('tab')
-  const tab = requestedTab === 'discussions' || requestedTab === 'quizzes' ? requestedTab : 'overview'
-  const setTab = (value: 'overview' | 'quizzes' | 'discussions') => {
+  const tab = requestedTab === 'comments' || requestedTab === 'discussions' || requestedTab === 'quizzes' ? requestedTab : 'overview'
+  const setTab = (value: 'overview' | 'quizzes' | 'discussions' | 'comments') => {
     const next = new URLSearchParams(searchParams)
     if (value === 'overview') next.delete('tab'); else next.set('tab', value)
     setSearchParams(next, { replace: true })
@@ -51,7 +53,7 @@ export function LessonLearningPage() {
       <div className="learning-course-identity"><h1>{data.courseTitle}</h1><p>Giảng viên: {data.expertName} · {lesson ? `Bài ${index + 1}: ${lesson.title}` : 'Nội dung khóa học'}</p></div>
       <div className="learning-progress"><div><b>Tiến độ khóa học:</b><span>{data.progressPercent}% ({data.completedLessons}/{data.lessons.length} bài)</span></div><progress value={data.progressPercent} max={100} aria-label="Tiến độ khóa học" /></div>
       <button className="learning-focus-button" aria-pressed={!syllabus} onClick={() => setSyllabus(value => !value)}>{syllabus ? '◉ Chế độ tập trung' : '☷ Hiện giáo trình'}</button>
-      <NotificationBell /><Link to="/profile" className="student-avatar learning-avatar" aria-label="Hồ sơ của tôi">{user?.fullName?.[0] ?? 'H'}</Link>
+      <NotificationBell /><AccountIdentity className="learning-account-menu" />
     </header>
     <div className="learning-workspace">{syllabus && <aside className="learning-syllabus">
       <div className="learning-syllabus-title"><h2>Nội dung khóa học</h2><button onClick={() => setSyllabus(false)}>Thu gọn ▾</button></div>
@@ -70,8 +72,8 @@ export function LessonLearningPage() {
         {next ? <Link className="learning-next-action" to={to(next.id)}>Bài tiếp theo →</Link> : <Link className="learning-next-action" to="/student/courses">Khóa học của tôi →</Link>}
       </nav>
       {complete.isError && <p role="alert" className="learning-error">Không lưu được tiến độ. Vui lòng kiểm tra quyền học hoặc thử lại.</p>}
-      <div className="learning-tabs" role="tablist" aria-label="Nội dung bài học"><button id="lesson-overview-tab" role="tab" aria-selected={activeTab === 'overview'} aria-controls="lesson-tab-panel" onClick={() => setTab('overview')}>Tổng quan bài giảng</button>{quizzes.length > 0 && <button id="lesson-quizzes-tab" role="tab" aria-selected={activeTab === 'quizzes'} aria-controls="lesson-tab-panel" onClick={() => setTab('quizzes')}>Bài kiểm tra ({quizzes.length})</button>}<button id="lesson-discussions-tab" role="tab" aria-selected={activeTab === 'discussions'} aria-controls="lesson-tab-panel" onClick={() => setTab('discussions')}>Hỏi đáp</button></div>
-      <section id="lesson-tab-panel" role="tabpanel" aria-labelledby={activeTab === 'overview' ? 'lesson-overview-tab' : activeTab === 'discussions' ? 'lesson-discussions-tab' : 'lesson-quizzes-tab'} className="learning-overview">{activeTab === 'discussions' ? <LessonDiscussions key={lesson.id} lessonId={lesson.id} /> : activeTab === 'overview' ? <><h2>{lesson.title}</h2>{lesson.content ? <SafePostContent content={lesson.content} /> : <p>Chưa có nội dung bổ sung.</p>}</> : quizzes.map(quiz => <div className="lesson-quiz-link" key={quiz.id}><div><b>{quiz.title}</b><small>Đánh giá toàn khóa · {quiz.questionCount} câu hỏi · {quiz.durationMinutes} phút · Đạt {quiz.passRate}%</small></div><Link to={`/student/quizzes/${quiz.id}`}>Làm bài →</Link></div>)}</section>
+      <div className="learning-tabs" role="tablist" aria-label="Nội dung bài học"><button id="lesson-overview-tab" role="tab" aria-selected={activeTab === 'overview'} aria-controls="lesson-tab-panel" onClick={() => setTab('overview')}>Tổng quan bài giảng</button>{quizzes.length > 0 && <button id="lesson-quizzes-tab" role="tab" aria-selected={activeTab === 'quizzes'} aria-controls="lesson-tab-panel" onClick={() => setTab('quizzes')}>Bài kiểm tra ({quizzes.length})</button>}<button id="lesson-discussions-tab" role="tab" aria-selected={activeTab === 'discussions'} aria-controls="lesson-tab-panel" onClick={() => setTab('discussions')}>Hỏi đáp</button><button id="lesson-comments-tab" role="tab" aria-selected={activeTab === 'comments'} aria-controls="lesson-tab-panel" onClick={() => setTab('comments')}>Bình luận</button></div>
+      <section id="lesson-tab-panel" role="tabpanel" aria-labelledby={activeTab === 'comments' ? 'lesson-comments-tab' : activeTab === 'overview' ? 'lesson-overview-tab' : activeTab === 'discussions' ? 'lesson-discussions-tab' : 'lesson-quizzes-tab'} className="learning-overview">{activeTab === 'comments' ? <LessonComments key={lesson.id} lessonId={lesson.id} /> : activeTab === 'discussions' ? <LessonDiscussions key={lesson.id} lessonId={lesson.id} /> : activeTab === 'overview' ? <><h2>{lesson.title}</h2>{lesson.content ? <SafePostContent content={lesson.content} /> : <p>Chưa có nội dung bổ sung.</p>}</> : quizzes.map(quiz => <div className="lesson-quiz-link" key={quiz.id}><div><b>{quiz.title}</b><small>Đánh giá toàn khóa · {quiz.questionCount} câu hỏi · {quiz.durationMinutes} phút · Đạt {quiz.passRate}%</small></div><Link to={`/student/quizzes/${quiz.id}`}>Làm bài →</Link></div>)}</section>
     </> : <p className="learning-empty-search">Khóa học chưa có bài học đang hoạt động.</p>}</section></div>
   </main>
 }
