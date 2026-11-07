@@ -6,10 +6,10 @@ import { ChatAvatar } from './ChatAvatar'
 
 type Props = {
   peer: ChatUser | null; chat: ReturnType<typeof useChatSocket>; sending: boolean
-  listVisible: boolean; onToggleSidebar: () => void; choose: (peer: ChatUser | null) => void
+  choose: (peer: ChatUser | null) => void
 }
 
-export function ChatContacts({ peer, chat, sending, listVisible, onToggleSidebar, choose }: Props) {
+export function ChatContacts({ peer, chat, sending, choose }: Props) {
   // Search/pagination belong to the directory, independently of the active conversation and draft.
   const [search, setSearch] = useState(''), [page, setPage] = useState(0)
   const query = useDebouncedChatSearch(search)
@@ -17,10 +17,6 @@ export function ChatContacts({ peer, chat, sending, listVisible, onToggleSidebar
   const waiting = search.trim() !== query
   const people = waiting ? [] : directory.data?.content ?? []
   return <>
-    <nav className="ms-rail" aria-label="Liên hệ nhanh"><button type="button" className="ms-rail-brand" aria-label={listVisible ? 'Ẩn đoạn chat' : 'Hiện đoạn chat'} title={listVisible ? 'Ẩn đoạn chat' : 'Hiện đoạn chat'} aria-expanded={listVisible} aria-controls="chat-conversation-list" onClick={onToggleSidebar}><b className="ms-web-logo" aria-hidden="true">E</b></button>
-      <button className={`ms-rail-person ${peer === null ? 'active' : ''}`} title="Phòng chat chung" aria-label="Phòng chat chung" onClick={() => choose(null)} disabled={sending}><ChatAvatar community online={chat.connected} /></button>
-      <div className="ms-rail-people">{people.map(person => <button key={person.id} className={`ms-rail-person ${peer?.id === person.id ? 'active' : ''}`} title={person.fullName} aria-label={`Chat với ${person.fullName}`} disabled={sending} onClick={() => choose(person)}><ChatAvatar person={person} online={chat.onlineIds.includes(person.id)} />{Boolean(chat.unread[String(person.id)]) && <b className="ms-dot-badge" />}</button>)}</div>
-    </nav>
     <aside id="chat-conversation-list" className="ms-sidebar" aria-label="Danh sách trò chuyện">
       <header><div><small>EDULEARN</small><h1>Đoạn chat</h1></div></header>
       <form className="ms-search" onSubmit={e => { e.preventDefault(); setPage(0) }}><input aria-label="Tìm người dùng" placeholder="Tìm theo tên cá nhân" value={search} maxLength={100} onChange={e => { setSearch(e.target.value); setPage(0) }} /><button aria-label="Tìm kiếm" type="submit">⌕</button></form>
