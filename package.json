@@ -8,6 +8,7 @@
     "dev:team": "node scripts/dev-team.mjs",
     "build": "vite build",
     "lint": "eslint .",
+    "test:auth": "node --test tests/authentication.test.cjs",
     "test:quiz": "node scripts/quiz-smoke.mjs",
     "test:quiz:api": "node scripts/quiz-api-smoke.mjs",
     "preview": "vite preview"
