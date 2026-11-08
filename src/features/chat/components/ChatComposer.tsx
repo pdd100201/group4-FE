@@ -3,11 +3,11 @@ import type { useChatSocket } from '../../../shared/hooks/useChat'
 import { chatApi, type ChatAttachment } from '../api/chatApi'
 
 type Props = {
-  peerId: number | null; chat: Pick<ReturnType<typeof useChatSocket>, 'send' | 'connected'>
+  peerId: number; courseId: number; chat: Pick<ReturnType<typeof useChatSocket>, 'send' | 'connected'>
   onBusyChange: (busy: boolean) => void
 }
 
-export function ChatComposer({ peerId, chat, onBusyChange }: Props) {
+export function ChatComposer({ peerId, courseId, chat, onBusyChange }: Props) {
   const [draft, setDraft] = useState(''), [sending, setSending] = useState(false), [error, setError] = useState('')
   const [selectedFile, setSelectedFile] = useState<File | null>(null), [preview, setPreview] = useState('')
   // Keep the same upload and UUID on retry when a socket acknowledgement is lost.
@@ -31,10 +31,10 @@ export function ChatComposer({ peerId, chat, onBusyChange }: Props) {
     if ((!text && !selectedFile) || text.length > 2000 || sending || !chat.connected) return
     setSending(true); onBusyChange(true); setError('')
     try {
-      if (selectedFile && !uploaded.current) uploaded.current = await chatApi.upload(selectedFile, peerId)
-      const signature = JSON.stringify([text, peerId, uploaded.current?.id])
+      if (selectedFile && !uploaded.current) uploaded.current = await chatApi.upload(selectedFile, peerId, courseId)
+      const signature = JSON.stringify([text, peerId, courseId, uploaded.current?.id])
       if (request.current.signature !== signature || !request.current.id) request.current = { signature, id: crypto.randomUUID() }
-      await chat.send(peerId, text, request.current.id, uploaded.current?.id)
+      await chat.send(peerId, courseId, text, request.current.id, uploaded.current?.id)
       setDraft(''); setSelectedFile(null); uploaded.current = null; request.current.id = ''
     } catch (e) {
       const apiError = e as { response?: { data?: { message?: string } } }
