@@ -72,7 +72,7 @@ export function AppRoutes() {
     <Route path="/forgot-password" element={<ForgotPasswordPage />} />
     <Route path="/reset-password" element={<ResetPasswordPage />} />
     <Route path="/verify-email" element={<VerifyEmailPage />} />
-    <Route element={<ProtectedRoute roles={['ROLE_STUDENT', 'ROLE_EXPERT']} />}>
+    <Route element={<ProtectedRoute roles={['ROLE_STUDENT', 'ROLE_EXPERT', 'ROLE_MANAGER']} />}>
       <Route element={<ProfileLayout />}><Route path="/chat" element={<ChatPage />} /></Route>
     </Route>
     <Route element={<ProtectedRoute />}>
