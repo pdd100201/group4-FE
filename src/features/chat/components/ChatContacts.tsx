@@ -22,13 +22,13 @@ export function ChatContacts({ contact, chat, sending, listVisible, onToggleSide
       <div className="ms-rail-people">{contacts.map(item => <button key={key(item)} className={`ms-rail-person ${selected(item) ? 'active' : ''}`} title={`${item.courseTitle} · ${item.peer.fullName}`} aria-label={`Chat với ${item.peer.fullName} về ${item.courseTitle}`} disabled={sending} onClick={() => choose(item)}><ChatAvatar person={item.peer} online={chat.onlineIds.includes(item.peer.id)} />{Boolean(chat.unread[key(item)]) && <b className="ms-dot-badge" />}</button>)}</div>
     </nav>
     <aside id="chat-conversation-list" className="ms-sidebar" aria-label="Danh sách trò chuyện">
-      <header><div><small>EDULEARN</small><h1>Trao đổi khóa học</h1></div></header>
+      <header><div><small>EDULEARN</small><h1>Trò chuyện</h1></div></header>
       <form className="ms-search" onSubmit={e => { e.preventDefault(); setPage(0) }}><input aria-label="Tìm khóa học hoặc người trò chuyện" placeholder="Tìm khóa học hoặc người trò chuyện" value={search} maxLength={100} onChange={e => { setSearch(e.target.value); setPage(0) }} /><button aria-label="Tìm kiếm" type="submit">⌕</button></form>
-      <p className="ms-section-label">Cuộc trò chuyện theo khóa học</p>
+      <p className="ms-section-label">Danh sách liên hệ</p>
       <div className="ms-conversations">
         {(directory.isPending || waiting) && <p className="ms-hint">Đang tải khóa học…</p>}
         {!waiting && directory.isError && <p className="ms-hint" role="alert">Không tải được liên hệ. <button onClick={() => void directory.refetch()}>Thử lại</button></p>}
-        {!waiting && directory.data?.content.length === 0 && <p className="ms-hint">Chưa có khóa học đang học hoặc học viên cần hỗ trợ.</p>}
+        {!waiting && directory.data?.content.length === 0 && <p className="ms-hint">Chưa có liên hệ trò chuyện.</p>}
         {contacts.map(item => <button key={key(item)} className={`ms-person ${selected(item) ? 'selected' : ''}`} onClick={() => choose(item)} disabled={sending}><ChatAvatar person={item.peer} online={chat.onlineIds.includes(item.peer.id)} /><span className="ms-person-text"><strong>{item.courseTitle}</strong><small>{item.peer.fullName} · {chat.onlineIds.includes(item.peer.id) ? 'Đang mở chat' : 'Ngoại tuyến'}</small></span>{Boolean(chat.unread[key(item)]) && <b className="ms-unread">{chat.unread[key(item)]}</b>}</button>)}
       </div>
       {!waiting && directory.data && directory.data.totalPages > 1 && <div className="ms-pagination"><button disabled={page === 0} onClick={() => setPage(p => p - 1)}>Trước</button><span>{page + 1}/{directory.data.totalPages}</span><button disabled={page + 1 >= directory.data.totalPages} onClick={() => setPage(p => p + 1)}>Sau</button></div>}

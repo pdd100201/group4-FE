@@ -70,7 +70,7 @@ export function useChatSocket(userId: number) {
           }
           if (data.type === 'MESSAGE' && typeof data.message === 'object' && data.message) {
             const message = data.message
-            if (!message.courseId || !message.recipientId) return
+            if (message.courseId == null || !message.recipientId) return
             const peer = message.sender.id === userId ? message.recipientId : message.sender.id
             const conversation = `${message.courseId}:${peer}`
             // Server delivery is authoritative; cache keys isolate each user's course conversation.
