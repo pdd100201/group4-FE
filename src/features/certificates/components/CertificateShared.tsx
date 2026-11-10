@@ -12,10 +12,21 @@ export function CertificateStatus({ status }: { status: string }) {
 }
 export function CertificatePreview({ certificate: c }: { certificate: PublicCertificate }) {
  return <section className={`cert-preview ${c.status === 'REVOKED' ? 'cert-preview-revoked' : ''}`} aria-label="Thông tin chứng nhận">
-  <div className="cert-preview-brand">E <span>EduLearn</span></div><p className="cert-preview-issuer">{c.issuerName}</p>
-  <h2>CHỨNG NHẬN HOÀN THÀNH</h2><p>Trao cho học viên</p><strong className="cert-preview-name">{c.studentName}</strong>
-  <p>Đã hoàn thành các yêu cầu của khóa học</p><h3>{c.courseTitle}</h3>
-  <footer><div><small>Ngày cấp</small><b>{certificateDate(c.issuedAt)}</b></div><div><small>Mã chứng nhận</small><code>{c.code}</code></div></footer>
+  <div className="cert-preview-content">
+   <div className="cert-preview-brand">EduLearn</div>
+   <p className="cert-preview-date">Ngày cấp {certificateDate(c.issuedAt)}</p>
+   <strong className="cert-preview-name">{c.studentName}</strong>
+   <p>Đã hoàn thành khóa học</p>
+   <h3>{c.courseTitle}</h3>
+   <div className="cert-preview-issuer"><b>{c.issuerName}</b><small>Đơn vị cấp chứng chỉ</small></div>
+  </div>
+  <div className="cert-preview-side">
+   <div className="cert-preview-ribbon">
+    <h2>CHỨNG CHỈ<span>HOÀN THÀNH KHÓA HỌC</span></h2>
+    <div className="cert-preview-seal" aria-hidden="true"><b>EDULEARN</b><small>CHỨNG NHẬN</small></div>
+   </div>
+   <div className="cert-preview-code"><small>Mã chứng chỉ</small><code>{c.code}</code></div>
+  </div>
   {c.status === 'REVOKED' && <p className="cert-revoked-note">Chứng nhận đã bị thu hồi{c.revokedAt ? ` ngày ${certificateDate(c.revokedAt)}` : ''}.</p>}
  </section>
 }

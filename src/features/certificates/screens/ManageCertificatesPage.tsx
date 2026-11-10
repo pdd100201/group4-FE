@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '../../../shared/context/AuthContext'
 import { certificateApi, managementBase, type CourseOption, type PolicyOptions } from '../api/certificateApi'
@@ -7,7 +8,8 @@ import { CertificateError, CertificateModal, CertificatePagination, CertificateP
 export function ManageCertificatesPage() {
  const { user } = useAuth()
  const base = managementBase(!!user?.roles.includes('ROLE_ADMIN'))
- const [tab, setTab] = useState<'certificates' | 'policy'>('certificates')
+ const [params, setParams] = useSearchParams()
+ const tab = params.get('tab') === 'policy' ? 'policy' : 'certificates'
  const [draft, setDraft] = useState('')
  const [search, setSearch] = useState('')
  const [status, setStatus] = useState('all')
@@ -18,7 +20,7 @@ export function ManageCertificatesPage() {
   queryFn: () => certificateApi.list(base, search, status, course?.id, page), enabled: tab === 'certificates', retry: false })
  return <main className="certificates-ui cert-page">
   <header className="cert-page-heading"><div><span className="cert-eyebrow">QUẢN LÝ ĐÀO TẠO</span><h1>Chứng nhận hoàn thành</h1><p>Cấu hình điều kiện cấp và quản lý vòng đời chứng nhận.</p></div></header>
-  <div className="cert-tabs" role="group" aria-label="Quản lý chứng nhận"><button aria-pressed={tab === 'certificates'} onClick={() => setTab('certificates')}>Chứng nhận đã cấp</button><button aria-pressed={tab === 'policy'} onClick={() => setTab('policy')}>Điều kiện cấp theo khóa</button></div>
+  <div className="cert-tabs" role="group" aria-label="Quản lý chứng nhận"><button aria-pressed={tab === 'certificates'} onClick={() => setParams({})}>Chứng nhận đã cấp</button><button aria-pressed={tab === 'policy'} onClick={() => setParams({ tab: 'policy' })}>Điều kiện cấp theo khóa</button></div>
   {tab === 'certificates' ? <>
    <form className="cert-toolbar" onSubmit={e => { e.preventDefault(); setSearch(draft.trim()); setPage(0) }}>
     <input type="search" aria-label="Tìm chứng nhận" maxLength={100} value={draft} onChange={e => setDraft(e.target.value)} placeholder="Tên học viên, khóa học hoặc mã chứng nhận…" />
@@ -31,23 +33,40 @@ export function ManageCertificatesPage() {
     {!list.data.content.length && <p className="cert-empty">Không có chứng nhận phù hợp.</p>}
     <CertificatePagination page={page} pages={list.data.totalPages} busy={list.isFetching} onChange={setPage} />
    </>}
-  </> : <>
-   <section className="cert-panel"><h2>Chọn khóa học</h2><CoursePicker base={base} selected={course?.id} onSelect={setCourse} /></section>
-   {course ? <PolicyPanel key={course.id} base={base} courseId={course.id} /> : <p className="cert-empty">Chọn khóa học để cấu hình điều kiện và xem lịch sử phiên bản.</p>}
-  </>}
+  </> : <section className="cert-panel">
+   <h2>Khóa học đủ điều kiện cấp chứng nhận</h2>
+   <CoursePicker key="policy" base={base} />
+  </section>}
   {selected !== null && <CertificateModal title="Quản lý chứng nhận" onClose={() => setSelected(null)}><ManagementDetail key={selected} base={base} id={selected} /></CertificateModal>}
  </main>
 }
-function CoursePicker({ base, selected, onSelect }: { base: string; selected?: number; onSelect: (course: CourseOption) => void }) {
+export function CertificatePolicyPage() {
+ const { user } = useAuth()
+ const base = managementBase(!!user?.roles.includes('ROLE_ADMIN'))
+ const id = Number(useParams().courseId)
+
+ return <main className="certificates-ui cert-page">
+  <header className="cert-page-heading"><h1>Cấu hình cấp chứng nhận</h1></header>
+  <Link to="../../..?tab=policy" relative="path">← Quay lại danh sách khóa học</Link>
+  {Number.isSafeInteger(id) && id > 0
+   ? <PolicyPanel key={id} base={base} courseId={id} />
+   : <p className="cert-error" role="alert">Mã khóa học không hợp lệ.</p>}
+ </main>
+}
+
+function CoursePicker({ base, selected, onSelect }: { base: string; selected?: number; onSelect?: (course: CourseOption) => void }) {
  const { user } = useAuth()
  const [draft, setDraft] = useState('')
  const [search, setSearch] = useState('')
  const [page, setPage] = useState(0)
- const query = useQuery({ queryKey: ['certificate-course-options', user?.id, base, search, page], queryFn: () => certificateApi.options(base, search, page), retry: false })
+ const eligibleOnly = !onSelect
+ const query = useQuery({ queryKey: ['certificate-course-options', user?.id, base, search, page, eligibleOnly], queryFn: () => certificateApi.options(base, search, page, eligibleOnly), retry: false })
  return <div className="cert-course-picker"><form className="cert-toolbar" onSubmit={e => { e.preventDefault(); setSearch(draft.trim()); setPage(0) }}><input type="search" maxLength={100} aria-label="Tìm khóa để cấu hình" placeholder="Tìm khóa học…" value={draft} onChange={e => setDraft(e.target.value)} /><button>Tìm khóa</button></form>
   {query.isPending && <p role="status">Đang tải khóa học…</p>}{query.isError && <CertificateError error={query.error} />}
-  {query.isSuccess && <><ul>{query.data.content.map(course => <li key={course.id}><button aria-pressed={selected === course.id} onClick={() => onSelect(course)}><strong>{course.title}</strong><small>{course.expertName} · {course.status}</small></button></li>)}</ul>
-   {!query.data.content.length && <p>Không tìm thấy khóa học.</p>}<CertificatePagination page={page} pages={query.data.totalPages} busy={query.isFetching} onChange={setPage} /></>}
+  {query.isSuccess && <><ul>{query.data.content.map(course => <li key={course.id}>{onSelect
+    ? <button aria-pressed={selected === course.id} onClick={() => onSelect(course)}><strong>{course.title}</strong><small>{course.expertName} · {course.status}</small></button>
+    : <Link to={'courses/' + course.id + '/policy'}><strong>{course.title}</strong><small>{course.expertName} · {course.status}</small></Link>}</li>)}</ul>
+   {!query.data.content.length && <p>{eligibleOnly ? 'Không tìm thấy khóa học đủ điều kiện.' : 'Không tìm thấy khóa học.'}</p>}<CertificatePagination page={page} pages={query.data.totalPages} busy={query.isFetching} onChange={setPage} /></>}
  </div>
 }
 function PolicyPanel({ base, courseId }: { base: string; courseId: number }) {

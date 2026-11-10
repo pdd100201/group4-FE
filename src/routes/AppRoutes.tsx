@@ -1,6 +1,6 @@
 import { StudentCertificatesPage } from '../features/certificates/screens/StudentCertificatesPage'
 import { VerifyCertificatePage } from '../features/certificates/screens/VerifyCertificatePage'
-import { ManageCertificatesPage } from '../features/certificates/screens/ManageCertificatesPage'
+import { CertificatePolicyPage, ManageCertificatesPage } from '../features/certificates/screens/ManageCertificatesPage'
 import { NotificationsPage } from '../features/notifications/components/NotificationCenter'
 import { LessonDiscussions } from '../features/discussions/components/LessonDiscussions'
 import { Route, Routes, useLocation } from 'react-router-dom'
@@ -44,7 +44,6 @@ import { StudentQuizPage } from '../features/learning/screens/StudentQuizPage'
 import { StudentQuizResultPage } from '../features/learning/screens/StudentQuizResultPage'
 import { ManagerPostsPage } from '../features/management/screens/ManagerPostsPage'
 import { ManagerPostDetailPage } from '../features/management/screens/ManagerPostDetailPage'
-import { ExpertApplicationReviewsPage } from '../features/expert-applications/screens/ExpertApplicationReviewsPage'
 
 export function AppRoutes() {
   const location = useLocation()
@@ -113,11 +112,10 @@ export function AppRoutes() {
         <Route path="/admin/transactions" element={<ManagementRecordsPage kind="transactions" />} />
         <Route path="/admin/transactions/:id" element={<ManagementRecordDetailPage kind="transactions" />} />
         <Route path="/admin/certificates" element={<ManageCertificatesPage />} />
+        <Route path="/admin/certificates/courses/:courseId/policy" element={<CertificatePolicyPage />} />
         <Route path="/admin/reports" element={<ReportsPage />} />
         <Route path="/admin/discussions" element={<div className="discussion-management"><LessonDiscussions /></div>} />
         <Route path="/admin/accounts" element={<AccountsPage />} />
-        <Route path="/admin/expert-applications" element={<ExpertApplicationReviewsPage />} />
-        <Route path="/admin/expert-applications/:id" element={<ExpertApplicationReviewsPage key={location.pathname} />} />
         <Route path="/admin/accounts/new" element={<AccountEditorPage create />} />
         <Route path="/admin/accounts/:id" element={<AccountEditorPage />} />
       </Route>
@@ -135,6 +133,7 @@ export function AppRoutes() {
         <Route path="/manager/courses/:courseId/review/quizzes" element={<ManagerQuizPreviewPage />} />
         <Route path="/manager/discussions" element={<div className="discussion-management"><LessonDiscussions /></div>} />
         <Route path="/manager/certificates" element={<ManageCertificatesPage />} />
+        <Route path="/manager/certificates/courses/:courseId/policy" element={<CertificatePolicyPage />} />
         <Route path="/manager/posts" element={<ManagerPostsPage />} />
         <Route path="/manager/posts/:postId" element={<ManagerPostDetailPage />} />
       </Route>

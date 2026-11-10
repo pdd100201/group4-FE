@@ -18,7 +18,6 @@ const posts = Array.from({ length: 14 }, (_, i) => ({
 let comments = [{ id: 1, postId: 1, postTitle: 'Bài viết Java 01', authorName: 'Học viên thử nghiệm', avatarUrl: null,
   content: 'Bình luận gốc', status: 'VISIBLE', createdAt: '2026-10-11T09:00:00Z', updatedAt: '2026-10-11T09:00:00Z' }]
 let mode = 'ok'
-const seenRequests = []
 async function contextFor(role) {
   const context = await browser.newContext({ viewport: { width: 1365, height: 900 } })
   if (role) await context.addInitScript(role => {
@@ -28,15 +27,14 @@ async function contextFor(role) {
   await context.route('https://fonts.googleapis.com/**', route => route.abort())
   await context.route('**/api/v1/**', async route => {
     const req = route.request(), url = new URL(req.url()), method = req.method()
-    seenRequests.push(method + ' ' + url.pathname + url.search)
     const json = (body, status = 200) => route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) })
     const permissions = c => ({ ...c, canEdit: role === 'ROLE_STUDENT', canDelete: ['ROLE_STUDENT', 'ROLE_MANAGER', 'ROLE_ADMIN'].includes(role) })
-    if (url.pathname === '/api/v1/public/courses') return json([{ id: 7, title: 'Java cơ bản', description: 'Khóa học Java', category: 'Lập trình', price: 200000, thumbnailUrl: null, expertName: 'Giảng viên thử nghiệm' }])
+    if (url.pathname === '/api/v1/public/courses') return json([{ id: 7, title: 'Java cơ bản', description: 'Khóa học Java', category: 'Lập trình', price: 200000, thumbnailUrl: null, expertName: 'Giảng viên thử nghiệm' }, { id: 8, title: 'Python cơ bản', description: 'Khóa học Python', category: 'Lập trình', price: 0, thumbnailUrl: null, expertName: 'Giảng viên thử nghiệm' }])
     if (url.pathname === '/api/v1/public/posts/categories') return json(['Lập trình', 'Thiết kế'])
     if (url.pathname === '/api/v1/public/posts') {
       if (mode === 'error') return json({ message: 'Test outage' }, 503)
       if (mode === 'empty') return json({ content: [], totalElements: 0, totalPages: 0, number: 0 })
-      let results = posts.filter(p => (!url.searchParams.get('search') || p.title.includes(url.searchParams.get('search'))) && (!url.searchParams.get('category') || p.category === url.searchParams.get('category')))
+      const results = posts.filter(p => (!url.searchParams.get('search') || p.title.includes(url.searchParams.get('search'))) && (!url.searchParams.get('category') || p.category === url.searchParams.get('category')))
       const page = Number(url.searchParams.get('page') || 0), size = Number(url.searchParams.get('size') || 9)
       return json({ content: results.slice(page * size, (page + 1) * size), totalElements: results.length, totalPages: Math.ceil(results.length / size), number: page })
     }
@@ -73,20 +71,25 @@ try {
   await page.getByRole('textbox', { name: 'Tìm kiếm khóa học' }).fill('Java')
   await page.getByRole('button', { name: 'Tìm kiếm', exact: true }).click()
   await page.waitForURL('**/courses?search=Java')
-  await page.locator('.course-card').waitFor()
-  assert(seenRequests.some(req => req.includes('/public/courses?search=Java')))
+  const courses = page.locator('.course-card')
+  await courses.filter({ hasText: 'Java cơ bản' }).waitFor()
+  assert.equal(await courses.count(), 1)
+  assert.equal(await courses.filter({ hasText: 'Python cơ bản' }).count(), 0)
   await page.goto(base + '/blog')
-  await page.locator('.blog-post-card').first().waitFor()
-  await page.getByRole('button', { name: 'Lập trình', exact: true }).click()
+  const postsInList = page.getByRole('region', { name: 'Danh sách bài viết' }).getByRole('link', { name: /^Đọc bài viết:/ })
+  await postsInList.first().waitFor()
+  await page.getByRole('button', { name: 'Lập trình (12)', exact: true }).click()
   await page.waitForURL('**/blog?category=*')
-  await page.getByRole('button', { name: 'Sau', exact: true }).click()
+  await page.getByRole('button', { name: 'Trang sau', exact: true }).click()
   await page.waitForURL('**page=1')
   assert.equal(new URL(page.url()).searchParams.get('category'), 'Lập trình')
-  await page.getByRole('textbox', { name: 'Tìm bài viết' }).fill('01')
+  await page.locator('button[aria-current=page]').filter({ hasText: /^2$/ }).waitFor()
+  assert.equal(await postsInList.count(), 3)
+  await page.getByRole('textbox', { name: 'Tìm kiếm bài viết' }).fill('01')
   await page.getByRole('button', { name: 'Tìm kiếm', exact: true }).click()
   await page.waitForURL('**search=01')
-  await page.waitForFunction(() => document.querySelectorAll('.blog-post-card').length === 1)
-  assert.equal(await page.locator('.blog-post-card').count(), 1)
+  await page.getByRole('link', { name: 'Đọc bài viết: Bài viết Java 01' }).waitFor()
+  assert.equal(await postsInList.count(), 1)
   assert.equal(new URL(page.url()).searchParams.has('page'), false)
   await page.screenshot({ path: path.join(output, 'blog-list-desktop.png'), fullPage: true })
   await page.goto(base + '/blog/1')
@@ -107,7 +110,7 @@ try {
   await sp.getByLabel('Chia sẻ ý kiến của bạn').fill('<script>test</script> Bình luận mới')
   await sp.getByRole('button', { name: 'Gửi bình luận' }).click()
   await sp.getByText('<script>test</script> Bình luận mới', { exact: true }).waitFor()
-  assert.equal(await sp.locator('.blog-comments script').count(), 0)
+  assert.equal(await sp.locator('.showcase-comments script').count(), 0)
   await sp.getByRole('button', { name: 'Sửa', exact: true }).first().click()
   await sp.getByLabel('Sửa bình luận').fill('Đã cập nhật qua API')
   await sp.getByRole('button', { name: 'Lưu', exact: true }).click()
@@ -118,7 +121,7 @@ try {
   for (const role of ['ROLE_EXPERT', 'ROLE_MANAGER', 'ROLE_ADMIN']) {
     const actor = await contextFor(role), actorPage = await actor.newPage()
     await actorPage.goto(base + '/blog/1')
-    await actorPage.locator('.blog-comment').waitFor()
+    await actorPage.getByRole('region', { name: 'Bình luận', exact: true }).getByRole('article').waitFor()
     assert.equal(await actorPage.getByRole('button', { name: 'Sửa', exact: true }).count(), 0)
     assert.equal(await actorPage.getByRole('button', { name: 'Gửi bình luận', exact: true }).count(), 0)
     assert.equal(await actorPage.getByRole('button', { name: 'Xóa', exact: true }).count(), role === 'ROLE_EXPERT' ? 0 : 1)
@@ -129,7 +132,7 @@ try {
   await page.getByText('Không tìm thấy bài viết phù hợp.', { exact: true }).waitFor()
   mode = 'error'
   await page.goto(base + '/blog?search=error-test')
-  await page.getByText('Không tải được bài viết.', { exact: false }).first().waitFor({ timeout: 20000 })
+  await page.getByRole('alert').filter({ hasText: 'Không tải được các bài viết mới.' }).waitFor({ timeout: 20000 })
   assert.deepEqual(errors, [])
   console.log('PASS: Home search; blog filters/paging; guest/Student permissions; comment create/edit/delete/detail; XSS; empty/error; mobile overflow.')
 } finally { await browser.close() }

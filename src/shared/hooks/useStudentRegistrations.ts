@@ -11,5 +11,5 @@ export function useStudentRegistration(id: number) {
 }
 export function useCreateRegistration() {
   const client = useQueryClient()
-  return useMutation({ mutationFn: registrationApi.create, onSuccess: async () => { await client.invalidateQueries({ queryKey: ['student-registrations'] }) } })
+  return useMutation({ mutationFn: registrationApi.create, onSuccess: async () => { await Promise.all(['student-registrations', 'published-courses', 'course-enrollment'].map(key => client.invalidateQueries({ queryKey: [key] }))) } })
 }

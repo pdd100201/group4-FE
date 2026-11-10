@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import apiClient from '../../../shared/services/apiClient'
 import { useAuth } from '../../../shared/context/AuthContext'
 import { useChatHistory, useChatSocket } from '../../../shared/hooks/useChat'
-import type { ChatUser } from '../api/chatApi'
+import type { ChatContact } from '../api/chatApi'
 import { ChatContacts } from '../components/ChatContacts'
 import { ChatThread } from '../components/ChatThread'
 import { ChatComposer } from '../components/ChatComposer'
@@ -13,14 +16,21 @@ export function ChatPage() {
 }
 
 function Workspace({ userId }: { userId: number }) {
-  const [peer, setPeer] = useState<ChatUser | null>(null)
+  const [params] = useSearchParams()
+  const courseId = Number(params.get('courseId')), peerId = Number(params.get('peerId'))
+  const requested = useQuery({ queryKey: ['chat-contact', userId, courseId, peerId], enabled: Number.isSafeInteger(courseId) && courseId > 0 && Number.isSafeInteger(peerId) && peerId > 0,
+    queryFn: async () => (await apiClient.get<ChatContact>('/chat/contact', { params: { courseId, peerId } })).data })
+  const [contact, setContact] = useState<ChatContact | null>(null)
   const [threadOpen, setThreadOpen] = useState(false), [sidebarOpen, setSidebarOpen] = useState(true)
   const [sending, setSending] = useState(false)
   const [compact, setCompact] = useState(() => window.matchMedia('(max-width:700px)').matches)
   const messageBox = useRef<HTMLDivElement>(null)
-  const history = useChatHistory(peer?.id ?? null, userId), chat = useChatSocket(userId)
+  const history = useChatHistory(contact?.peer.id ?? null, contact?.courseId ?? null, userId), chat = useChatSocket(userId)
   const messages = [...new Map((history.data?.pages.flat() ?? []).map(m => [m.id, m])).values()].sort((a, b) => a.id - b.id)
   const latest = messages.at(-1)?.id
+  useEffect(() => {
+    if (requested.data) { setContact(requested.data); setThreadOpen(true); chat.selectConversation(requested.data.courseId, requested.data.peer.id) }
+  }, [requested.data, chat.selectConversation])
 
   useEffect(() => {
     const media = window.matchMedia('(max-width:700px)')
@@ -30,20 +40,21 @@ function Workspace({ userId }: { userId: number }) {
   }, [])
   useEffect(() => {
     if (messageBox.current) messageBox.current.scrollTop = messageBox.current.scrollHeight
-  }, [latest, peer?.id])
+  }, [latest, contact?.courseId, contact?.peer.id])
 
-  const choose = (next: ChatUser | null) => {
+  const choose = (next: ChatContact) => {
     if (sending) return
-    setPeer(next); setThreadOpen(true); chat.selectPeer(next?.id ?? null)
+    setContact(next); setThreadOpen(true); chat.selectConversation(next.courseId, next.peer.id)
   }
   const toggleSidebar = () => compact ? setThreadOpen(open => !open) : setSidebarOpen(open => !open)
   const listVisible = compact ? !threadOpen : sidebarOpen
 
   // Hide panels with CSS rather than unmounting the thread/composer: drafts and uploads survive logo toggles.
   return <main className={`messenger ${threadOpen ? 'thread-open' : ''} ${!compact && !sidebarOpen ? 'sidebar-collapsed' : ''}`}>
-    <ChatContacts peer={peer} chat={chat} sending={sending} listVisible={listVisible} onToggleSidebar={toggleSidebar} choose={choose} />
-    <ChatThread peer={peer} userId={userId} chat={chat} history={history} messages={messages} messageBox={messageBox} onBack={() => setThreadOpen(false)}>
-      <ChatComposer key={peer?.id ?? 'community'} peerId={peer?.id ?? null} chat={chat} onBusyChange={setSending} />
+    {requested.isError && <p role="alert">Không thể mở cuộc trò chuyện. Quyền học có thể đã hết hạn.</p>}
+    <ChatContacts contact={contact} chat={chat} sending={sending} listVisible={listVisible} onToggleSidebar={toggleSidebar} choose={choose} />
+    <ChatThread contact={contact} userId={userId} chat={chat} history={history} messages={messages} messageBox={messageBox} onBack={() => setThreadOpen(false)}>
+      {contact && <ChatComposer key={`${contact.courseId}:${contact.peer.id}`} peerId={contact.peer.id} courseId={contact.courseId} chat={chat} onBusyChange={setSending} />}
     </ChatThread>
   </main>
 }
