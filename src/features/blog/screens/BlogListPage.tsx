@@ -1,8 +1,8 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useMemo, type FormEvent } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../../shared/context/AuthContext'
 import { useBlogCategories, useBlogPosts } from '../../../shared/hooks/useBlogPosts'
-import { blogApi, type BlogPost } from '../api/blogApi'
+import type { BlogPost } from '../api/blogApi'
 import { postDate } from './PostCard'
 import './blog.css'
 import './blog-showcase.css'
@@ -42,28 +42,6 @@ function BlogShowcaseSidebar({
   onChooseCategory: (category: string) => void
   totalCount?: number
 }) {
-  const [newsletterEmail, setNewsletterEmail] = useState('')
-  const [newsletterState, setNewsletterState] = useState<{ kind: 'success' | 'error'; message: string } | null>(null)
-  const [isSubscribing, setIsSubscribing] = useState(false)
-
-  const subscribe = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const email = newsletterEmail.trim()
-    if (!email) return
-    setIsSubscribing(true)
-    setNewsletterState(null)
-    try {
-      const response = await blogApi.subscribeNewsletter(email)
-      setNewsletterState({ kind: 'success', message: response.message || 'Đăng ký nhận bản tin thành công.' })
-      setNewsletterEmail('')
-    } catch (error) {
-      const responseMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message
-      setNewsletterState({ kind: 'error', message: responseMessage || 'Không thể đăng ký lúc này. Vui lòng thử lại sau.' })
-    } finally {
-      setIsSubscribing(false)
-    }
-  }
-
   return <aside className="blog-showcase-sidebar">
     <section className="showcase-sidebar-card showcase-category-card">
       <h2>Danh mục bài viết</h2>
@@ -78,15 +56,6 @@ function BlogShowcaseSidebar({
         <div><b>{entry.post.title}</b><small>{postDate(entry.post.updatedAt)}</small></div>
       </Link>)}
       {recentEntries.length === 0 && <p className="showcase-empty-small">Chưa có bài viết mới.</p>}
-    </section>
-    <section className="showcase-newsletter">
-      <h2>📬 Đăng ký bản tin</h2>
-      <p>Nhận bài học và lộ trình mới qua email mỗi tuần.</p>
-      <form onSubmit={subscribe}>
-        <input type="email" aria-label="Email đăng ký" placeholder="name@example.com" autoComplete="email" maxLength={255} required value={newsletterEmail} onChange={event => setNewsletterEmail(event.target.value)} disabled={isSubscribing} />
-        <button type="submit" disabled={isSubscribing}>{isSubscribing ? 'Đang đăng ký…' : 'Đăng ký ngay'}</button>
-      </form>
-      {newsletterState && <p className={`showcase-newsletter-feedback ${newsletterState.kind}`} role={newsletterState.kind === 'error' ? 'alert' : 'status'}>{newsletterState.message}</p>}
     </section>
   </aside>
 }

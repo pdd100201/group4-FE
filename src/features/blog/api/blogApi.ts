@@ -15,7 +15,6 @@ export interface BlogComment {
   status: 'VISIBLE' | 'HIDDEN' | 'DISABLED' | 'DELETED'; createdAt: string | null; updatedAt: string | null
   canEdit: boolean; canDelete: boolean; likeCount: number; liked: boolean; canLike: boolean; parentId: number | null; replyCount: number
 }
-export interface NewsletterSubscriptionResponse { message: string }
 export const blogApi = {
   list: async (params: PostFilters): Promise<BlogPage<BlogPost>> => (await apiClient.get<BlogPage<BlogPost>>('/public/posts', { params })).data,
   categories: async (): Promise<string[]> => (await apiClient.get<string[]>('/public/posts/categories')).data,
@@ -28,8 +27,6 @@ export const blogApi = {
   editComment: async (id: number, content: string): Promise<BlogComment> => (await apiClient.put<BlogComment>(`/student/comments/${id}`, { content })).data,
   likeComment: async ({ id, liked }: { id: number; liked: boolean }): Promise<BlogComment> => (await apiClient.put<BlogComment>(`/comments/${id}/like`, { liked })).data,
   deleteComment: async (id: number): Promise<void> => { await apiClient.delete(`/comments/${id}`) },
-  subscribeNewsletter: async (email: string): Promise<NewsletterSubscriptionResponse> =>
-    (await apiClient.post<NewsletterSubscriptionResponse>('/public/newsletter/subscriptions', { email })).data,
   submitPost: async (input: PostSubmissionInput): Promise<PostSubmission> =>
     (await apiClient.post<PostSubmission>('/posts/submissions', input)).data,
   myPostSubmissions: async (page = 0, size = 10): Promise<BlogPage<PostSubmission>> =>
