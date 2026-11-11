@@ -5,6 +5,8 @@ import { useAvailableReports, useReport } from '../../../shared/hooks/useReports
 import { reportApi } from '../api/reportApi'
 import type { ReportKind } from '../../../shared/types/report'
 import '../../management/screens/management.css'
+import { ReportChart } from '../../../shared/components/report-chart/ReportChart'
+import { countByStatus } from '../../../shared/components/report-chart/chartData'
 import './ReportsPage.css'
 
 const names: Record<ReportKind, string> = {
@@ -123,6 +125,14 @@ export function ReportsPage() {
     {data && !report.error && <>
       <dl className="report-totals"><div><dt>{registrations ? 'Số đăng ký' : 'Số khóa học'}</dt><dd>{data.records.totalElements.toLocaleString('vi-VN')}</dd></div>
         <div><dt>{registrations ? 'Tổng tiền đăng ký' : 'Doanh thu thanh toán thành công'}</dt><dd>{money(data.totalAmount)}</dd></div></dl>
+      <ReportChart
+        title={kind === 'REVENUE' ? 'Doanh thu theo khóa học' : registrations ? 'Đăng ký theo trạng thái' : 'Khóa học theo trạng thái'}
+        scope="Dữ liệu của trang hiện tại theo bộ lọc"
+        points={kind === 'REVENUE'
+          ? data.records.items.map(row => ({ label: row.courseTitle, value: row.amount ?? 0 }))
+          : countByStatus(data.records.items, statuses)}
+        formatValue={kind === 'REVENUE' ? money : undefined}
+      />
       {data.records.items.length ? <div className="management-table-wrap" aria-busy={report.isFetching}>
         <table className="management-table"><thead><tr><th>{registrations ? 'Mã đăng ký' : 'Mã khóa học'}</th><th>Khóa học</th>
           {registrations && <><th>Học viên</th><th>Ngày đăng ký (UTC)</th></>}
