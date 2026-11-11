@@ -11,6 +11,10 @@ export interface PaymentResponse {
   accountHolder: string | null
   transferContent: string | null
   amount: number
+  originalPrice: number | null
+  discountAmount: number | null
+  payable: boolean
+  notice: string | null
   expiresAt: string | null
   serverTime: string
   expired: boolean

@@ -28,3 +28,25 @@
 .registration-checkout .course-primary{min-height:44px;width:100%;margin-top:4px}
 .registration-checkout .course-panel h2{font-size:18px;line-height:1.5;overflow-wrap:anywhere}
 @media(max-width:760px){.registration-checkout{padding-top:24px;padding-bottom:32px}.registration-checkout h1{font-size:24px}}
+.registration-list-filters{grid-template-columns:minmax(220px,2fr) minmax(150px,1fr) minmax(150px,1fr) auto}
+.registration-list-filters .registration-filter-search,.registration-filter-actions{grid-column:auto}
+.registration-detail-trigger{border:0;background:transparent;color:#2563eb;font:inherit;padding:8px 6px;cursor:pointer;border-radius:6px}
+.registration-detail-trigger:hover{background:#eef3ff;text-decoration:underline}
+.registration-detail-trigger:focus-visible,.registration-detail-dialog button:focus-visible{outline:2px solid #2563eb;outline-offset:3px}
+.registration-detail-dialog{width:min(720px,calc(100vw - 32px));max-width:none;max-height:calc(100dvh - 48px);padding:0;border:0;border-radius:16px;background:#fff;color:#24324b;box-shadow:0 24px 80px #10214f40;overflow:auto;box-sizing:border-box}
+.registration-detail-dialog::backdrop{background:#0d183a80;backdrop-filter:blur(3px)}
+.registration-detail-header{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 24px;border-bottom:1px solid #e5eaf2;background:#fff;z-index:1}
+.registration-detail-header h2{margin:0;font-size:21px;line-height:1.4}
+.registration-detail-close{display:inline-flex;align-items:center;justify-content:center;flex:0 0 36px;box-sizing:border-box;width:36px;height:36px;min-height:36px;padding:0;margin:0;border:1px solid #dce4f0;border-radius:8px;background:#f7f9fc;color:#53657e;cursor:pointer;line-height:1}.registration-detail-close svg{display:block;flex-shrink:0}
+.registration-detail-body{padding:24px}
+.registration-detail-course{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+.registration-detail-course h2{margin:0;max-width:100%;font-size:22px;line-height:1.4;overflow-wrap:anywhere}
+.registration-detail-status{padding:6px 12px;border-radius:20px;background:#edf1f7;color:#53657e;font-size:13px;white-space:nowrap}
+.registration-detail-status-active{background:#e5f5eb;color:#14703f}.registration-detail-status-pending_payment{background:#fff4d7;color:#8a5a0b}
+.registration-detail-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 24px;margin:0}
+.registration-detail-fields dt{margin:0 0 6px;font-size:13px;color:#6b7d95}.registration-detail-fields dd{margin:0;font-size:15px;line-height:1.6;overflow-wrap:anywhere}
+.registration-detail-total{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:24px;padding:18px;background:#f2f6ff;border-radius:10px}.registration-detail-total strong{font-size:24px;color:#193665}
+.registration-detail-validity{margin-top:20px;padding-top:16px;border-top:1px solid #e5eaf2}.registration-detail-validity h3{margin:0 0 12px;font-size:16px}.registration-detail-validity p{margin:8px 0;line-height:1.6}
+.registration-detail-footer{display:flex;align-items:center;justify-content:flex-end;gap:12px;min-height:0;padding:16px 24px;border-top:1px solid #e5eaf2;background:#fff;font-size:14px;line-height:1.4}.registration-detail-footer button{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;box-sizing:border-box;width:auto;min-width:88px;height:40px;min-height:40px;padding:0 20px;margin:0;border:1px solid #d9e1ed;border-radius:8px;background:#fff;color:#24324b;font:inherit;line-height:1;white-space:nowrap;cursor:pointer}
+@media(max-width:1100px){.registration-list-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.registration-list-filters .registration-filter-search,.registration-filter-actions{grid-column:span 2}}
+@media(max-width:560px){.registration-list-filters{grid-template-columns:minmax(0,1fr)}.registration-list-filters .registration-filter-search,.registration-filter-actions{grid-column:auto}.registration-detail-fields{grid-template-columns:1fr}.registration-detail-header,.registration-detail-body{padding:18px}.registration-detail-course h2{font-size:20px}.registration-detail-header h2{font-size:18px}.registration-detail-dialog{max-height:calc(100dvh - 24px)}}

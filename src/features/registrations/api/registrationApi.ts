@@ -6,6 +6,7 @@ export interface StudentRegistration { id: number; courseId: number; courseTitle
 export interface RegistrationInput { courseId: number; packageId: number; fullName: string; phone: string }
 export const registrationApi = {
   create: async (input: RegistrationInput) => (await apiClient.post<StudentRegistration>('/student/registrations', input)).data,
+  cancel: async (id: number) => (await apiClient.post<StudentRegistration>(`/student/registrations/${id}/cancel`)).data,
   detail: async (id: number) => (await apiClient.get<StudentRegistration>(`/student/registrations/${id}`)).data,
   list: async (params: URLSearchParams) => (await apiClient.get<{ content: StudentRegistration[]; totalElements: number; totalPages: number }>('/student/registrations', { params })).data,
 }

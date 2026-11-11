@@ -78,7 +78,7 @@ function AppFrame({ children, admin = false }: { children: ReactNode; admin?: bo
   useEffect(() => setMenuOpen(false), [location.pathname])
   return <section className={`app-shell ${menuOpen ? 'menu-open' : ''}`}>
     <button className="sidebar-backdrop" aria-label="Đóng thanh điều hướng" onClick={() => setMenuOpen(false)} />
-    <aside className={`sidebar ${admin ? 'admin' : ''}`}><div className="sidebar-header"><Logo admin={admin}/><button aria-label="Đóng menu" onClick={() => setMenuOpen(false)}>×</button></div>{children}<LogoutButton /></aside>
+    <aside className={`sidebar ${admin ? 'admin' : ''}`}><div className="sidebar-header"><Logo admin={admin}/><button aria-label="Đóng menu" onClick={() => setMenuOpen(false)}>×</button></div>{children}</aside>
     <section className="app-content"><Topbar onMenu={() => setMenuOpen(true)}/><Outlet/></section>
   </section>
 }
@@ -93,7 +93,7 @@ export function StudentLayout() {
       <div className="student-portal-notification-profile"><NotificationBell /><AccountIdentity />
     </div></header><Outlet /><div className="student-portal-footer">© 2026 EduLearn. Nền tảng học tập và đánh giá trực tuyến.</div></div>
   }
-  return <AppFrame>{user?.roles.includes('ROLE_EXPERT') && <><p className="side-label">GIẢNG DẠY</p><SideLink to="/expert/courses"><SidebarIcon name="courses" />Không gian giảng dạy</SideLink></>}<p className="side-label">HỌC TẬP</p><SideLink to="/student/courses" end><SidebarIcon name="courses" />Khóa học của tôi</SideLink><SideLink to="/certificates"><SidebarIcon name="certificate" />Chứng nhận</SideLink><SideLink to="/student/registrations"><SidebarIcon name="registration" />Đăng ký của tôi</SideLink><p className="side-label">TÀI KHOẢN</p><SideLink to="/chat"><SidebarIcon name="chat" />Trò chuyện</SideLink><SideLink to="/notifications"><SidebarIcon name="bell" />Thông báo</SideLink><SideLink to="/profile"><SidebarIcon name="profile" />Hồ sơ cá nhân</SideLink></AppFrame>
+  return <AppFrame>{user?.roles.includes('ROLE_EXPERT') && <><p className="side-label">GIẢNG DẠY</p><SideLink to="/expert/courses"><SidebarIcon name="courses" />Không gian giảng dạy</SideLink></>}<p className="side-label">HỌC TẬP</p><SideLink to="/student/courses" end><SidebarIcon name="courses" />Khóa học của tôi</SideLink><SideLink to="/certificates"><SidebarIcon name="certificate" />Chứng nhận</SideLink><SideLink to="/student/registrations"><SidebarIcon name="registration" />Đăng ký của tôi</SideLink><p className="side-label">TÀI KHOẢN</p><SideLink to="/chat"><SidebarIcon name="chat" />Trò chuyện</SideLink><SideLink to="/notifications"><SidebarIcon name="bell" />Thông báo</SideLink></AppFrame>
 }
 
 function SidebarIcon({ name }: { name: 'courses' | 'create' | 'list' | 'discussion' | 'chat' | 'bell' | 'profile' | 'certificate' | 'registration' | 'dashboard' | 'wallet' | 'report' | 'users' | 'review' | 'post' | 'quiz' | 'logout' | 'explore' }) {
@@ -123,22 +123,25 @@ function SidebarIcon({ name }: { name: 'courses' | 'create' | 'list' | 'discussi
 function ExpertCourseMenu() {
   const { pathname } = useLocation()
   const inCourses = pathname === '/expert/courses' || pathname.startsWith('/expert/courses/')
-  const [expanded, setExpanded] = useState(inCourses)
-  useEffect(() => { if (inCourses) setExpanded(true) }, [pathname, inCourses])
+  const inStudents = pathname === '/expert/students' || pathname.startsWith('/expert/students/')
+  const inSection = inCourses || inStudents
+  const [expanded, setExpanded] = useState(inSection)
+  useEffect(() => { if (inSection) setExpanded(true) }, [pathname, inSection])
   return <div className="expert-course-menu">
-    <button className={inCourses ? 'expert-course-menu-toggle active' : 'expert-course-menu-toggle'} aria-expanded={expanded} aria-controls="expert-course-submenu" onClick={() => setExpanded(value => !value)}>
+    <button className={inSection ? 'expert-course-menu-toggle active' : 'expert-course-menu-toggle'} aria-expanded={expanded} aria-controls="expert-course-submenu" onClick={() => setExpanded(value => !value)}>
       <span className="sidebar-item-label"><SidebarIcon name="courses" />Quản lý khóa học</span><span aria-hidden="true">{expanded ? '⌃' : '⌄'}</span>
     </button>
     <nav id="expert-course-submenu" className="expert-course-submenu" aria-label="Quản lý khóa học" hidden={!expanded}>
       <SideLink to="/expert/courses/new" end><SidebarIcon name="create" />Tạo khóa học</SideLink>
       <Link className={inCourses && pathname !== '/expert/courses/new' ? 'side-link active' : 'side-link'} to="/expert/courses" aria-current={inCourses && pathname !== '/expert/courses/new' ? 'page' : undefined}><SidebarIcon name="list" />Danh sách khóa học</Link>
+      <SideLink to="/expert/students"><SidebarIcon name="registration" />Danh sách học viên</SideLink>
     </nav>
   </div>
 }
 
 export function ExpertLayout() {
   const { user } = useAuth()
-  return <AppFrame><p className="side-label">GIẢNG DẠY</p><ExpertCourseMenu /><SideLink to="/expert/discussions"><SidebarIcon name="discussion" />Hỏi đáp bài học</SideLink>{user?.roles.includes('ROLE_STUDENT') && <><p className="side-label">HỌC TẬP</p><SideLink to="/student/courses" end><SidebarIcon name="courses" />Khóa học của tôi</SideLink><SideLink to="/student/registrations"><SidebarIcon name="registration" />Đăng ký của tôi</SideLink><SideLink to="/certificates"><SidebarIcon name="certificate" />Chứng nhận của tôi</SideLink></>}<p className="side-label">TÀI KHOẢN</p><SideLink to="/chat"><SidebarIcon name="chat" />Trò chuyện</SideLink><SideLink to="/notifications"><SidebarIcon name="bell" />Thông báo</SideLink><SideLink to="/profile"><SidebarIcon name="profile" />Hồ sơ cá nhân</SideLink></AppFrame>
+  return <AppFrame><p className="side-label">GIẢNG DẠY</p><ExpertCourseMenu /><SideLink to="/expert/discussions"><SidebarIcon name="discussion" />Hỏi đáp bài học</SideLink>{user?.roles.includes('ROLE_STUDENT') && <><p className="side-label">HỌC TẬP</p><SideLink to="/student/courses" end><SidebarIcon name="courses" />Khóa học của tôi</SideLink><SideLink to="/student/registrations"><SidebarIcon name="registration" />Đăng ký của tôi</SideLink><SideLink to="/certificates"><SidebarIcon name="certificate" />Chứng nhận của tôi</SideLink></>}<p className="side-label">TÀI KHOẢN</p><SideLink to="/chat"><SidebarIcon name="chat" />Trò chuyện</SideLink><SideLink to="/notifications"><SidebarIcon name="bell" />Thông báo</SideLink></AppFrame>
 }
 
 export function DashboardLayout() {
@@ -149,7 +152,7 @@ export function DashboardLayout() {
     {admin ? <><p className="side-label">TỔNG QUAN HỆ THỐNG</p><SideLink to="/dashboard"><SidebarIcon name="dashboard" />Bảng điều khiển</SideLink><SideLink to="/admin/registrations"><SidebarIcon name="registration" />Quản lý Đăng ký</SideLink><SideLink to="/admin/transactions"><SidebarIcon name="wallet" />Giao dịch & Dòng tiền</SideLink><SideLink to="/admin/reports"><SidebarIcon name="report" />Báo cáo & Xuất dữ liệu</SideLink><p className="side-label">QUẢN TRỊ NGƯỜI DÙNG</p><SideLink to="/admin/accounts"><SidebarIcon name="users" />Tài khoản & Phân quyền</SideLink></>
       : <><p className="side-label">QUẢN LÝ</p><SideLink to="/manager/courses/review"><SidebarIcon name="review" />Duyệt khóa học</SideLink><SideLink to="/manager/registrations"><SidebarIcon name="registration" />Quản lý Đăng ký</SideLink><SideLink to="/manager/transactions"><SidebarIcon name="wallet" />Giao dịch & Dòng tiền</SideLink><SideLink to="/manager/posts"><SidebarIcon name="post" />Quản lý bài viết</SideLink></>}
     {!admin && <SideLink to="/manager/courses/review/quizzes"><SidebarIcon name="quiz" />Xem trước bài kiểm tra</SideLink>}
-    <p className="side-label">TÀI KHOẢN</p><SideLink to="/chat"><SidebarIcon name="chat" />Trò chuyện</SideLink><SideLink to="/notifications"><SidebarIcon name="bell" />Thông báo</SideLink><SideLink to="/profile"><SidebarIcon name="profile" />Hồ sơ cá nhân</SideLink>
+    <p className="side-label">TÀI KHOẢN</p><SideLink to="/chat"><SidebarIcon name="chat" />Trò chuyện</SideLink><SideLink to="/notifications"><SidebarIcon name="bell" />Thông báo</SideLink>
   </AppFrame>
 }
 

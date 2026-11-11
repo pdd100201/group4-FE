@@ -4,5 +4,5 @@ import type { PackageInput } from '../../features/registrations/api/registration
 export function useCoursePackages(id: number) { return useQuery({ queryKey: ['course-packages', id], queryFn: () => coursePackageApi.get(id) }) }
 export function useSaveCoursePackages(id: number) {
   const client = useQueryClient()
-  return useMutation({ mutationFn: (input: PackageInput[]) => coursePackageApi.save(id, input), onSuccess: async () => { await Promise.all(['course-packages', 'public-course', 'published-courses', 'course-submission-readiness', 'expert-courses', 'manager-courses', 'manager-course', 'moderation-courses'].map(key => client.invalidateQueries({ queryKey: [key] }))) } })
+  return useMutation({ mutationFn: (input: PackageInput[]) => coursePackageApi.save(id, input), onSuccess: async () => { await Promise.all(['course-packages', 'public-course', 'published-courses', 'course-submission-readiness', 'expert-courses', 'expert-course', 'manager-courses', 'manager-course-changes', 'manager-course', 'moderation-courses'].map(key => client.invalidateQueries({ queryKey: [key] }))) } })
 }

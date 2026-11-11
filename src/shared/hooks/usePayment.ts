@@ -8,6 +8,13 @@ export function usePayment(id: number, poll = false) {
   const { user } = useAuth()
   const query = useQuery({ queryKey: ['payment', id, user?.id], queryFn: () => paymentApi.status(id), enabled: Boolean(user) && Number.isSafeInteger(id) && id > 0,
     refetchInterval: poll ? query => query.state.data?.status === 'PENDING' ? 3000 : false : false })
+  const quote = query.data ? JSON.stringify([query.data.amount, query.data.originalPrice, query.data.discountAmount, query.data.payable]) : null
+  useEffect(() => {
+    if (quote !== null) {
+      void client.invalidateQueries({ queryKey: ['student-registration', id] })
+      void client.invalidateQueries({ queryKey: ['student-registrations'] })
+    }
+  }, [quote, id, client])
   const status = query.data?.status
   useEffect(() => {
     if (status === 'SUCCEEDED' || status === 'CANCELLED') {

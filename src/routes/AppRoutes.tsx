@@ -22,6 +22,7 @@ import { RegisterPage } from '../features/auth/screens/RegisterPage'
 import { VerifyEmailPage } from '../features/auth/screens/VerifyEmailPage'
 import { DashboardPage } from '../features/dashboard/screens/DashboardPage'
 import { ManagementRecordsPage, ManagementRecordDetailPage } from '../features/management/screens/ManagementRecordsPage'
+import { ExpertStudentsPage, ExpertCourseStudentsPage } from '../features/expert/screens/ExpertStudentsPage'
 import { ExpertCoursesPage } from '../features/expert/screens/ExpertCoursesPage'
 import { CourseEditorPage } from '../features/expert/screens/CourseEditorPage'
 import { CourseReviewPage } from '../features/management/screens/CourseReviewPage'
@@ -91,6 +92,8 @@ export function AppRoutes() {
     <Route element={<ProtectedRoute roles={['ROLE_EXPERT']} />}>
       <Route element={<ExpertLayout />}>
         <Route path="/expert/discussions" element={<div className="discussion-management"><LessonDiscussions /></div>} />
+        <Route path="/expert/students" element={<ExpertStudentsPage />} />
+        <Route path="/expert/students/:courseId" element={<ExpertCourseStudentsPage />} />
         <Route path="/expert/courses" element={<ExpertCoursesPage />} />
         <Route path="/expert/courses/new" element={<CourseEditorPage />} />
         <Route path="/expert/courses/:courseId" element={<CourseEditorPage />} />

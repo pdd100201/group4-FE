@@ -1,0 +1,30 @@
+.registration-cancellation{display:inline-flex;flex-direction:column;align-items:flex-start;vertical-align:middle;gap:6px}
+.registration-cancel-button{display:inline-flex;align-items:center;justify-content:center;min-height:40px;margin:0;padding:8px 12px;border:1px solid #f0c9c9;border-radius:6px;background:#fff;color:#b42318;font:inherit;font-size:14px;line-height:1.5;cursor:pointer}
+.registration-cancel-button:hover:not(:disabled){background:#fff1f1;border-color:#dc9b9b}
+.registration-cancel-button:focus-visible{outline:2px solid #b42318;outline-offset:3px}
+.registration-cancel-button:disabled{opacity:.55;cursor:not-allowed}
+.registration-cancel-error{max-width:320px;white-space:normal;color:#b42318;font-size:13px;line-height:1.5}
+.registration-table .registration-cancellation{margin-left:10px}
+.registration-detail-content>.registration-cancellation{margin-top:20px}
+.payment-summary>.registration-cancellation{margin-top:16px}
+.registration-cancel-dialog{width:min(520px,calc(100vw - 32px));max-width:none;max-height:calc(100dvh - 40px);box-sizing:border-box;margin:auto;padding:0;border:0;border-radius:14px;background:#fff;color:#24324b;box-shadow:0 24px 80px #10214f40;overflow:auto;white-space:normal;font-size:14px;line-height:1.6;text-align:left}
+.registration-cancel-dialog::backdrop{background:#0d183a80;backdrop-filter:blur(3px)}
+.registration-cancel-dialog-heading{display:flex;align-items:center;gap:12px;padding:20px 24px;border-bottom:1px solid #e5eaf2}
+.registration-cancel-warning-icon{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:50%;background:#fff1e8;color:#b54708}
+.registration-cancel-dialog-heading h2{margin:0;flex:1;font-size:20px;line-height:1.4;color:#24324b}
+.registration-cancel-dialog .registration-cancel-dialog-close{display:inline-flex;align-items:center;justify-content:center;flex:0 0 32px;width:32px;height:32px;min-height:32px;margin:0;padding:0;border:0;border-radius:6px;background:transparent;color:#63738c;box-shadow:none;line-height:1}
+.registration-cancel-dialog-close svg{display:block;flex:none}
+.registration-cancel-dialog-body{padding:20px 24px}
+.registration-cancel-dialog-body>p{margin:0 0 16px}
+.registration-cancel-course{display:grid;gap:4px;padding:14px 16px;border:1px solid #e1e8f1;border-radius:8px;background:#f7f9fc;overflow-wrap:anywhere}
+.registration-cancel-course>strong{font-size:16px;color:#24324b}.registration-cancel-course>span{font-size:13px;color:#63738c}
+.registration-cancel-warning{margin-top:16px;padding:14px 16px;border:1px solid #fed7aa;border-radius:8px;background:#fff7ed;color:#9a3412}
+.registration-cancel-warning>strong{display:block;font-size:14px}.registration-cancel-warning ul{margin:8px 0 0;padding-left:20px}.registration-cancel-warning li+li{margin-top:6px}
+.registration-cancel-dialog-body>.registration-cancel-history{margin:12px 0 0;color:#63738c;font-size:13px}
+.registration-cancel-dialog-body>.registration-cancel-dialog-error{margin:12px 0 0;padding:10px 12px;background:#fff1f1;border-radius:6px;color:#b42318}
+.registration-cancel-dialog-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:16px 24px;border-top:1px solid #e5eaf2}
+.registration-cancel-dialog-actions button{display:inline-flex;align-items:center;justify-content:center;flex:0 1 auto;width:auto;min-height:40px;margin:0;padding:9px 16px;box-sizing:border-box;border:1px solid #d9e1ed;border-radius:6px;background:#fff;color:#24324b;font:inherit;font-weight:600;line-height:1.5;cursor:pointer;box-shadow:none}
+.registration-cancel-dialog-actions .registration-cancel-confirm{background:#b42318;border-color:#b42318;color:#fff}
+.registration-cancel-dialog-actions .registration-cancel-confirm:hover:not(:disabled){background:#912018;border-color:#912018}
+.registration-cancel-dialog button:focus-visible{outline:2px solid #2563eb;outline-offset:3px}.registration-cancel-dialog button:disabled{opacity:.55;cursor:not-allowed}
+@media(max-width:560px){.registration-cancel-dialog-heading,.registration-cancel-dialog-body{padding:18px}.registration-cancel-dialog-heading h2{font-size:18px}.registration-cancel-dialog-actions{padding:16px 18px;gap:8px}.registration-cancel-dialog-actions button{flex:1;padding:9px 12px}.registration-cancel-warning-icon{flex-basis:36px;width:36px;height:36px}}

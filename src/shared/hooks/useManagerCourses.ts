@@ -5,6 +5,6 @@ export function useManagerCourse(id: number) { return useQuery({ queryKey: ['man
 export function useCourseDecision() {
   const client = useQueryClient()
   return useMutation({ mutationFn: managerCourseApi.decide, onSuccess: async () => {
-    await Promise.all(['manager-courses', 'manager-course', 'expert-courses', 'expert-course', 'published-courses', 'public-course'].map(key => client.invalidateQueries({ queryKey: [key] })))
+    await Promise.all(['manager-courses', 'manager-course', 'manager-course-changes', 'expert-courses', 'expert-course', 'published-courses', 'public-course'].map(key => client.invalidateQueries({ queryKey: [key] })))
   } })
 }

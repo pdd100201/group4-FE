@@ -23,7 +23,7 @@ function PackageForm({ id, initial, disabled, onDirty, onBusy }: { id: number; i
     const input: PackageInput[] = form.map(p => ({ ...p, price: Number(p.price), discountPercent: Number(p.discountPercent) }))
     try { await save.mutateAsync(input) } catch { /* Render server validation below. */ }
   }
-  return <form className="course-panel package-panel" onSubmit={event => void submit(event)}><h2>Gói giá và thời hạn</h2><p className="package-policy">Đăng ký cũ giữ nguyên giá đã chốt.</p>
+  return <form className="course-panel package-panel" onSubmit={event => void submit(event)}><h2>Gói giá và thời hạn</h2><p className="package-policy">Đăng ký đã thanh toán giữ nguyên giá. Đăng ký chưa thanh toán sẽ cập nhật giá mới và phải tạo lại QR nếu giá thay đổi. Sửa gói của khóa học đã xuất bản sẽ đưa khóa học về Nháp; cần gửi duyệt lại trước khi xuất bản.</p>
     <fieldset disabled={disabled || save.isPending}>{form.map((p, index) => <section key={p.duration} className="package-editor" aria-labelledby={`package-title-${p.duration}`}><h3 id={`package-title-${p.duration}`}>{durations[index][1]}</h3>
       <label>Giá gốc (VNĐ)<input aria-label={`Giá gốc ${durations[index][1]} (VNĐ)`} required type="number" min="0" max="9999999999" step="1" value={p.price} onChange={e => setForm(current => current.map((item, i) => i === index ? { ...item, price: e.target.value } : item))} /></label>
       <label>Giảm giá (%)<input aria-label={`Giảm giá ${durations[index][1]} (%)`} required type="number" min="0" max="100" step="0.01" value={p.discountPercent} onChange={e => setForm(current => current.map((item, i) => i === index ? { ...item, discountPercent: e.target.value } : item))} /></label>

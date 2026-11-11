@@ -6,6 +6,7 @@ import { courseError } from '../../expert/screens/ExpertCoursesPage'
 import { MediaVideo } from '../../../shared/components/media/MediaVideo'
 import '../../expert/screens/courses.css'
 import './review.css'
+import { CourseReviewChanges } from './CourseReviewChanges'
 
 export function CourseReviewDetailPage() {
   const { courseId } = useParams()
@@ -29,6 +30,7 @@ export function CourseReviewDetailPage() {
   }
   return <section className="expert-courses"><Link to="/manager/courses/review">← Danh sách xét duyệt</Link><header className="course-heading"><div><h1>{course.title}</h1><p>Expert: {course.expertName} · Mã #{course.id}</p></div><span className={`course-status status-${course.status.toLowerCase()}`}>{courseStatusLabels[course.status]}</span></header>
     {message && <p className="course-success" role="status">{message}</p>}
+    <CourseReviewChanges id={id} />
     {course.thumbnailUrl && <img className="media-preview" src={course.thumbnailUrl} alt="Ảnh khóa học" />}
     {course.lessons.some(l => l.videoMediaId) && <section className="course-panel"><h2>Video bài học</h2>{course.lessons.filter(l => l.videoMediaId).map(l => <details key={l.id}><summary>{l.title}</summary><MediaVideo mediaId={l.videoMediaId!} /></details>)}</section>}
     <div className="course-editor-grid"><div className="review-content"><section className="course-panel"><h2>Thông tin khóa học</h2><p>Danh mục: {course.category || 'Chưa có'}</p><p>Giá gói từ: {course.price == null ? 'Chưa mở gói học' : course.price.toLocaleString('vi-VN') + ' ₫'}</p><p className="review-text">{course.description || 'Chưa có mô tả.'}</p></section>

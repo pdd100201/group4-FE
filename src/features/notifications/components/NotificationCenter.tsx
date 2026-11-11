@@ -26,6 +26,7 @@ function useReadActions() {
 }
 function NotificationRow({ item, compact = false, onOpen }: { item: NotificationItem; compact?: boolean; onOpen?: () => void }) {
  const { read } = useReadActions()
+ const title = item.title.replace(/^\s*\[TEST\]\s*/i, '')
  const navigate = useNavigate()
  async function open() {
   if (read.isPending) return
@@ -38,7 +39,7 @@ function NotificationRow({ item, compact = false, onOpen }: { item: Notification
  return <article className={`notification-item ${item.readAt ? '' : 'unread'} ${compact ? 'compact' : ''}`}>
   <button type="button" className="notification-open" onClick={() => void open()} disabled={read.isPending}>
    <span className="notification-category">{notificationLabels[item.category] ?? 'Hệ thống'}{!item.readAt && <span className="notification-unread-dot" aria-label="Chưa đọc" />}</span>
-   <strong>{item.title}</strong><span className="notification-message">{item.message}</span>
+   <strong>{title}</strong><span className="notification-message">{item.message}</span>
    <time dateTime={item.createdAt}>{new Date(item.createdAt).toLocaleString('vi-VN')}</time>
   </button>
   {read.isError && <p role="alert">{notificationError(read.error)}</p>}

@@ -84,13 +84,15 @@ function CourseStudio({ course }: { course?: ExpertCourse }) {
   try {
    const result = await save.mutateAsync({ id: course?.id, input: form })
    setForm({ title: result.title, description: result.description, category: result.category, price: result.price, thumbnailMediaId: result.thumbnailMediaId })
-   setMessage('Đã lưu thông tin khóa học.')
+   setMessage(course?.status === 'PUBLISHED' && result.status === 'DRAFT'
+    ? 'Đã lưu thay đổi thành bản nháp. Hãy vào Kiểm tra & gửi duyệt để gửi quản trị viên duyệt lại trước khi xuất bản.'
+    : 'Đã lưu thông tin khóa học.')
    if (!course) navigate(`/expert/courses/${result.id}?step=info`, { replace: true })
   } catch { /* Keep the draft and render the request error. */ }
  }
  return <main className="expert-courses course-studio">
   <Link className="studio-back" to="/expert/courses"><CourseIcon name="back" /> Tất cả khóa học</Link>
-  <header className="studio-header"><div><p className="studio-eyebrow">KHÔNG GIAN GIẢNG DẠY</p><h1>{course?.title ?? 'Tạo khóa học mới'}</h1><p>{course ? 'Biến kiến thức của bạn thành một hành trình học tập rõ ràng.' : 'Bắt đầu với thông tin cơ bản. Hoàn thiện nội dung theo từng bước.'}</p></div><div className="studio-header-status">{course && <span className={`course-status status-${course.status.toLowerCase()}`}>{courseStatusLabels[course.status]}</span>}{course?.status === 'PUBLISHED' && <Link to={`/courses/${course.id}`} target="_blank" rel="noreferrer">Xem trang khóa học ↗</Link>}</div></header>
+  <header className="studio-header"><div><p className="studio-eyebrow">KHÔNG GIAN GIẢNG DẠY</p><h1>{course?.title ?? 'Tạo khóa học mới'}</h1><p>{course ? 'Biến kiến thức của bạn thành một hành trình học tập rõ ràng.' : 'Bắt đầu với thông tin cơ bản. Hoàn thiện nội dung theo từng bước.'}</p></div><div className="studio-header-status">{course && <Link to={`/expert/students/${course.id}`}>Danh sách học viên</Link>}{course && <span className={`course-status status-${course.status.toLowerCase()}`}>{courseStatusLabels[course.status]}</span>}{course?.status === 'PUBLISHED' && <Link to={`/courses/${course.id}`} target="_blank" rel="noreferrer">Xem trang khóa học ↗</Link>}</div></header>
   {course?.rejectionReason && <div className="studio-review-note" role="note"><CourseIcon name="info" /><div><b>Phản hồi từ quản lý</b><p>{course.rejectionReason}</p></div></div>}
   <div className="studio-layout">
    <aside className="studio-rail"><div className="studio-rail-title"><span>LỘ TRÌNH SOẠN KHÓA</span><small>{course ? `${completed}/${checks.length || '—'} điều kiện` : 'Bắt đầu tại đây'}</small></div>
