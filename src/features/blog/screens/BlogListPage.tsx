@@ -109,6 +109,7 @@ export function BlogSidebar() {
 
 export function BlogListPage() {
   const { user } = useAuth()
+  const managementRole = user?.roles.includes('ROLE_ADMIN') ? 'admin' : user?.roles.includes('ROLE_MANAGER') ? 'manager' : undefined
   const [params, setParams] = useSearchParams()
   const search = params.get('search') || ''
   const category = params.get('category') || ''
@@ -155,7 +156,7 @@ export function BlogListPage() {
   }
 
   return <div className="blog-showcase blog-showcase-list-only">
-    <div className="blog-showcase-topline"><Link to="/blog"><b>EduLearn</b><span> — Cẩm Nang Tri Thức &amp; Tin Tức Giáo Dục</span></Link><small>Kiến thức, kinh nghiệm và phương pháp học tập</small><div className="showcase-post-actions">{user && <Link className="showcase-my-submissions" to="/blog/my-submissions">Bài viết của tôi</Link>}<Link className="showcase-submit-post" to={user ? '/blog/submit' : '/login'} state={user ? undefined : { from: '/blog/submit' }}>{user ? '✎ Gửi bài viết' : 'Đăng nhập để viết bài'}</Link></div></div>
+    <div className="blog-showcase-topline"><Link to="/blog"><b>EduLearn</b><span> — Cẩm Nang Tri Thức &amp; Tin Tức Giáo Dục</span></Link><small>Kiến thức, kinh nghiệm và phương pháp học tập</small><div className="showcase-post-actions">{user && <Link className="showcase-my-submissions" to={managementRole ? `/${managementRole}/posts` : '/blog/my-submissions'}>{managementRole ? 'Quản lý bài viết' : 'Bài viết của tôi'}</Link>}<Link className="showcase-submit-post" to={user ? '/blog/submit' : '/login'} state={user ? undefined : { from: '/blog/submit' }}>{user ? managementRole ? '✎ Tạo bài viết' : '✎ Gửi bài viết' : 'Đăng nhập để viết bài'}</Link></div></div>
     <div className="blog-showcase-panels">
       <section className="blog-showcase-list-panel" aria-label="Danh sách bài viết">
         <header className="blog-showcase-list-header">

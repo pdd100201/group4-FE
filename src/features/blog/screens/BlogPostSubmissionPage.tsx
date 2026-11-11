@@ -3,6 +3,8 @@ import { isAxiosError } from 'axios'
 import { Link, useNavigate } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { MediaUpload } from '../../../shared/components/media/MediaUpload'
+import { useAuth } from '../../../shared/context/AuthContext'
+import { managerPostApi, type PostManagementRole } from '../../management/api/managerPostApi'
 import { blogApi, type PostSubmissionInput } from '../api/blogApi'
 import './blog.css'
 
@@ -13,27 +15,38 @@ function submitError(error: unknown) {
 }
 
 export function BlogPostSubmissionPage() {
+  const { user } = useAuth()
+  const managementRole: PostManagementRole | undefined = user?.roles.includes('ROLE_ADMIN') ? 'admin' : user?.roles.includes('ROLE_MANAGER') ? 'manager' : undefined
   const navigate = useNavigate()
   const client = useQueryClient()
   const [form, setForm] = useState(initialForm)
   const [thumbnailUrl, setThumbnailUrl] = useState('')
   const [uploading, setUploading] = useState(false)
   const [validationError, setValidationError] = useState('')
-  const submit = useMutation({ mutationFn: blogApi.submitPost, onSuccess: async () => {
-    await client.invalidateQueries({ queryKey: ['my-post-submissions'] })
-    navigate('/blog/my-submissions?submitted=1')
+  const [published, setPublished] = useState(true)
+  const submit = useMutation({ mutationFn: (input: PostSubmissionInput) => managementRole
+    ? managerPostApi.create({ ...input, thumbnailMediaId: input.thumbnailMediaId || null, published }, managementRole)
+    : blogApi.submitPost(input), onSuccess: async () => {
+    await Promise.all([
+      client.invalidateQueries({ queryKey: ['my-post-submissions'] }),
+      client.invalidateQueries({ queryKey: ['manager-posts'] }),
+      client.invalidateQueries({ queryKey: ['public-posts'] }),
+      client.invalidateQueries({ queryKey: ['public-post-categories'] }),
+    ])
+    navigate(managementRole ? `/${managementRole}/posts` : '/blog/my-submissions?submitted=1')
   } })
   const busy = submit.isPending || uploading
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (busy) return
     setValidationError('')
-    if (!form.thumbnailMediaId) { setValidationError('Hãy tải ảnh đại diện trước khi gửi bài.'); return }
+    if ((!managementRole || published) && !form.thumbnailMediaId) { setValidationError('Hãy tải ảnh đại diện trước khi gửi bài.'); return }
     try { await submit.mutateAsync(form) } catch { /* The API error is displayed in the form. */ }
   }
 
   return <section className="blog-submission-page">
-    <header className="blog-submission-heading"><div><p><Link to="/">Trang chủ</Link> / <Link to="/blog">Bài viết</Link> / Gửi bài viết</p><h1>Gửi bài viết</h1><p>Bài viết sẽ được Manager kiểm duyệt trước khi hiển thị công khai.</p></div><Link className="blog-submission-secondary" to="/blog/my-submissions">Bài viết đã gửi</Link></header>
+    <header className="blog-submission-heading"><div><p><Link to="/">Trang chủ</Link> / <Link to="/blog">Bài viết</Link> / {managementRole ? 'Tạo bài viết' : 'Gửi bài viết'}</p><h1>{managementRole ? 'Tạo bài viết' : 'Gửi bài viết'}</h1><p>{managementRole ? 'Bạn có thể xuất bản trực tiếp hoặc lưu bản nháp.' : 'Bài viết sẽ được Manager kiểm duyệt trước khi hiển thị công khai.'}</p></div><Link className="blog-submission-secondary" to={managementRole ? `/${managementRole}/posts` : '/blog/my-submissions'}>{managementRole ? 'Quản lý bài viết' : 'Bài viết đã gửi'}</Link></header>
     {(submit.isError || validationError) && <p role="alert" className="blog-submission-error">{validationError || submitError(submit.error)}</p>}
     <form className="blog-submission-form" onSubmit={event => void onSubmit(event)}>
       <div className="blog-submission-fields">
@@ -44,15 +57,16 @@ export function BlogPostSubmissionPage() {
         <small className="blog-submission-counter">{form.content.length}/12000 ký tự</small>
       </div>
       <aside className="blog-submission-media">
-        <h2>Ảnh đại diện *</h2>
+        {managementRole && <label>Trạng thái <select disabled={busy} value={published ? 'published' : 'draft'} onChange={event => setPublished(event.target.value === 'published')}><option value="published">Xuất bản</option><option value="draft">Bản nháp</option></select></label>}
+        <h2>Ảnh đại diện {(!managementRole || published) && '*'}</h2>
         {thumbnailUrl ? <img src={thumbnailUrl} alt="Ảnh đại diện bài viết" /> : <p>Thêm ảnh để bài viết dễ nhận biết.</p>}
         <MediaUpload purpose="CONTENT_IMAGE" disabled={busy} onBusy={setUploading} onUploaded={media => {
           setForm(current => ({ ...current, thumbnailMediaId: media.id }))
           setThumbnailUrl(media.url ?? '')
         }} />
-        <p>Sau khi gửi, bài viết sẽ ở trạng thái chờ duyệt. Bài chưa được công khai trong thời gian này.</p>
+        <p>{managementRole ? published ? 'Bài viết sẽ hiển thị công khai ngay sau khi xuất bản.' : 'Bản nháp chỉ hiển thị với người quản lý.' : 'Sau khi gửi, bài viết sẽ ở trạng thái chờ duyệt. Bài chưa được công khai trong thời gian này.'}</p>
       </aside>
-      <footer className="blog-submission-actions"><Link to="/blog">Hủy</Link><button type="submit" disabled={busy}>{busy ? 'Đang gửi…' : 'Gửi Manager kiểm duyệt'}</button></footer>
+      <footer className="blog-submission-actions"><Link to="/blog">Hủy</Link><button type="submit" disabled={busy}>{busy ? 'Đang gửi…' : managementRole ? published ? 'Xuất bản bài viết' : 'Lưu bản nháp' : 'Gửi Manager kiểm duyệt'}</button></footer>
     </form>
   </section>
 }
