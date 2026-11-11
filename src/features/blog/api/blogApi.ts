@@ -13,7 +13,7 @@ export interface PostSubmissionInput { title: string; category: string; summary:
 export interface BlogComment {
   id: number; postId: number; postTitle: string; authorName: string; avatarUrl: string | null; content: string
   status: 'VISIBLE' | 'HIDDEN' | 'DISABLED' | 'DELETED'; createdAt: string | null; updatedAt: string | null
-  canEdit: boolean; canDelete: boolean
+  canEdit: boolean; canDelete: boolean; likeCount: number; liked: boolean; canLike: boolean; parentId: number | null; replyCount: number
 }
 export interface NewsletterSubscriptionResponse { message: string }
 export const blogApi = {
@@ -21,9 +21,12 @@ export const blogApi = {
   categories: async (): Promise<string[]> => (await apiClient.get<string[]>('/public/posts/categories')).data,
   detail: async (id: number): Promise<BlogDetail> => (await apiClient.get<BlogDetail>(`/public/posts/${id}`)).data,
   comments: async (id: number, page: number): Promise<BlogPage<BlogComment>> => (await apiClient.get<BlogPage<BlogComment>>(`/public/posts/${id}/comments`, { params: { page, size: 10 } })).data,
+  replies: async (postId: number, id: number, page: number): Promise<BlogPage<BlogComment>> => (await apiClient.get<BlogPage<BlogComment>>(`/public/posts/${postId}/comments/${id}/replies`, { params: { page, size: 10 } })).data,
+  reply: async (postId: number, id: number, content: string): Promise<BlogComment> => (await apiClient.post<BlogComment>(`/student/posts/${postId}/comments/${id}/replies`, { content })).data,
   comment: async (postId: number, id: number): Promise<BlogComment> => (await apiClient.get<BlogComment>(`/public/posts/${postId}/comments/${id}`)).data,
   createComment: async (postId: number, content: string): Promise<BlogComment> => (await apiClient.post<BlogComment>(`/student/posts/${postId}/comments`, { content })).data,
   editComment: async (id: number, content: string): Promise<BlogComment> => (await apiClient.put<BlogComment>(`/student/comments/${id}`, { content })).data,
+  likeComment: async ({ id, liked }: { id: number; liked: boolean }): Promise<BlogComment> => (await apiClient.put<BlogComment>(`/comments/${id}/like`, { liked })).data,
   deleteComment: async (id: number): Promise<void> => { await apiClient.delete(`/comments/${id}`) },
   subscribeNewsletter: async (email: string): Promise<NewsletterSubscriptionResponse> =>
     (await apiClient.post<NewsletterSubscriptionResponse>('/public/newsletter/subscriptions', { email })).data,

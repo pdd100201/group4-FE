@@ -13,6 +13,8 @@ import { CourseDialog, CourseIcon } from './CourseUi'
 import './courses.css'
 import './course-studio.css'
 
+const courseCategories = ['Lập trình', 'Công nghệ thông tin', 'Thiết kế', 'Ngoại ngữ', 'Kinh doanh', 'Marketing', 'Kỹ năng mềm']
+
 const steps = [
  { id: 'info', title: 'Thông tin khóa học', description: 'Tên, giới thiệu & ảnh bìa', icon: 'info', codes: ['BASIC', 'THUMBNAIL'] },
  { id: 'content', title: 'Xây dựng giáo trình', description: 'Bài học, câu hỏi & quiz', icon: 'book', codes: ['LESSONS', 'QUIZZES'] },
@@ -34,6 +36,8 @@ function CourseStudio({ course }: { course?: ExpertCourse }) {
  const [params, setParams] = useSearchParams()
  const step = course && steps.some(s => s.id === params.get('step')) ? params.get('step')! : 'info'
  const [form, setForm] = useState<CourseInput>({ title: course?.title ?? '', description: course?.description ?? '', category: course?.category ?? '', price: course?.price ?? 0, thumbnailMediaId: course?.thumbnailMediaId ?? null })
+ const [customCategory, setCustomCategory] = useState(() => Boolean(course?.category && !courseCategories.includes(course.category)))
+ const [customCategoryDraft, setCustomCategoryDraft] = useState(() => course?.category && !courseCategories.includes(course.category) ? course.category : '')
  const [thumbnail, setThumbnail] = useState(course?.thumbnailUrl ?? '')
  const [uploading, setUploading] = useState(false)
  const [submitting, setSubmitting] = useState(false)
@@ -108,7 +112,15 @@ function CourseStudio({ course }: { course?: ExpertCourse }) {
     <section hidden={step !== 'info'} aria-labelledby="studio-info-title"><div className="studio-section-heading"><span className="studio-section-icon"><CourseIcon name="info" /></span><div><p>BƯỚC 01</p><h2 id="studio-info-title">Ấn tượng đầu tiên bắt đầu ở đây</h2><span>Giúp học viên hiểu họ sẽ học được gì từ khóa học của bạn.</span></div></div>
      <form id="course-info-form" className="course-panel studio-info-form" onSubmit={e => void saveCourse(e)}><div className="studio-panel-heading"><h3>Thông tin cơ bản</h3><span>Các trường có * là bắt buộc</span></div><fieldset disabled={!editable || busy}>
       <label>Tên khóa học *<input autoFocus={!course} required maxLength={30} value={form.title} placeholder="Ví dụ: Java từ nền tảng đến thực hành" onChange={e => setForm(c => ({ ...c, title: e.target.value }))} /><small className="studio-field-hint">Ngắn gọn, cụ thể và dễ tìm kiếm.<span>{form.title.length}/30</span></small></label>
-      <label>Danh mục *<input required maxLength={30} value={form.category} placeholder="Ví dụ: Lập trình, Thiết kế, Ngoại ngữ…" onChange={e => setForm(c => ({ ...c, category: e.target.value }))} /></label>
+      <label>Danh mục *<select required value={customCategory ? '__other__' : form.category} onChange={event => {
+       const selected = event.target.value
+       setCustomCategory(selected === '__other__')
+       setForm(current => ({ ...current, category: selected === '__other__' ? customCategoryDraft : selected }))
+      }}><option value="" disabled>Chọn danh mục khóa học</option>{courseCategories.map(category => <option key={category} value={category}>{category}</option>)}<option value="__other__">Khác</option></select></label>
+      {customCategory && <label>Tên danh mục khác *<input required maxLength={30} value={form.category} placeholder="Nhập tên danh mục" onChange={event => {
+       setCustomCategoryDraft(event.target.value)
+       setForm(current => ({ ...current, category: event.target.value }))
+      }} /><small className="studio-field-hint">Nhập danh mục phù hợp với khóa học.<span>{form.category.length}/30</span></small></label>}
       <label>Giới thiệu khóa học *<textarea required maxLength={255} rows={5} value={form.description} placeholder="Khóa học dành cho ai? Sau khi học, học viên sẽ làm được gì?" onChange={e => setForm(c => ({ ...c, description: e.target.value }))} /><small className="studio-field-hint">Nêu mục tiêu và giá trị thực tế cho học viên.<span>{form.description.length}/255</span></small></label>
      </fieldset>
      <div className="studio-cover-section"><div><h3>Ảnh bìa khóa học</h3><p>Chọn hình ảnh rõ nét, liên quan đến nội dung giảng dạy.</p></div><div className="studio-cover-grid"><div className="studio-cover-preview">{thumbnail ? <img src={thumbnail} alt="Ảnh bìa khóa học" /> : <><CourseIcon name="image" /><span>Không gian cho ý tưởng của bạn</span><small>Ảnh bìa xuất hiện trên trang khám phá</small></>}</div><div>{editable ? <MediaUpload purpose="COURSE_IMAGE" courseId={course?.id} disabled={busy} onBusy={setUploading} onUploaded={media => { setForm(c => ({ ...c, thumbnailMediaId: media.id })); setThumbnail(media.url ?? '') }} /> : <p className="studio-muted">Ảnh bìa hiện tại của khóa học.</p>}</div></div></div>

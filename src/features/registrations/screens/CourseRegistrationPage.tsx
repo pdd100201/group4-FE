@@ -1,5 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import { profileApi } from '../../profile/api/profileApi'
 import { useAuth } from '../../../shared/context/AuthContext'
 import { usePublicCourse } from '../../../shared/hooks/usePublicCourse'
 import { useCreateRegistration } from '../../../shared/hooks/useStudentRegistrations'
@@ -16,7 +18,9 @@ export function CourseRegistrationPage() {
   const create = useCreateRegistration()
   const navigate = useNavigate()
   const [fullName, setFullName] = useState(user?.fullName ?? '')
-  const [phone, setPhone] = useState('')
+  const profile = useQuery({ queryKey: ['registration-profile', user?.id], queryFn: profileApi.current, enabled: Boolean(user) })
+  const [phoneDraft, setPhoneDraft] = useState<string | null>(null)
+  const phone = phoneDraft ?? (profile.data?.id === user?.id ? profile.data?.phone ?? '' : '')
   useEffect(() => { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }) }, [id, selectedId])
   if (!Number.isSafeInteger(id) || id <= 0) return <p role="alert">Mã khóa học không hợp lệ.</p>
   if (query.isPending) return <p role="status">Đang tải thông tin đăng ký…</p>
@@ -33,7 +37,7 @@ export function CourseRegistrationPage() {
     <div className="registration-grid"><form className="course-panel" onSubmit={event => void submit(event)}><h2>Thông tin học viên</h2><fieldset disabled={create.isPending}>
       <label>Họ và tên *<input required maxLength={255} value={fullName} onChange={e => setFullName(e.target.value)} /></label>
       <label>Email tài khoản<input readOnly value={user?.email ?? ''} /></label>
-      <label>Số điện thoại *<input required type="tel" minLength={8} maxLength={20} value={phone} onChange={e => setPhone(e.target.value)} /></label>
+      <label>Số điện thoại *<input required type="tel" autoComplete="tel" minLength={8} maxLength={20} value={phone} onChange={e => setPhoneDraft(e.target.value)} /></label>
       <button type="submit" className="course-primary">{create.isPending ? 'Đang tạo đăng ký…' : 'Xác nhận đăng ký'}</button></fieldset>
       {create.isError && <p className="course-error" role="alert">{courseError(create.error)}</p>}
     </form><aside className="course-panel"><h2>{course.title}</h2><p>Gói: {selected.name}</p><p>Giá gốc: {coursePrice(selected.price)}</p><p>Giảm {selected.discountPercent}%: {coursePrice(selected.discountAmount)}</p><h2>Tổng: {coursePrice(selected.finalPrice)}</h2><p>Thời hạn được tính từ lúc thanh toán thành công. Đăng ký này chưa cấp quyền học.</p><p>Số tiền được backend xác định lại lúc đăng ký. Nếu đã có đăng ký chờ thanh toán, hệ thống mở đăng ký cũ và giữ giá đã chốt.</p></aside></div>

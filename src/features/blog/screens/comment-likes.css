@@ -1,0 +1,34 @@
+.showcase-comment-actions .blog-comment-like{display:inline-flex;align-items:center;gap:6px;color:#53657e;font-weight:600}
+.showcase-comment-actions .blog-comment-like[aria-pressed=true]{color:#2563eb}
+.blog-comment-like[aria-pressed=true] svg{fill:#dbeafe}
+.showcase-comment-actions .blog-comment-like:disabled{opacity:.6;cursor:not-allowed}
+.blog-comment-like:focus-visible{outline:2px solid #2563eb;outline-offset:3px;border-radius:4px}
+
+.blog-comment-thread{min-width:0}.blog-comment-replies{margin:8px 0 12px 24px;padding-left:16px;border-left:2px solid #dce7fb}.showcase-comments .blog-replies-toggle{border:0;background:transparent;color:#2563eb;padding:4px 0;margin-left:48px;font:inherit;font-size:13px;cursor:pointer}.blog-reply-composer{padding:12px;border:1px solid #dce5f0;border-radius:8px;background:#f8fafd}.blog-reply-composer label{display:block;font-size:13px;font-weight:600}.blog-reply-composer textarea{display:block;width:100%;box-sizing:border-box;margin:8px 0;min-height:80px;padding:10px;border:1px solid #dce5f0;border-radius:6px;resize:vertical;font:inherit;font-size:13px;line-height:1.6}.blog-reply-composer>div{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.blog-reply-composer small{margin-right:auto;color:#63738c;font-size:12px}.blog-reply-composer button,.blog-replies-pagination button{min-height:36px;padding:6px 12px;border:1px solid #dce5f0;border-radius:6px;background:#fff;color:#2563eb;font:inherit;font-size:13px}.blog-reply-composer .course-primary{background:#2563eb;color:#fff}.blog-replies-pagination{display:flex;align-items:center;justify-content:flex-end;gap:10px;font-size:13px}.blog-reply-composer button:disabled,.blog-replies-pagination button:disabled{opacity:.5;cursor:not-allowed}@media(max-width:560px){.blog-comment-replies{margin-left:10px;padding-left:10px}.showcase-comments .blog-replies-toggle{margin-left:12px}}
+
+/* Keep each conversation visually connected to its author and actions. */
+.showcase-comments .blog-comment-thread{padding:12px 0;min-width:0}
+.showcase-comments .blog-comment-thread .showcase-comment{margin:0;padding:0;border:0;border-radius:0;background:transparent;gap:10px}
+.showcase-comments .blog-comment-thread .showcase-comment-avatar{width:32px;height:32px;font-size:13px}
+.blog-comment-bubble{display:table;max-width:100%;box-sizing:border-box;padding:10px 14px;background:#f0f3f8;border-radius:14px;overflow-wrap:anywhere}
+.blog-comment-bubble>b{font-size:13px;color:#29364c}.blog-comment-bubble>small{display:inline-block;margin-left:8px;color:#63738c;font-size:12px;line-height:1.5}
+.blog-comment-bubble>.comment-content{margin:4px 0 0;font-size:13px;line-height:1.6}
+.showcase-comments .blog-comment-thread .showcase-comment-actions{gap:14px;padding:2px 10px 0;align-items:center}
+.showcase-comments .blog-comment-thread .showcase-comment-actions button{min-height:28px;padding:2px 0;color:#63738c;font-size:13px;border:0;background:transparent;box-shadow:none;transform:none}
+.showcase-comments .blog-comment-thread .showcase-comment-actions button:hover:not(:disabled){text-decoration:underline;box-shadow:none;transform:none}
+.showcase-comments .blog-comment-thread .blog-comment-like[aria-pressed=true]{color:#2563eb}
+.showcase-comments .blog-comment-thread>.blog-replies-toggle{display:flex;align-items:center;gap:6px;width:fit-content;min-height:28px;margin:2px 0 0 42px;padding:0 10px;border:0;border-radius:0;background:transparent;color:#63738c;box-shadow:none;font:inherit;font-size:13px;font-weight:600;text-align:left;transform:none}
+.showcase-comments .blog-comment-thread>.blog-replies-toggle:hover{box-shadow:none;transform:none;text-decoration:underline}
+.showcase-comments .blog-comment-thread>.blog-replies-toggle:focus:not(:focus-visible){outline:0;box-shadow:none}
+.showcase-comments .blog-comment-thread>.blog-replies-toggle:focus-visible{outline:2px solid #2563eb;outline-offset:2px;border-radius:4px}
+.showcase-comments .blog-comment-replies{display:grid;gap:12px;margin:8px 0 0 42px;padding:0;border:0;min-width:0}
+.showcase-comments .blog-comment-replies .showcase-comment-avatar{width:28px;height:28px}
+.showcase-comments .blog-reply-composer{margin:0;padding:10px 12px;border:1px solid #dce5f0;border-radius:16px;background:#f5f7fa;min-width:0}
+.blog-reply-composer .blog-reply-label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.showcase-comments .blog-reply-composer textarea{min-height:44px;margin:0 0 6px;padding:2px;border:0;border-radius:0;background:transparent;font-weight:400}
+.showcase-comments .blog-reply-composer button{min-height:30px;padding:3px 10px;font-size:13px}
+.showcase-comments .blog-reply-placeholder{display:flex;align-items:center;gap:10px;width:100%;min-width:0;min-height:40px;padding:0;border:0;border-radius:0;background:transparent;text-align:left;box-shadow:none;transform:none;font:inherit;font-size:13px;color:#63738c}
+.blog-reply-placeholder img,.blog-reply-avatar{display:grid;place-items:center;width:28px;height:28px;flex:0 0 28px;object-fit:cover;border-radius:50%;background:#e4edff;color:#2860e7}
+.blog-reply-placeholder>span:last-child{display:block;flex:1;min-width:0;padding:9px 12px;border-radius:20px;background:#f0f3f8;overflow-wrap:anywhere}
+.showcase-comments .blog-reply-placeholder:hover{box-shadow:none;transform:none}.showcase-comments .blog-reply-placeholder:hover>span:last-child{background:#e7edf5}
+@media(max-width:560px){.showcase-comments .blog-comment-replies{margin-left:24px}.showcase-comments .blog-comment-thread>.blog-replies-toggle{margin-left:42px}.blog-comment-bubble{padding:8px 10px}}
