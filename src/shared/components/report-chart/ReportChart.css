@@ -1,0 +1,47 @@
+.report-chart {
+  min-width: 0;
+  background: #fff;
+  border: 1px solid #dfe7f2;
+  border-radius: 10px;
+  padding: 18px;
+}
+.management-page .report-chart { margin: 0 0 18px; }
+.report-chart-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.report-chart-header h2 { margin: 0; font-size: 16px; }
+.report-chart-header p { margin: 4px 0 0; color: #53647c; font-size: 13px; }
+.report-chart-switch { display: inline-flex; gap: 4px; padding: 3px; border-radius: 8px; background: #eef3fb; }
+.report-chart-switch button { padding: 5px 12px; border: 1px solid transparent; background: transparent; font-weight: 600; color: #53647c; }
+.report-chart-switch button[aria-pressed='true'] { border-color: #d8e4fa; background: #fff; color: #204fc4; }
+.report-chart-switch button:focus-visible { outline: 2px solid #2859df; outline-offset: 2px; }
+.report-chart-body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 265px), 1fr));
+  gap: 18px;
+  align-items: center;
+}
+.report-chart-bars {
+  display: flex;
+  justify-content: space-evenly;
+  gap: 8px;
+  height: 155px;
+  padding: 0 8px;
+  border-bottom: 1px solid #ccd8e9;
+  background: repeating-linear-gradient(to top, transparent 0 calc(25% - 1px), #edf1f7 calc(25% - 1px) 25%);
+}
+.report-chart-column { flex: 1; max-width: 42px; display: flex; align-items: flex-end; }
+.report-chart-column span { width: 100%; min-height: 1px; border-radius: 4px 4px 0 0; }
+.report-chart-pie { width: min(100%, 155px); aspect-ratio: 1; border-radius: 50%; justify-self: center; }
+.report-chart-legend { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
+.report-chart-legend li { display: flex; align-items: baseline; gap: 8px; font-size: 13px; }
+.report-chart-swatch { width: 9px; height: 9px; flex: 0 0 9px; border-radius: 2px; }
+.report-chart-label { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.report-chart-legend strong, .report-chart-percent { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.report-chart-percent { min-width: 4ch; text-align: right; color: #53647c; }
+.report-chart-empty { margin: 0; color: #53647c; }

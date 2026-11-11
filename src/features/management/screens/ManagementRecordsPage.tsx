@@ -3,6 +3,8 @@ import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom'
 import { isAxiosError } from 'axios'
 import { useManagementRecord, useManagementRecords } from '../../../shared/hooks/useManagementRecords'
 import type { ManagementKind, ManagementRecord, ManagementScope, RegistrationRecord } from '../../../shared/types/management'
+import { ReportChart } from '../../../shared/components/report-chart/ReportChart'
+import { countByStatus } from '../../../shared/components/report-chart/chartData'
 import './management.css'
 
 const labels: Record<string, string> = {
@@ -98,6 +100,11 @@ export function ManagementRecordsPage({ kind }: { kind: ManagementKind }) {
     {isLoading && <p role="status">Đang tải...</p>}
     {error && <div role="alert" className="management-error">{errorMessage(error)} <button onClick={() => refetch()}>Thử lại</button></div>}
     {!isLoading && !error && data && <>
+      {scope === 'admin' && <ReportChart
+        title={transactions ? 'Giao dịch theo trạng thái' : 'Đăng ký theo trạng thái'}
+        scope="Dữ liệu của trang hiện tại theo bộ lọc"
+        points={countByStatus(data.items, labels)}
+      />}
       {data.items.length > 0 ? <div className="management-table-wrap" aria-busy={isFetching}><table className="management-table"><thead><tr>
         <th>{transactions ? 'Giao dịch' : 'Đăng ký'}</th><th>Học viên</th><th>Khóa học / Gói</th><th>Số tiền</th>
         {transactions && <th>Phương thức</th>}<th>Trạng thái</th><th>{transactions ? 'Ngày giao dịch (UTC)' : 'Ngày đăng ký (UTC)'}</th>
