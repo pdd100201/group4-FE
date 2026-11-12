@@ -77,7 +77,7 @@ function PolicyPanel({ base, courseId }: { base: string; courseId: number }) {
   {notice && <p className="cert-success" role="status">{notice}</p>}
   {query.isPending && <p role="status">Đang tải cấu hình…</p>}{query.isError && <CertificateError error={query.error} />}
   {query.isSuccess && <><PolicyEditor key={query.data.current?.id ?? 'new'} base={base} options={query.data} onSaved={() => setNotice('Đã lưu phiên bản điều kiện mới. Chứng nhận đã cấp giữ nguyên thông tin.')} />
-   <details className="cert-policy-history"><summary>Lịch sử 10 phiên bản gần nhất</summary>{query.data.history.map(policy => <article key={policy.id}><b>Phiên bản {policy.version} · {policy.enabled ? 'Bật' : 'Tắt'}</b><p>{policy.issuerName} · {policy.lessons.length} bài học · {policy.quizzes.length} quiz</p><small>{policy.configuredBy} · {certificateDate(policy.createdAt)}</small></article>)}</details>
+   <details className="cert-policy-history"><summary>Lịch sử 10 phiên bản gần nhất</summary>{query.data.history.map(policy => <article key={policy.id}><b>Phiên bản {policy.version} · {policy.enabled ? 'Bật' : 'Tắt'}</b><p>{policy.issuerName} · {policy.lessons.length} bài học · {policy.quizzes.length} ngân hàng câu hỏi</p><small>{policy.configuredBy} · {certificateDate(policy.createdAt)}</small></article>)}</details>
   </>}
  </section>
 }
@@ -99,9 +99,9 @@ function PolicyEditor({ base, options, onSaved }: { base: string; options: Polic
    <label className="cert-field">Đơn vị cấp<input required maxLength={160} value={issuer} onChange={e => setIssuer(e.target.value)} /></label>
    {enabled && options.courseStatus !== 'PUBLISHED' && <p className="cert-error">Chỉ bật cấp khi khóa học đã được xuất bản.</p>}
    <h4>Bài học bắt buộc ({options.lessons.length})</h4><ul>{options.lessons.map(l => <li key={l.id}>{l.title}</li>)}</ul>
-   <h4>Chọn quiz bắt buộc</h4><p className="cert-muted">Cần ít nhất một quiz hợp lệ. Quiz bị ẩn hoặc thiếu cấu hình không thể được chọn.</p>
+   <h4>Ngân hàng câu hỏi dùng cho từng bài</h4><p className="cert-muted">Đây là nguồn câu hỏi và cấu hình đánh giá. Học viên chỉ làm câu hỏi được gán vào từng bài, không làm thêm bài tổng hợp. Ngân hàng bị ẩn hoặc thiếu cấu hình không thể được chọn.</p>
    {options.quizzes.map(q => <label className="cert-checkbox" key={q.id}><input type="checkbox" disabled={!q.complete} checked={selected.includes(q.id)} onChange={e => setSelected(ids => e.target.checked ? [...ids, q.id] : ids.filter(id => id !== q.id))} />{q.title}{!q.complete && <small> — Chưa sẵn sàng</small>}</label>)}
-   {!options.quizzes.length && <p>Khóa học chưa có quiz.</p>}
+   {!options.quizzes.length && <p>Khóa học chưa có ngân hàng câu hỏi.</p>}
    <button className="cert-primary" disabled={!valid || save.isPending}>{save.isPending ? 'Đang lưu…' : 'Lưu phiên bản điều kiện'}</button>
   </fieldset>
   {save.isError && <CertificateError error={save.error} />}

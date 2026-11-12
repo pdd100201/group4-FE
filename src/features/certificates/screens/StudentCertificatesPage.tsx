@@ -40,10 +40,10 @@ export function StudentCertificatesPage() {
    <div className="cert-card-top"><span className="cert-emblem" aria-hidden="true">✓</span><CertificateStatus status={c.status} /></div>
    <h2>{c.courseTitle}</h2><p>{c.issuerName}</p><small>Ngày cấp: {certificateDate(c.issuedAt)}</small><code>{c.code}</code>
    <button onClick={() => open(c.id)}>Xem chứng nhận</button>
-  </article>)}</div>{!list.data.content.length && <div className="cert-empty"><h2>Chưa có chứng nhận phù hợp</h2><p>Hoàn thành bài học và các quiz bắt buộc, hoặc kiểm tra điều kiện của khóa đang học.</p><button onClick={() => { setTab('conditions'); setPage(0) }}>Kiểm tra điều kiện</button></div>}</>}
+  </article>)}</div>{!list.data.content.length && <div className="cert-empty"><h2>Chưa có chứng nhận phù hợp</h2><p>Hoàn thành bài học và câu hỏi của từng bài học, hoặc kiểm tra điều kiện của khóa đang học.</p><button onClick={() => { setTab('conditions'); setPage(0) }}>Kiểm tra điều kiện</button></div>}</>}
   {tab === 'conditions' && courses.isSuccess && <><p className="cert-muted">Các khóa có quyền học hiện tại</p><div className="cert-grid">{courses.data.content.map(c => <article className="cert-card" key={c.courseId}>
    <h2>{c.courseTitle}</h2><p>{c.certificate ? 'Khóa học đã có chứng nhận.' : c.enabled ? 'Khóa học có cấp chứng nhận.' : 'Khóa học chưa bật cấp chứng nhận.'}</p>
-   {c.enabled && !c.certificate && <p className="cert-muted">{c.lessons.filter(l => l.complete).length}/{c.lessons.length} bài học · {c.quizzes.filter(q => q.complete).length}/{c.quizzes.length} quiz đạt</p>}
+   {c.enabled && !c.certificate && <p className="cert-muted">{c.lessons.filter(l => l.complete).length}/{c.lessons.length} bài học · {c.quizzes.filter(q => q.complete).length}/{c.quizzes.length} phần câu hỏi đạt</p>}
    <button disabled={check.isPending} onClick={() => c.certificate ? open(c.certificate.id) : check.mutate(c.courseId)}>{check.isPending && check.variables === c.courseId ? 'Đang kiểm tra…' : c.certificate ? 'Xem chứng nhận' : 'Kiểm tra và nhận chứng nhận'}</button>
   </article>)}</div>{!courses.data.content.length && <div className="cert-empty"><p>Bạn chưa có khóa học đang còn quyền truy cập phù hợp.</p><Link to="/student/courses">Khóa học của tôi</Link></div>}</>}
   {query.isSuccess && <CertificatePagination page={page} pages={query.data.totalPages} busy={query.isFetching} onChange={setPage} />}
@@ -53,7 +53,7 @@ export function StudentCertificatesPage() {
    {checkResult.certificate ? <><CertificateStatus status={checkResult.certificate.status} /><p>{checkResult.certificate.status === 'ISSUED' ? 'Chứng nhận đã được cấp và lưu trong tài khoản của bạn.' : 'Chứng nhận đã bị thu hồi.'}</p><button onClick={() => { open(checkResult.certificate!.id); setCheckResult(null) }}>Xem chứng nhận</button></> : <>
     <ul>{checkResult.reasons.map(reason => <li key={reason}>{reason}</li>)}</ul>
     {!!checkResult.lessons.length && <RequirementList title="Bài học bắt buộc" items={checkResult.lessons} />}
-    {!!checkResult.quizzes.length && <RequirementList title="Quiz bắt buộc" items={checkResult.quizzes} />}
+    {!!checkResult.quizzes.length && <RequirementList title="Câu hỏi theo bài học" items={checkResult.quizzes} />}
    </>}
   </CertificateModal>}
   {selected !== null && <CertificateModal title="Chứng nhận hoàn thành" onClose={() => open(null)}>
