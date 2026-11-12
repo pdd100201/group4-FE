@@ -7,7 +7,7 @@ export const useChatUsers = (query: string, page: number) => useQuery({
   queryKey: ['chat', 'users', query, page], queryFn: () => chatApi.users(query, page),
 })
 export const useChatHistory = (peerId: number | null, courseId: number | null, userId: number) => useInfiniteQuery({
-  queryKey: ['chat', 'messages', userId, courseId, peerId],
+  queryKey: ['chat', 'messages', userId, peerId],
   queryFn: ({ pageParam }) => chatApi.messages(peerId!, courseId!, pageParam),
   enabled: peerId !== null && courseId !== null,
   initialPageParam: undefined as number | undefined,
@@ -21,7 +21,7 @@ export function useDebouncedChatSearch(value: string) {
 }
 
 export const useChatMessageSearch = (peerId: number, courseId: number, userId: number, query: string) => useInfiniteQuery({
-  queryKey: ['chat', 'search', userId, courseId, peerId, query],
+  queryKey: ['chat', 'search', userId, peerId, query],
   queryFn: ({ pageParam }) => chatApi.searchMessages(peerId, courseId, query, pageParam),
   enabled: Boolean(query), staleTime: 0,
   initialPageParam: undefined as number | undefined,
@@ -72,9 +72,9 @@ export function useChatSocket(userId: number) {
             const message = data.message
             if (!message.courseId || !message.recipientId) return
             const peer = message.sender.id === userId ? message.recipientId : message.sender.id
-            const conversation = `${message.courseId}:${peer}`
-            // Server delivery is authoritative; cache keys isolate each user's course conversation.
-            const key = ['chat', 'messages', userId, message.courseId, peer]
+            const conversation = String(peer)
+            // All messages between this pair share one history cache.
+            const key = ['chat', 'messages', userId, peer]
             const previous = cache.getQueryData<InfiniteData<ChatMessage[]>>(key)
             const needsHistory = !previous
             const duplicate = previous?.pages.some(page => page.some(m => m.id === message.id))
@@ -115,8 +115,8 @@ export function useChatSocket(userId: number) {
     }
   }, [cache, userId])
 
-  const selectConversation = useCallback((courseId: number, peerId: number) => {
-    const key = `${courseId}:${peerId}`
+  const selectConversation = useCallback((peerId: number) => {
+    const key = String(peerId)
     activeConversation.current = key
     setUnread(old => ({ ...old, [key]: 0 }))
   }, [])
