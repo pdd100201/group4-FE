@@ -15,3 +15,5 @@
 @media(max-width:600px){.studio-rail nav button b{font-size:10px}.studio-field-hint{font-size:11px}.studio-section-heading>div>span{font-size:12px}.studio-section-heading h2{font-size:19px}.studio-tip{display:none}.studio-checklist li>button{margin-left:38px}.course-studio .package-panel .package-editor label{font-size:13px}.studio-panel-heading>span{font-size:11px}.studio-package-dirty{font-size:11px}.studio-step-number{font-size:11px}}
 /* Keep package cards contained regardless of shared stylesheet load order. */
 .course-studio .package-panel .package-editor>*{min-width:0;max-width:100%;box-sizing:border-box}.course-studio .package-panel .package-editor input[type=number]{width:100%;box-sizing:border-box}.course-studio .package-panel .studio-package-preview{overflow-wrap:anywhere}
+
+.course-studio .curriculum .course-heading>button,.course-studio .curriculum-course-wide>button{font-size:14px;font-weight:600;line-height:1.5;min-height:42px;padding:10px 14px}

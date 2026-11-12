@@ -142,7 +142,7 @@ export function CommentModerationDialog({ post, onClose }: { post: ManagedPost; 
   return <div className="course-modal-backdrop manager-post-backdrop" onMouseDown={event => { if (event.target === event.currentTarget && !busy) onClose() }}>
     <section className="course-modal manager-post-editor manager-comment-moderation" role="dialog" aria-modal="true" aria-labelledby="comment-moderation-title">
       <header className="manager-post-editor-heading"><div><h2 id="comment-moderation-title">Kiểm duyệt bình luận</h2><p>{post.post.title}</p></div><button type="button" aria-label="Đóng" disabled={busy} onClick={onClose}>×</button></header>
-      <label className="manager-comment-filter">Lọc trạng thái<select value={status} onChange={event => { setStatus(event.target.value as ModerationStatus | ''); setPage(0) }}><option value="">Tất cả trạng thái</option><option value="VISIBLE">Đang hiển thị</option><option value="HIDDEN">Đã ẩn</option><option value="DISABLED">Đã tắt</option></select></label>
+      <label className="manager-comment-filter">Lọc trạng thái<select value={status} onChange={event => { setStatus(event.target.value as ModerationStatus | ''); setPage(0) }}><option value="">Tất cả trạng thái</option><option value="VISIBLE">Đang hiển thị</option><option value="HIDDEN">Đã ẩn</option></select></label>
       {(updateStatus.isError || remove.isError) && <p role="alert" className="course-error">{courseError(updateStatus.error ?? remove.error)}</p>}
       {query.isPending ? <p role="status">Đang tải bình luận…</p> : query.isError ? <div role="alert" className="course-error"><p>{courseError(query.error)}</p><button onClick={() => void query.refetch()}>Thử lại</button></div> : <>
         <p className="manager-comment-count">{query.data.totalElements} bình luận cần kiểm duyệt</p>
@@ -156,9 +156,9 @@ export function CommentModerationDialog({ post, onClose }: { post: ManagedPost; 
 
 function ModerationCommentRow({ comment, busy, onStatus, onDelete }: { comment: BlogComment; busy: boolean; onStatus: (status: ModerationStatus) => Promise<void>; onDelete: () => void }) {
   const current = comment.status === 'DELETED' ? 'VISIBLE' : comment.status
-  const [nextStatus, setNextStatus] = useState<ModerationStatus>(current)
+  const [nextStatus, setNextStatus] = useState<Exclude<ModerationStatus, 'DISABLED'>>(current === 'DISABLED' ? 'HIDDEN' : current)
   return <article className="manager-comment-row">
     <div className="manager-comment-body"><div><b>{comment.authorName}</b><small>{comment.createdAt ? new Date(comment.createdAt).toLocaleString('vi-VN') : '—'} · #{comment.id}</small></div><span className={`course-status manager-comment-status status-${comment.status.toLowerCase()}`}>{moderationLabels[current]}</span><p>{comment.content}</p></div>
-    <div className="manager-comment-actions"><label><span className="sr-only">Trạng thái bình luận</span><select value={nextStatus} disabled={busy} onChange={event => setNextStatus(event.target.value as ModerationStatus)}><option value="VISIBLE">Hiển thị</option><option value="HIDDEN">Ẩn</option><option value="DISABLED">Tắt</option></select></label><button disabled={busy || nextStatus === current} onClick={() => void onStatus(nextStatus)}>Lưu trạng thái</button><button className="course-danger" disabled={busy} onClick={onDelete}>Gỡ bình luận</button></div>
+    <div className="manager-comment-actions"><label><span className="sr-only">Trạng thái bình luận</span><select value={nextStatus} disabled={busy} onChange={event => setNextStatus(event.target.value as Exclude<ModerationStatus, 'DISABLED'>)}><option value="VISIBLE">Hiển thị</option><option value="HIDDEN">Ẩn</option></select></label><button disabled={busy || nextStatus === current} onClick={() => void onStatus(nextStatus)}>Lưu trạng thái</button><button className="course-danger" disabled={busy} onClick={onDelete}>Gỡ bình luận</button></div>
   </article>
 }

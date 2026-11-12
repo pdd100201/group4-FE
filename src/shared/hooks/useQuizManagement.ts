@@ -28,6 +28,10 @@ export function useQuizWrites(courseId: number) {
   const client = useQueryClient()
   const invalidate = async () => {
     await Promise.all([
+      client.invalidateQueries({ queryKey: ['expert-course'] }),
+      client.invalidateQueries({ queryKey: ['expert-courses'] }),
+      client.invalidateQueries({ queryKey: ['published-courses'] }),
+      client.invalidateQueries({ queryKey: ['public-course'] }),
       client.invalidateQueries({ queryKey: ['course-curriculum'] }),
       client.invalidateQueries({ queryKey: ['course-submission-readiness', courseId] }),
       client.invalidateQueries({ queryKey: ['managed-quizzes'] }),

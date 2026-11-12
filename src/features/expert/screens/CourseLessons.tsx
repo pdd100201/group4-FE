@@ -4,12 +4,14 @@ import type { Lesson, LessonInput } from '../api/lessonApi'
 import { MediaUpload } from '../../../shared/components/media/MediaUpload'
 import { MediaVideo } from '../../../shared/components/media/MediaVideo'
 import { courseError } from './ExpertCoursesPage'
+import { LessonQuestionPicker } from './LessonQuestionPicker'
 import './lessons.css'
 
 export function CourseLessons({ courseId, editable }: { courseId: number; editable: boolean }) {
   const query = useLessons(courseId)
   const { save, remove } = useLessonActions(courseId)
   const [selection, setSelection] = useState<Lesson | 'new' | null>(null)
+  const [questionLesson, setQuestionLesson] = useState<Lesson | null>(null)
   const [deleting, setDeleting] = useState<Lesson | null>(null)
   const [message, setMessage] = useState('')
   async function saveLesson(input: LessonInput) {
@@ -24,10 +26,11 @@ export function CourseLessons({ courseId, editable }: { courseId: number; editab
     {message && <p role="status" className="course-success">{message}</p>}{!editable && <p>Khóa học hiện chỉ cho phép xem nội dung bài học.</p>}
     {query.isPending ? <p role="status">Đang tải bài học…</p> : query.isError ? <div role="alert"><p>{courseError(query.error)}</p><button onClick={() => void query.refetch()}>Thử lại</button></div> : <>
       {query.data.length === 0 && <p>Chưa có bài học trong khóa học này.</p>}
-      <div className="course-table-wrap"><table className="course-table"><thead><tr><th>Thứ tự</th><th>Tên bài học</th><th>Thao tác</th></tr></thead><tbody>{query.data.map(l => <tr key={l.id}><td>{l.position}</td><td>{l.title}</td><td><div className="course-row-actions"><button onClick={() => { save.reset(); setSelection(l) }}>{editable ? 'Xem / sửa' : 'Xem nội dung'}</button>{editable && <button className="course-danger" onClick={() => { remove.reset(); setDeleting(l) }}>Xóa</button>}</div></td></tr>)}</tbody></table></div>
+      <div className="course-table-wrap"><table className="course-table"><thead><tr><th>Thứ tự</th><th>Tên bài học</th><th>Thao tác</th></tr></thead><tbody>{query.data.map(l => <tr key={l.id}><td>{l.position}</td><td>{l.title}</td><td><div className="course-row-actions"><button onClick={() => { save.reset(); setSelection(l) }}>{editable ? 'Xem / sửa' : 'Xem nội dung'}</button><button onClick={() => setQuestionLesson(l)}>{editable ? 'Chọn câu hỏi' : 'Xem câu hỏi'}</button>{editable && <button className="course-danger" onClick={() => { remove.reset(); setDeleting(l) }}>Xóa</button>}</div></td></tr>)}</tbody></table></div>
     </>}
+    {questionLesson && <LessonQuestionPicker courseId={courseId} lesson={questionLesson} lessons={query.data ?? []} editable={editable} onClose={() => setQuestionLesson(null)} />}
     {selection && <LessonEditor key={selection === 'new' ? 'new' : selection.id} courseId={courseId} lesson={selection === 'new' ? undefined : selection} nextPosition={Math.max(0, ...(query.data ?? []).map(l => l.position ?? 0)) + 1} editable={editable} saving={save.isPending} error={save.isError ? courseError(save.error) : ''} onSave={saveLesson} onClose={() => setSelection(null)} />}
-    {deleting && <div className="course-modal-backdrop"><section className="course-modal" role="dialog" aria-modal="true" aria-labelledby="delete-lesson-title"><h2 id="delete-lesson-title">Xóa bài học?</h2><p>Bạn muốn xóa “{deleting.title}”? Thao tác này không thể hoàn tác.</p>{remove.isError && <p className="course-error" role="alert">{courseError(remove.error)}</p>}<div className="course-row-actions"><button autoFocus disabled={remove.isPending} onClick={() => setDeleting(null)}>Hủy</button><button className="course-danger" disabled={remove.isPending} onClick={() => void deleteLesson()}>{remove.isPending ? 'Đang xóa…' : 'Xác nhận xóa'}</button></div></section></div>}
+    {deleting && <div className="course-modal-backdrop"><section className="course-modal" role="dialog" aria-modal="true" aria-labelledby="delete-lesson-title"><h2 id="delete-lesson-title">Xóa bài học?</h2><p>Bạn muốn gỡ “{deleting.title}” khỏi giáo trình? Tiến độ và lịch sử học đã có vẫn được giữ lại. Khóa học cần được gửi duyệt lại sau khi cập nhật.</p>{remove.isError && <p className="course-error" role="alert">{courseError(remove.error)}</p>}<div className="course-row-actions"><button autoFocus disabled={remove.isPending} onClick={() => setDeleting(null)}>Hủy</button><button className="course-danger" disabled={remove.isPending} onClick={() => void deleteLesson()}>{remove.isPending ? 'Đang xóa…' : 'Xác nhận xóa'}</button></div></section></div>}
   </section>
 }
 function LessonEditor({ courseId, lesson, nextPosition, editable, saving, error, onSave, onClose }: { courseId: number; lesson?: Lesson; nextPosition: number; editable: boolean; saving: boolean; error: string; onSave: (input: LessonInput) => Promise<void>; onClose: () => void }) {

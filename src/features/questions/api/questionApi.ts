@@ -2,7 +2,7 @@ import apiClient from '../../../shared/services/apiClient'
 
 export type QuestionType = 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE'
 export interface QuestionInput { lessonId?: number | null; content: string; type: QuestionType; explanation: string; active: boolean; imageMediaId: number | null; options: { content: string; correct: boolean }[] }
-export interface BankQuestion extends QuestionInput { id: number; courseId: number; imageUrl: string | null }
+export interface BankQuestion extends QuestionInput { id: number; courseId: number; imageUrl: string | null; lessonIds: number[] }
 export interface QuestionPage { content: BankQuestion[]; totalElements: number; totalPages: number; number: number }
 export interface ImportResult { imported: number; errors: { row: number; message: string }[] }
 const base = (courseId: number) => `/expert/courses/${courseId}/questions`
