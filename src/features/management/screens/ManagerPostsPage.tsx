@@ -2,8 +2,8 @@ import { useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { MediaUpload } from '../../../shared/components/media/MediaUpload'
-import { useManagerPostActions, useManagerPosts } from '../../../shared/hooks/useManagerPosts'
-import { managerPostApi, type ManagedPost, type ModerationStatus, type PostInput } from '../api/managerPostApi'
+import { useManagerPostActions, useManagerPosts, usePostManagement } from '../../../shared/hooks/useManagerPosts'
+import { type ManagedPost, type ModerationStatus, type PostInput } from '../api/managerPostApi'
 import type { BlogComment } from '../../blog/api/blogApi'
 import { courseError } from '../../expert/screens/ExpertCoursesPage'
 import '../../expert/screens/courses.css'
@@ -15,6 +15,7 @@ const moderationLabels: Record<ModerationStatus, string> = { VISIBLE: 'Đang hi�
 const postStatusLabels: Record<ManagedPost['status'], string> = { DRAFT: 'Bản nháp', PENDING_REVIEW: 'Chờ duyệt', PUBLISHED: 'Đã xuất bản', REJECTED: 'Không được duyệt' }
 
 export function ManagerPostsPage() {
+  const { postsPath } = usePostManagement()
   const [page, setPage] = useState(0)
   const [editor, setEditor] = useState<Editor | null>(null)
   const query = useManagerPosts(page, managerPostPageSize)
@@ -29,12 +30,12 @@ export function ManagerPostsPage() {
     </header>
 
     {query.isPending ? <p role="status">Đang tải bài viết…</p> : query.isError ? <div role="alert" className="course-error"><p>{courseError(query.error)}</p><button onClick={() => void query.refetch()}>Thử lại</button></div> : <>
-      <div className="manager-post-summary"><strong>{query.data.totalElements}</strong> bài viết · Bài gửi từ tài khoản khác cần được duyệt trước khi công khai.</div>
+      <div className="manager-post-summary"><strong>{query.data.totalElements}</strong> bài viết · Bài gửi từ học viên và chuyên gia cần được duyệt trước khi công khai.</div>
       <section className="manager-post-list-panel manager-post-list-page" aria-label="Danh sách bài viết quản lý">
           <h2>Bài viết</h2>
           <div className="manager-post-card-list">
             {query.data.content.map((item, index) => <article className="manager-post-card" key={item.post.id}>
-              <Link className="manager-post-card-select" to={`/manager/posts/${item.post.id}`} aria-label={`Mở chi tiết bài viết ${item.post.title}`}>
+              <Link className="manager-post-card-select" to={`${postsPath}/${item.post.id}`} aria-label={`Mở chi tiết bài viết ${item.post.title}`}>
                 {item.post.thumbnailUrl ? <img className="manager-post-card-image" src={item.post.thumbnailUrl} alt="" loading="lazy" /> : <span className="manager-post-card-placeholder">{item.post.category?.slice(0, 3).toUpperCase() || 'BLOG'}</span>}
                 <span className="manager-post-card-content"><span className="manager-post-card-category">{item.post.category || 'Chưa phân loại'}</span><strong>{item.post.title}</strong><span className="manager-post-card-summary">{item.post.summary || 'Chưa có tóm tắt.'}</span><small>{item.post.authorName} · {item.post.updatedAt ? new Date(item.post.updatedAt).toLocaleDateString('vi-VN') : 'Chưa cập nhật'}</small></span>
               </Link>
@@ -108,12 +109,13 @@ export function PostEditor({ editor, onClose }: { editor: Editor; onClose: () =>
 }
 
 export function CommentModerationDialog({ post, onClose }: { post: ManagedPost; onClose: () => void }) {
+  const { api, userId } = usePostManagement()
   const client = useQueryClient()
   const [status, setStatus] = useState<ModerationStatus | ''>('')
   const [page, setPage] = useState(0)
   const query = useQuery({
-    queryKey: ['manager-post-comments', post.post.id, status, page],
-    queryFn: () => managerPostApi.moderationComments(post.post.id, status, page),
+    queryKey: ['manager-post-comments', post.post.id, status, page, userId],
+    queryFn: () => api.moderationComments(post.post.id, status, page),
   })
   const refresh = async () => {
     await Promise.all([
@@ -123,10 +125,10 @@ export function CommentModerationDialog({ post, onClose }: { post: ManagedPost; 
     ])
   }
   const updateStatus = useMutation({
-    mutationFn: ({ id, next }: { id: number; next: ModerationStatus }) => managerPostApi.setCommentStatus(id, next),
+    mutationFn: ({ id, next }: { id: number; next: ModerationStatus }) => api.setCommentStatus(id, next),
     onSuccess: refresh,
   })
-  const remove = useMutation({ mutationFn: managerPostApi.deleteComment, onSuccess: refresh })
+  const remove = useMutation({ mutationFn: api.deleteComment, onSuccess: refresh })
   const busy = updateStatus.isPending || remove.isPending
 
   async function deleteComment(comment: BlogComment) {

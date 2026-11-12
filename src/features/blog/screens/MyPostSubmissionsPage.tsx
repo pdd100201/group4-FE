@@ -4,6 +4,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { blogApi, type PostSubmissionStatus } from '../api/blogApi'
 import { postDate } from './PostCard'
+import { useAuth } from '../../../shared/context/AuthContext'
 import './blog.css'
 
 const labels: Record<PostSubmissionStatus, string> = {
@@ -11,11 +12,14 @@ const labels: Record<PostSubmissionStatus, string> = {
 }
 
 export function MyPostSubmissionsPage() {
+  const { user } = useAuth()
+  const canPublish = Boolean(user?.roles.some(role => role === 'ROLE_ADMIN' || role === 'ROLE_MANAGER'))
   const [page, setPage] = useState(0)
   const [params] = useSearchParams()
-  const query = useQuery({ queryKey: ['my-post-submissions', page], queryFn: () => blogApi.myPostSubmissions(page, 10) })
+  const query = useQuery({ queryKey: ['my-post-submissions', user?.id, page], queryFn: () => blogApi.myPostSubmissions(page, 10) })
   return <section className="my-post-submissions">
-    <header><div><p><Link to="/blog">Bài viết</Link> / Bài viết đã gửi</p><h1>Bài viết của tôi</h1><p>Theo dõi kết quả kiểm duyệt bài viết bạn gửi.</p></div><Link className="my-post-submit-link" to="/blog/submit">+ Gửi bài viết</Link></header>
+    <header><div><p><Link to="/blog">Bài viết</Link> / Bài viết của tôi</p><h1>Bài viết của tôi</h1><p>{canPublish ? 'Theo dõi các bài viết của bạn.' : 'Theo dõi kết quả kiểm duyệt bài viết bạn gửi.'}</p></div><Link className="my-post-submit-link" to="/blog/submit">{canPublish ? '+ Đăng bài viết' : '+ Gửi bài viết'}</Link></header>
+    {params.get('published') === '1' && <p className="submission-success" role="status">Đã đăng bài viết thành công. Bài viết đã được hiển thị công khai.</p>}
     {params.get('submitted') === '1' && <p className="submission-success" role="status">Đã gửi bài. Manager sẽ kiểm duyệt trước khi bài được hiển thị công khai.</p>}
     {query.isPending && <p role="status">Đang tải bài viết…</p>}
     {query.isError && <div role="alert" className="blog-submission-error">{isAxiosError<{ message?: string }>(query.error) ? query.error.response?.data?.message || 'Không tải được danh sách bài viết.' : 'Không tải được danh sách bài viết.'} <button onClick={() => void query.refetch()}>Thử lại</button></div>}

@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { MediaUpload } from '../../../shared/components/media/MediaUpload'
 import { blogApi, type PostSubmissionInput } from '../api/blogApi'
+import { useAuth } from '../../../shared/context/AuthContext'
 import './blog.css'
 
 const initialForm: PostSubmissionInput = { title: '', category: '', summary: '', content: '', thumbnailMediaId: 0 }
@@ -13,15 +14,23 @@ function submitError(error: unknown) {
 }
 
 export function BlogPostSubmissionPage() {
+  const { user } = useAuth()
+  const canPublish = Boolean(user?.roles.some(role => role === 'ROLE_ADMIN' || role === 'ROLE_MANAGER'))
+  const actionTitle = canPublish ? 'Đăng bài viết' : 'Gửi bài viết'
   const navigate = useNavigate()
   const client = useQueryClient()
   const [form, setForm] = useState(initialForm)
   const [thumbnailUrl, setThumbnailUrl] = useState('')
   const [uploading, setUploading] = useState(false)
   const [validationError, setValidationError] = useState('')
-  const submit = useMutation({ mutationFn: blogApi.submitPost, onSuccess: async () => {
-    await client.invalidateQueries({ queryKey: ['my-post-submissions'] })
-    navigate('/blog/my-submissions?submitted=1')
+  const submit = useMutation({ mutationFn: blogApi.submitPost, onSuccess: async result => {
+    await Promise.all([
+      client.invalidateQueries({ queryKey: ['my-post-submissions'] }),
+      client.invalidateQueries({ queryKey: ['public-posts'] }),
+      client.invalidateQueries({ queryKey: ['public-post-categories'] }),
+    ])
+    navigate(result.published && result.status === 'PUBLISHED'
+      ? '/blog/my-submissions?published=1' : '/blog/my-submissions?submitted=1')
   } })
   const busy = submit.isPending || uploading
 
@@ -33,7 +42,7 @@ export function BlogPostSubmissionPage() {
   }
 
   return <section className="blog-submission-page">
-    <header className="blog-submission-heading"><div><p><Link to="/">Trang chủ</Link> / <Link to="/blog">Bài viết</Link> / Gửi bài viết</p><h1>Gửi bài viết</h1><p>Bài viết sẽ được Manager kiểm duyệt trước khi hiển thị công khai.</p></div><Link className="blog-submission-secondary" to="/blog/my-submissions">Bài viết đã gửi</Link></header>
+    <header className="blog-submission-heading"><div><p><Link to="/">Trang chủ</Link> / <Link to="/blog">Bài viết</Link> / {actionTitle}</p><h1>{actionTitle}</h1><p>{canPublish ? 'Bài viết được xuất bản ngay sau khi đăng.' : 'Bài viết sẽ được Manager kiểm duyệt trước khi hiển thị công khai.'}</p></div><Link className="blog-submission-secondary" to="/blog/my-submissions">Bài viết của tôi</Link></header>
     {(submit.isError || validationError) && <p role="alert" className="blog-submission-error">{validationError || submitError(submit.error)}</p>}
     <form className="blog-submission-form" onSubmit={event => void onSubmit(event)}>
       <div className="blog-submission-fields">
@@ -50,9 +59,9 @@ export function BlogPostSubmissionPage() {
           setForm(current => ({ ...current, thumbnailMediaId: media.id }))
           setThumbnailUrl(media.url ?? '')
         }} />
-        <p>Sau khi gửi, bài viết sẽ ở trạng thái chờ duyệt. Bài chưa được công khai trong thời gian này.</p>
+        <p>{canPublish ? 'Với vai trò Admin/Manager, bạn có thể đăng bài trực tiếp, không cần gửi duyệt.' : 'Sau khi gửi, bài viết sẽ ở trạng thái chờ duyệt. Bài chưa được công khai trong thời gian này.'}</p>
       </aside>
-      <footer className="blog-submission-actions"><Link to="/blog">Hủy</Link><button type="submit" disabled={busy}>{busy ? 'Đang gửi…' : 'Gửi Manager kiểm duyệt'}</button></footer>
+      <div className="blog-submission-actions"><Link to="/blog">Hủy</Link><button type="submit" disabled={busy}>{busy ? (canPublish ? 'Đang đăng…' : 'Đang gửi…') : (canPublish ? 'Đăng bài viết' : 'Gửi duyệt')}</button></div>
     </form>
   </section>
 }

@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { useManagerPostActions } from '../../../shared/hooks/useManagerPosts'
-import { managerPostApi } from '../api/managerPostApi'
+import { useManagerPostActions, usePostManagement } from '../../../shared/hooks/useManagerPosts'
+
 import { type ManagedPost } from '../api/managerPostApi'
 import { SafePostContent } from '../../blog/screens/SafePostContent'
 import { courseError } from '../../expert/screens/ExpertCoursesPage'
@@ -10,9 +10,10 @@ import { CommentModerationDialog, PostEditor, type Editor } from './ManagerPosts
 import '../../expert/screens/courses.css'
 import './manager-posts.css'
 
-const postStatusLabels: Record<ManagedPost['status'], string> = { DRAFT: 'Bản nháp · Chỉ Manager xem được', PENDING_REVIEW: 'Đang chờ Manager kiểm duyệt', PUBLISHED: 'Đã xuất bản · Đang hiển thị với người học', REJECTED: 'Chưa được duyệt · Chỉ Manager xem được' }
+const postStatusLabels: Record<ManagedPost['status'], string> = { DRAFT: 'Bản nháp · Chỉ Admin/Manager xem được', PENDING_REVIEW: 'Đang chờ Manager kiểm duyệt', PUBLISHED: 'Đã xuất bản · Đang hiển thị với người học', REJECTED: 'Chưa được duyệt · Chỉ Admin/Manager xem được' }
 
 export function ManagerPostDetailPage() {
+  const { api, postsPath, userId } = usePostManagement()
   const { postId: routePostId } = useParams()
   const postId = Number(routePostId)
   const validPostId = Number.isSafeInteger(postId) && postId > 0
@@ -21,8 +22,8 @@ export function ManagerPostDetailPage() {
   const [editor, setEditor] = useState<Editor | null>(null)
   const [moderationOpen, setModerationOpen] = useState(false)
   const query = useQuery({
-    queryKey: ['manager-post', postId],
-    queryFn: () => managerPostApi.detail(postId),
+    queryKey: ['manager-post', postId, userId],
+    queryFn: () => api.detail(postId),
     enabled: validPostId,
   })
   const post = query.data
@@ -31,7 +32,7 @@ export function ManagerPostDetailPage() {
     if (!post || !window.confirm(`Xóa bài viết “${post.post.title}” khỏi danh sách? Nội dung và lịch sử sẽ được lưu.`)) return
     try {
       await actions.remove.mutateAsync(post.post.id)
-      navigate('/manager/posts', { replace: true })
+      navigate(postsPath, { replace: true })
     } catch { /* The API error is shown on this page. */ }
   }
 
@@ -47,7 +48,7 @@ export function ManagerPostDetailPage() {
     <header className="course-heading">
       <div><h1>Chi tiết bài viết</h1><p>Xem nội dung và quản lý trạng thái của bài viết.</p></div>
       <div className="manager-post-detail-actions">
-        <Link to="/manager/posts" className="manager-post-back-link">← Danh sách bài viết</Link>
+        <Link to={postsPath} className="manager-post-back-link">← Danh sách bài viết</Link>
         {post && <>
           {post.status === 'PENDING_REVIEW' && <>
             <button className="manager-post-approve" disabled={actions.review.isPending} onClick={() => void reviewPost('APPROVE')}>{actions.review.isPending ? 'Đang kiểm duyệt…' : 'Duyệt & xuất bản'}</button>
@@ -67,7 +68,7 @@ export function ManagerPostDetailPage() {
             <div className="manager-post-detail-toolbar"><span className={`course-status manager-post-status status-${post.status.toLowerCase()}`}>{postStatusLabels[post.status]}</span><span>#{post.post.id}</span></div>
             {actions.review.isError && <p role="alert" className="course-error">{courseError(actions.review.error)}</p>}
             <div className="manager-post-detail-content">
-              <p className="manager-post-preview-breadcrumb"><Link to="/manager/posts">Quản lý bài viết</Link> / {post.post.category || 'Chưa phân loại'}</p>
+              <p className="manager-post-preview-breadcrumb"><Link to={postsPath}>Quản lý bài viết</Link> / {post.post.category || 'Chưa phân loại'}</p>
               <span className="showcase-detail-category">{post.post.category || 'Chưa phân loại'}</span>
               <h2>{post.post.title}</h2>
               <p className="manager-post-preview-byline">{post.post.authorName} · {post.post.updatedAt ? new Date(post.post.updatedAt).toLocaleDateString('vi-VN') : 'Chưa cập nhật'}</p>

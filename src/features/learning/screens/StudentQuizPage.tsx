@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../../shared/context/AuthContext'
@@ -44,8 +44,16 @@ function QuizAttemptForm({ attempt }: { attempt:QuizAttempt }) {
   const [expiry]=useState(()=>Date.now()+new Date(attempt.deadline).getTime()-new Date(attempt.serverTime).getTime())
   const [seconds,setSeconds]=useState(()=>Math.max(0,Math.ceil((expiry-Date.now())/1000)))
   const autoSent=useRef(false)
-  const autosave=useMutation({mutationFn:(answer:QuizAnswer)=>studentQuizApi.answer(attempt.id,answer),onSuccess:data=>{if(data.submittedAt)navigate(`/student/quiz-attempts/${attempt.id}`,{replace:true})}})
-  const submit=useMutation({mutationFn:(values:QuizAnswer[])=>studentQuizApi.submit(attempt.id,values),onSuccess:()=>navigate(`/student/quiz-attempts/${attempt.id}`,{replace:true})})
+  const client=useQueryClient()
+  const showResult=async()=>{
+    await Promise.all([
+      client.invalidateQueries({queryKey:['student-learning']}),
+      client.invalidateQueries({queryKey:['student-courses']}),
+    ])
+    navigate(`/student/quiz-attempts/${attempt.id}`,{replace:true})
+  }
+  const autosave=useMutation({mutationFn:(answer:QuizAnswer)=>studentQuizApi.answer(attempt.id,answer),onSuccess:data=>{if(data.submittedAt)void showResult()}})
+  const submit=useMutation({mutationFn:(values:QuizAnswer[])=>studentQuizApi.submit(attempt.id,values),onSuccess:showResult})
   const values=()=>attempt.questions.map(q=>({questionId:q.id,optionIds:answers[q.id]??[]}))
   useEffect(()=>{const interval=setInterval(()=>setSeconds(Math.max(0,Math.ceil((expiry-Date.now())/1000))),500);return()=>clearInterval(interval)},[expiry])
   useEffect(()=>{if(seconds===0&&!autoSent.current){autoSent.current=true;submit.mutate([])}},[seconds,submit])

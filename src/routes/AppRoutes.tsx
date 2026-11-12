@@ -118,6 +118,8 @@ export function AppRoutes() {
         <Route path="/admin/certificates/courses/:courseId/policy" element={<CertificatePolicyPage />} />
         <Route path="/admin/reports" element={<ReportsPage />} />
         <Route path="/admin/discussions" element={<div className="discussion-management"><LessonDiscussions /></div>} />
+        <Route path="/admin/posts" element={<ManagerPostsPage />} />
+        <Route path="/admin/posts/:postId" element={<ManagerPostDetailPage />} />
         <Route path="/admin/accounts" element={<AccountsPage />} />
         <Route path="/admin/accounts/new" element={<AccountEditorPage create />} />
         <Route path="/admin/accounts/:id" element={<AccountEditorPage />} />

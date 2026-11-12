@@ -7,6 +7,8 @@ import type { BlogComment } from '../api/blogApi'
 import { postDate } from './PostCard'
 import './comment-likes.css'
 
+const commentRoles = ['ROLE_STUDENT', 'ROLE_EXPERT', 'ROLE_MANAGER', 'ROLE_ADMIN']
+
 function errorMessage(error: unknown) {
   return isAxiosError<{ message?: string }>(error) ? error.response?.data.message || 'Không thể lưu thay đổi. Vui lòng thử lại.' : 'Không thể lưu thay đổi.'
 }
@@ -34,7 +36,7 @@ function CommentItem({ comment, onLike, likePending, onReply, onEdit, onDelete, 
 
 function CommentThread(props: ComponentProps<typeof CommentItem> & { postId: number }) {
   const { user } = useAuth()
-  const canReply = Boolean(user?.roles.includes('ROLE_STUDENT'))
+  const canReply = Boolean(user?.roles.some(role => commentRoles.includes(role)))
   const [open, setOpen] = useState(false)
   const [composing, setComposing] = useState(false)
   const [draft, setDraft] = useState('')
@@ -73,7 +75,7 @@ export function CommentSection({ postId }: { postId: number }) {
   const [error, setError] = useState('')
   const comments = useBlogComments(postId, page)
   const actions = useCommentActions(postId)
-  const canComment = Boolean(user?.roles.includes('ROLE_STUDENT'))
+  const canComment = Boolean(user?.roles.some(role => commentRoles.includes(role)))
   const pending = actions.create.isPending || actions.edit.isPending || actions.remove.isPending
   return <section className="showcase-comments" aria-label="Bình luận"><h3>Bình luận <span>({comments.data?.totalElements ?? 0} phản hồi)</span></h3>
     {canComment ? <form onSubmit={async event => {
@@ -82,14 +84,14 @@ export function CommentSection({ postId }: { postId: number }) {
       catch (cause) { setError(errorMessage(cause)) }
     }} className="showcase-comment-composer showcase-real-comment-composer"><textarea aria-label="Chia sẻ ý kiến của bạn" placeholder="Chia sẻ suy nghĩ hoặc câu hỏi của bạn về bài viết này…" maxLength={2000} required value={draft} onChange={event => setDraft(event.target.value)} />
       <small>{draft.length}/2000 ký tự</small><button disabled={pending || !draft.trim()}>Gửi bình luận <span aria-hidden="true">➤</span></button>
-    </form> : !user && <p className="showcase-comment-login-note"><Link to="/login" state={{ from: `/blog/${postId}` }}>Đăng nhập</Link> bằng tài khoản học viên để gửi bình luận. Bạn vẫn có thể đọc các bình luận công khai bên dưới.</p>}
+    </form> : !user && <p className="showcase-comment-login-note"><Link to="/login" state={{ from: `/blog/${postId}` }}>Đăng nhập</Link> để gửi bình luận. Bạn vẫn có thể đọc các bình luận công khai bên dưới.</p>}
     {feedback && <p role="status">{feedback}</p>}{error && <p role="alert">{error}</p>}
     {comments.isPending && <p role="status">Đang tải bình luận…</p>}
     {comments.isError && <p role="alert">Không tải được bình luận. <button onClick={() => void comments.refetch()}>Thử lại</button></p>}
     {comments.data?.content.length === 0 && <p>Chưa có bình luận trên trang này.</p>}
     <div className="showcase-comment-list" aria-label="Danh sách bình luận công khai">{comments.data?.content.map(comment => <CommentThread key={comment.id} postId={postId} comment={{ ...comment,
-      canEdit: comment.canEdit && Boolean(user?.roles.includes('ROLE_STUDENT')),
-      canDelete: comment.canDelete && Boolean(user?.roles.some(role => ['ROLE_STUDENT', 'ROLE_MANAGER', 'ROLE_ADMIN'].includes(role))),
+      canEdit: comment.canEdit && Boolean(user?.roles.some(role => commentRoles.includes(role))),
+      canDelete: comment.canDelete && Boolean(user?.roles.some(role => commentRoles.includes(role))),
     }} pending={pending} likePending={actions.like.isPending && actions.like.variables?.id === comment.id} onLike={() => {
       setError('')
       actions.like.mutate({ id: comment.id, liked: !comment.liked }, { onError: cause => setError(errorMessage(cause)) })
