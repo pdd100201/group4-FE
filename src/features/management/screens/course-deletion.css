@@ -1,0 +1,9 @@
+.deletion-management { max-width: 1320px; margin: 0 auto; padding: 32px 24px; }
+.deletion-management > label { display: flex; align-items: center; gap: 12px; margin: 24px 0; }
+.deletion-management select { padding: 10px 14px; border: 1px solid #d4dff0; border-radius: 8px; background: white; font: inherit; }
+.deletion-reason { display: flex; flex-direction: column; gap: 8px; margin: 18px 0; font: inherit; }
+.deletion-reason textarea { width: 100%; box-sizing: border-box; resize: vertical; border: 1px solid #d4dff0; border-radius: 8px; padding: 12px; font: inherit; color: inherit; }
+.deletion-request-reason { padding: 14px 16px; background: #f3f6fc; border-radius: 10px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.deletion-reason-cell { max-width: 300px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.deletion-management .course-table { min-width: 800px; }
+.studio-dialog .studio-dialog-actions button { min-height: 38px; height: auto; width: auto; flex: 0 1 auto; white-space: normal; font-size: 14px; padding: 9px 16px; }

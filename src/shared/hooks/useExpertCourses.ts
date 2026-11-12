@@ -8,6 +8,7 @@ export function useCourseActions() {
   const refresh = async () => { await Promise.all(['expert-courses', 'expert-course', 'published-courses', 'public-course', 'manager-courses', 'manager-course-changes', 'manager-course', 'moderation-courses', 'course-submission-readiness'].map(key => client.invalidateQueries({ queryKey: [key] }))) }
   return {
     save: useMutation({ mutationFn: ({ id, input }: { id?: number; input: CourseInput }) => id === undefined ? expertCourseApi.create(input) : expertCourseApi.update(id, input), onSuccess: refresh }),
+    requestDeletion: useMutation({ mutationFn: expertCourseApi.requestDeletion, onSuccess: refresh }),
     remove: useMutation({ mutationFn: expertCourseApi.remove, onSuccess: refresh }),
     submit: useMutation({ mutationFn: expertCourseApi.submit, onSuccess: refresh }),
   }

@@ -50,7 +50,7 @@ function CourseStudio({ course }: { course?: ExpertCourse }) {
  const { save } = useCourseActions()
  const readiness = useSubmissionReadiness(course?.id)
  const editable = !course || course.editable
- const contentEditable = !!course && (course.status === 'DRAFT' || course.status === 'REJECTED' || course.status === 'PUBLISHED')
+ const contentEditable = !!course && course.editable && (course.status === 'DRAFT' || course.status === 'REJECTED' || course.status === 'PUBLISHED')
  const busy = save.isPending || uploading || submitting || packagesBusy || quizBusy
  const dirty = !course || form.title !== course.title || form.description !== course.description || form.category !== course.category || form.price !== course.price || (form.thumbnailMediaId ?? null) !== (course.thumbnailMediaId ?? null)
  const checks = readiness.data?.checks ?? []
@@ -171,6 +171,7 @@ function CourseStudio({ course }: { course?: ExpertCourse }) {
      <div className="studio-actionbar"><span>{!course ? 'Bản nháp chỉ hiển thị trong không gian của bạn.' : dirty ? 'Có thay đổi chưa lưu' : 'Thông tin đã được lưu'}</span><div>{editable && <button className="course-primary" type="submit" form="course-info-form" disabled={busy || (!!course && !dirty)}>{save.isPending ? 'Đang lưu…' : course ? 'Lưu & tiếp tục' : 'Tạo bản nháp & tiếp tục'}<CourseIcon name="check" /></button>}{course && <button disabled={!canAdvance} onClick={() => selectStep('content')}>Tiếp: Giáo trình <CourseIcon name="next" /></button>}</div></div>
     </section>
     {course && <>
+     {course?.deletionRequestStatus === 'PENDING' && <p className="course-notice" role="status">Đang chờ Manager duyệt xóa. Khóa học tạm khóa chỉnh sửa.</p>}
      <section hidden={step !== 'content'} aria-label="Xây dựng giáo trình"><div className="studio-section-heading"><span className="studio-section-icon"><CourseIcon name="book" /></span><div><p>BƯỚC 02</p><h2>Một hành trình học có định hướng</h2><span>Tổ chức bài học và câu hỏi để học viên tiến bộ từng bước.</span></div></div><CourseContent courseId={course.id} editable={contentEditable && unlockedIndex >= 1} busy={busy} onDirty={setQuizDirty} onBusy={setQuizBusy} /></section>
      <section hidden={step !== 'pricing'} aria-label="Gói học và học phí"><div className="studio-section-heading"><span className="studio-section-icon"><CourseIcon name="price" /></span><div><p>BƯỚC 03</p><h2>Gói học phù hợp với từng nhu cầu</h2><span>Thiết lập thời hạn truy cập, học phí và ưu đãi minh bạch.</span></div></div><CoursePackagesPanel id={course.id} disabled={!editable || unlockedIndex < 2 || save.isPending || uploading || submitting} onDirty={setPackagesDirty} onBusy={setPackagesBusy} /></section>
      <section hidden={step !== 'review'} aria-label="Kiểm tra và gửi duyệt"><div className="studio-section-heading"><span className="studio-section-icon"><CourseIcon name="check" /></span><div><p>BƯỚC 04</p><h2>Sẵn sàng chia sẻ kiến thức?</h2><span>Kiểm tra lần cuối trước khi gửi khóa học đến Manager.</span></div></div><CourseSubmissionPanel course={course} dirty={dirty || packagesDirty || quizDirty} busy={busy} onBusy={setSubmitting} onFix={selectStep} /></section>

@@ -5,6 +5,7 @@ import { MediaUpload } from '../../../shared/components/media/MediaUpload'
 import { MediaVideo } from '../../../shared/components/media/MediaVideo'
 import { courseError } from './ExpertCoursesPage'
 import { LessonQuestionPicker } from './LessonQuestionPicker'
+import { normalizeNumberInput } from '../../../shared/utils/numberInput'
 import './lessons.css'
 
 export function CourseLessons({ courseId, editable }: { courseId: number; editable: boolean }) {
@@ -34,15 +35,15 @@ export function CourseLessons({ courseId, editable }: { courseId: number; editab
   </section>
 }
 function LessonEditor({ courseId, lesson, nextPosition, editable, saving, error, onSave, onClose }: { courseId: number; lesson?: Lesson; nextPosition: number; editable: boolean; saving: boolean; error: string; onSave: (input: LessonInput) => Promise<void>; onClose: () => void }) {
-  const [form, setForm] = useState<LessonInput>({ title: lesson?.title ?? '', content: lesson?.content ?? '', position: lesson?.position ?? nextPosition, videoMediaId: lesson?.videoMediaId ?? null })
+  const [form, setForm] = useState<Omit<LessonInput, 'position'> & { position: string }>({ title: lesson?.title ?? '', content: lesson?.content ?? '', position: String(lesson?.position ?? nextPosition), videoMediaId: lesson?.videoMediaId ?? null })
   const [uploading, setUploading] = useState(false)
-  async function submit(e: FormEvent<HTMLFormElement>) { e.preventDefault(); if (saving || uploading || !editable) return; try { await onSave(form) } catch { /* Parent mutation renders the error. */ } }
+  async function submit(e: FormEvent<HTMLFormElement>) { e.preventDefault(); if (saving || uploading || !editable || form.position.trim() === '') return; try { await onSave({ ...form, position: Number(form.position) }) } catch { /* Parent mutation renders the error. */ } }
   return <div className="course-modal-backdrop"><form className="course-modal lesson-editor" role="dialog" aria-modal="true" aria-labelledby="lesson-editor-title" onSubmit={e => void submit(e)}>
     <h2 id="lesson-editor-title">{lesson ? editable ? 'Chỉnh sửa bài học' : 'Nội dung bài học' : 'Thêm bài học'}</h2>
     {error && <p role="alert" className="course-error">{error}</p>}
     <fieldset disabled={!editable || saving || uploading}>
       <label>Tên bài học *<input autoFocus required maxLength={255} value={form.title} onChange={e => setForm(c => ({ ...c, title: e.target.value }))} /></label>
-      <label>Thứ tự *<input type="number" required min={1} max={2147483647} step={1} value={form.position} onChange={e => setForm(c => ({ ...c, position: Number(e.target.value) }))} /></label>
+      <label>Thứ tự *<input type="number" required min={1} max={2147483647} step={1} value={form.position} onChange={e => setForm(c => ({ ...c, position: normalizeNumberInput(e.target.value) }))} /></label>
       <label>Nội dung bài học *<textarea required maxLength={8000} rows={10} value={form.content} onChange={e => setForm(c => ({ ...c, content: e.target.value }))} /></label>
     </fieldset>
     <h3>Video bài học</h3>

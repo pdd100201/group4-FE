@@ -1,3 +1,4 @@
+import { CourseDeletionRequestsPage } from '../features/management/screens/CourseDeletionRequestsPage'
 import { StudentCertificatesPage } from '../features/certificates/screens/StudentCertificatesPage'
 import { VerifyCertificatePage } from '../features/certificates/screens/VerifyCertificatePage'
 import { CertificatePolicyPage, ManageCertificatesPage } from '../features/certificates/screens/ManageCertificatesPage'
@@ -41,6 +42,7 @@ import { ExpertQuizPage } from '../features/quiz/ExpertQuizPage'
 import { QuizEditorPage } from '../features/quiz/QuizEditorPage'
 import { ManagerQuizPreviewPage } from '../features/quiz/ManagerQuizPreviewPage'
 import { LessonLearningPage } from '../features/learning/screens/LessonLearningPage'
+import { StudentLessonQuestionsPage } from '../features/learning/screens/StudentLessonQuestionsPage'
 import { StudentQuizPage } from '../features/learning/screens/StudentQuizPage'
 import { StudentQuizResultPage } from '../features/learning/screens/StudentQuizResultPage'
 import { ManagerPostsPage } from '../features/management/screens/ManagerPostsPage'
@@ -85,6 +87,7 @@ export function AppRoutes() {
         <Route path="/student/courses/:courseId/lessons/:lessonId" element={<LessonLearningPage />} />
         <Route path="/student/registrations" element={<StudentRegistrationsPage />} />
         <Route path="/student/registrations/:id" element={<StudentRegistrationDetailPage />} />
+        <Route path="/student/courses/:courseId/lessons/:lessonId/questions" element={<StudentLessonQuestionsPage />} />
         <Route path="/student/quizzes/:quizId" element={<StudentQuizPage />} />
         <Route path="/student/quiz-attempts/:attemptId" element={<StudentQuizResultPage />} />
       </Route>
@@ -139,6 +142,7 @@ export function AppRoutes() {
         <Route path="/manager/discussions" element={<div className="discussion-management"><LessonDiscussions /></div>} />
         <Route path="/manager/certificates" element={<ManageCertificatesPage />} />
         <Route path="/manager/certificates/courses/:courseId/policy" element={<CertificatePolicyPage />} />
+        <Route path="/manager/course-deletion-requests" element={<CourseDeletionRequestsPage />} />
         <Route path="/manager/posts" element={<ManagerPostsPage />} />
         <Route path="/manager/posts/:postId" element={<ManagerPostDetailPage />} />
       </Route>
