@@ -30,6 +30,8 @@
 .blog-submission-actions>button{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:auto;height:auto;min-height:42px;white-space:nowrap;font:inherit;line-height:1.5;padding:0 16px;border:0;border-radius:8px;background:#2860e7;color:#fff;font-weight:700;cursor:pointer}
 .blog-submission-actions>button:disabled{opacity:.6;cursor:wait}
 .blog-submission-error{padding:12px;border-radius:8px;background:#fff0ed;color:#aa2417}
+.blog-submission-form .blog-submission-field-error{margin:0;font-size:13px;line-height:1.5;font-weight:400;color:#aa2417}
+.blog-submission-fields input[aria-invalid="true"],.blog-submission-fields textarea[aria-invalid="true"],.blog-submission-media[aria-invalid="true"]{border-color:#c43222}
 .my-post-submissions>header{align-items:center}
 .my-submission-list{display:grid;gap:12px}
 .my-submission-list>article{display:grid;grid-template-columns:130px minmax(0,1fr) auto;align-items:center;gap:16px;padding:16px;border:1px solid #dce5f0;border-radius:12px;background:#fff}
