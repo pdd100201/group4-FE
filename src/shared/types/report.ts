@@ -9,10 +9,13 @@ export interface ReportRow {
   studentName: string | null
   studentEmail: string | null
   createdAt: string | null
+  lessonCount: number | null
+  questionCount: number | null
   demo: boolean
 }
 export interface ReportResponse {
   kind: ReportKind
   records: ManagementPage<ReportRow>
+  metrics: Record<string, number>
   totalAmount: number
 }

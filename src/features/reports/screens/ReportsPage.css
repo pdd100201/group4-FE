@@ -11,3 +11,9 @@
 .reports-page .management-table a:hover{text-decoration:underline}
 .reports-page .management-table a:focus-visible{outline:2px solid #2459cc;outline-offset:3px}
 @media(max-width:600px){.report-actions{justify-content:flex-end}.report-tabs button{padding:12px}.report-totals dd{font-size:20px}}
+
+.report-description{color:#68788a;line-height:1.6;margin:12px 0 20px}
+.report-content-charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:20px 0}
+.report-content-charts>*{min-width:0;margin:0}
+.report-totals.report-metrics>div{background:white;border:1px solid #dce5f1;border-radius:10px;padding:16px;min-width:150px}
+@media(max-width:850px){.report-content-charts{grid-template-columns:1fr}}

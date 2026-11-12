@@ -18,7 +18,7 @@ function errorMessage(error: unknown) {
   if (isAxiosError(error)) {
     if (error.response?.status === 404) return 'Không tìm thấy bản ghi.'
     if (error.response?.status === 403) return 'Bạn không có quyền xem dữ liệu này.'
-    if (error.response?.status === 400) return 'Bộ lọc không hợp lệ. Kiểm tra ngày và mã khóa học.'
+    if (error.response?.status === 400) return 'Bộ lọc không hợp lệ. Vui lòng kiểm tra khoảng ngày và trạng thái.'
   }
   return 'Không tải được dữ liệu. Vui lòng thử lại.'
 }
@@ -50,11 +50,13 @@ export function ManagementRecordsPage({ kind }: { kind: ManagementKind }) {
   const size = 20
   request.delete('minAmount')
   request.delete('maxAmount')
-  if (!transactions) request.delete('courseId')
+  if (!reportReturnTo || !transactions) request.delete('courseId')
+  request.delete('provider')
+  if (transactions && ['REFUNDED', 'FAILED'].includes(request.get('status') ?? '')) request.delete('status')
   request.set('page', String(page))
   request.set('size', String(size))
   const { data, isLoading, isFetching, error, refetch } = useManagementRecords(scope, kind, request)
-  const statuses = transactions ? ['PENDING', 'SUCCEEDED', 'FAILED', 'CANCELLED', 'REFUNDED'] : ['PENDING_PAYMENT', 'ACTIVE', 'CANCELLED', 'EXPIRED', 'FAILED']
+  const statuses = transactions ? ['PENDING', 'SUCCEEDED', 'CANCELLED'] : ['PENDING_PAYMENT', 'ACTIVE', 'CANCELLED', 'EXPIRED', 'FAILED']
 
   function applyFilters(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -62,11 +64,6 @@ export function ManagementRecordsPage({ kind }: { kind: ManagementKind }) {
     const next = new URLSearchParams()
     for (const [key, value] of values.entries()) if (String(value).trim()) next.set(key, String(value).trim())
     const from = next.get('from'), to = next.get('to')
-    const courseId = next.get('courseId')
-    if (courseId && (!Number.isSafeInteger(Number(courseId)) || Number(courseId) <= 0)) {
-      setValidation('Mã khóa học phải là số nguyên dương.')
-      return
-    }
     if (from && to && from > to) {
       setValidation('Khoảng ngày không hợp lệ.')
       return
@@ -77,7 +74,9 @@ export function ManagementRecordsPage({ kind }: { kind: ManagementKind }) {
   }
   function changePage(nextPage: number) {
     const next = new URLSearchParams(params)
-    if (!transactions) next.delete('courseId')
+    if (!reportReturnTo || !transactions) next.delete('courseId')
+    next.delete('provider')
+    if (transactions && ['REFUNDED', 'FAILED'].includes(next.get('status') ?? '')) next.delete('status')
     next.delete('size'); next.delete('minAmount'); next.delete('maxAmount')
     next.set('page', String(nextPage))
     setParams(next, { state: location.state })
@@ -89,13 +88,12 @@ export function ManagementRecordsPage({ kind }: { kind: ManagementKind }) {
       <button type="button" onClick={() => refetch()} disabled={isFetching}>Làm mới</button></header>
     <form className="management-filters" key={params.toString()} onSubmit={applyFilters}>
       <label className="management-search">Tìm kiếm<input name="q" defaultValue={params.get('q') ?? ''} maxLength={200} placeholder={transactions ? 'Mã giao dịch/QR, tên, email, khóa học' : 'Tên, email, khóa học'} /></label>
-      {transactions && <label>Mã khóa học<input name="courseId" type="number" min="1" step="1" defaultValue={params.get('courseId') ?? ''} /></label>}
-      <label>{transactions ? 'Kết quả giao dịch' : 'Trạng thái'}<select name="status" defaultValue={params.get('status') ?? ''}><option value="">Tất cả</option>{statuses.map(s => <option key={s} value={s}>{labels[s]}</option>)}</select></label>
+      <label>{transactions ? 'Kết quả giao dịch' : 'Trạng thái'}<select name="status" defaultValue={statuses.includes(params.get('status') ?? '') ? params.get('status')! : ''}><option value="">Tất cả</option>{statuses.map(s => <option key={s} value={s}>{labels[s]}</option>)}</select></label>
       <label>Từ ngày (UTC)<input name="from" type="date" defaultValue={params.get('from') ?? ''} /></label>
       <label>Đến ngày (UTC)<input name="to" type="date" defaultValue={params.get('to') ?? ''} /></label>
-      {transactions && <label>Phương thức<select name="provider" defaultValue={params.get('provider') ?? ''}><option value="">Tất cả</option><option value="SEPAY">SePay</option><option value="SEPAY_TEST">SePay Test Mode</option></select></label>}
       <div className="management-filter-actions"><button className="primary-button" type="submit">Áp dụng</button><button type="button" onClick={() => { setValidation(''); setParams({}, { state: location.state }) }}>Xóa lọc</button></div>
     </form>
+    {reportReturnTo && transactions && request.get('courseId') && <p>Giao dịch của khóa học #{request.get('courseId')}</p>}
     {validation && <p role="alert" className="management-error">{validation}</p>}
     {isLoading && <p role="status">Đang tải...</p>}
     {error && <div role="alert" className="management-error">{errorMessage(error)} <button onClick={() => refetch()}>Thử lại</button></div>}
