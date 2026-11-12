@@ -47,7 +47,7 @@ function LessonEditor({ courseId, lesson, nextPosition, editable, saving, error,
       <label>Nội dung bài học *<textarea required maxLength={8000} rows={10} value={form.content} onChange={e => setForm(c => ({ ...c, content: e.target.value }))} /></label>
     </fieldset>
     <h3>Video bài học</h3>
-    {form.videoMediaId && <MediaVideo key={form.videoMediaId} mediaId={form.videoMediaId} />}
+    {form.videoMediaId && <MediaVideo key={form.videoMediaId} mediaId={form.videoMediaId} showRefresh={false} />}
     {editable && <MediaUpload purpose="LESSON_VIDEO" courseId={courseId} disabled={saving} onBusy={setUploading} onUploaded={media => setForm(c => ({ ...c, videoMediaId: media.id }))} />}
     {editable && form.videoMediaId && <button type="button" disabled={saving || uploading} onClick={() => setForm(c => ({ ...c, videoMediaId: null }))}>Gỡ video khỏi bài học</button>}
     <div className="course-row-actions"><button type="button" disabled={saving || uploading} onClick={onClose}>{editable ? 'Hủy' : 'Đóng'}</button>{editable && <button type="submit" className="course-primary" disabled={saving || uploading}>{saving ? 'Đang lưu…' : 'Lưu bài học'}</button>}</div>

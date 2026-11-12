@@ -86,12 +86,9 @@ function PolicyEditor({ base, options, onSaved }: { base: string; options: Polic
  const client = useQueryClient()
  const [enabled, setEnabled] = useState(options.current?.enabled ?? false)
  const [issuer, setIssuer] = useState(options.current?.issuerName ?? 'EduLearn')
- const [selected, setSelected] = useState<number[]>(options.current
-  ? options.current.quizzes.filter(item => options.quizzes.some(q => q.id === item.id && q.complete)).map(item => item.id)
-  : options.quizzes.filter(q => q.complete).map(q => q.id))
- const save = useMutation({ mutationFn: () => certificateApi.savePolicy(base, options.courseId, { enabled, issuerName: issuer.trim(), quizIds: selected, expectedVersion: options.current?.version ?? 0 }),
+ const save = useMutation({ mutationFn: () => certificateApi.savePolicy(base, options.courseId, { enabled, issuerName: issuer.trim(), quizIds: [], expectedVersion: options.current?.version ?? 0 }),
   onSuccess: async () => { onSaved(); await client.invalidateQueries({ queryKey: ['certificate-policy', user?.id, base, options.courseId] }) } })
- const valid = issuer.trim() && (!enabled || (options.courseStatus === 'PUBLISHED' && options.lessons.length > 0 && selected.length > 0))
+ const valid = issuer.trim() && (!enabled || (options.courseStatus === 'PUBLISHED' && options.lessons.length > 0))
  return <form onSubmit={e => { e.preventDefault(); if (valid && !save.isPending) save.mutate() }}>
   <h3>{options.courseTitle}</h3><p className="cert-muted">Mỗi lần lưu tạo một phiên bản mới cho nội dung hiện tại. Tất cả bài học đang hoạt động đều là bắt buộc.</p>
   <fieldset disabled={save.isPending}>
@@ -99,9 +96,7 @@ function PolicyEditor({ base, options, onSaved }: { base: string; options: Polic
    <label className="cert-field">Đơn vị cấp<input required maxLength={160} value={issuer} onChange={e => setIssuer(e.target.value)} /></label>
    {enabled && options.courseStatus !== 'PUBLISHED' && <p className="cert-error">Chỉ bật cấp khi khóa học đã được xuất bản.</p>}
    <h4>Bài học bắt buộc ({options.lessons.length})</h4><ul>{options.lessons.map(l => <li key={l.id}>{l.title}</li>)}</ul>
-   <h4>Ngân hàng câu hỏi dùng cho từng bài</h4><p className="cert-muted">Đây là nguồn câu hỏi và cấu hình đánh giá. Học viên chỉ làm câu hỏi được gán vào từng bài, không làm thêm bài tổng hợp. Ngân hàng bị ẩn hoặc thiếu cấu hình không thể được chọn.</p>
-   {options.quizzes.map(q => <label className="cert-checkbox" key={q.id}><input type="checkbox" disabled={!q.complete} checked={selected.includes(q.id)} onChange={e => setSelected(ids => e.target.checked ? [...ids, q.id] : ids.filter(id => id !== q.id))} />{q.title}{!q.complete && <small> — Chưa sẵn sàng</small>}</label>)}
-   {!options.quizzes.length && <p>Khóa học chưa có ngân hàng câu hỏi.</p>}
+   <p className="cert-muted">Học viên cần đạt tất cả phần câu hỏi được gắn vào từng bài học.</p>
    <button className="cert-primary" disabled={!valid || save.isPending}>{save.isPending ? 'Đang lưu…' : 'Lưu phiên bản điều kiện'}</button>
   </fieldset>
   {save.isError && <CertificateError error={save.error} />}
